@@ -12,38 +12,41 @@ class StartScreen extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       decoration: const BoxDecoration(
           image: DecorationImage(
-        image: AssetImage("assets/images/startCar.jpg"),
+        image: AssetImage("assets/images/start_background.png"),
         fit: BoxFit.cover,
       )),
       child: Padding(
           padding:
-              const EdgeInsets.only(top: 30, left: 20, right: 20, bottom: 30),
+              const EdgeInsets.only(top: 180, left: 20, right: 20, bottom: 30),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Column(
                 children: [
-                  Image.asset(
-                    'assets/images/logo.png',
-                    height: 120,
-                    width: 120,
-                  ),
                   Text(
                     "Car Wash",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       height: 0.99,
-                      fontSize: 80,
+                      fontSize: MediaQuery.of(context).size.width / 5,
                       fontFamily: 'Nosifer',
                       foreground: Paint()
                         ..shader = const LinearGradient(
                           colors: <Color>[
-                            Color.fromARGB(255, 0, 122, 162),
-                            Color.fromARGB(192, 255, 255, 255)
+                            Color.fromARGB(222, 146, 146, 146),
+                            Color.fromARGB(239, 255, 255, 255)
                           ],
                         ).createShader(
                             const Rect.fromLTWH(0.0, 0.0, 400.0, 70.0)),
+                      shadows: [
+                        Shadow(
+                          offset: const Offset(
+                              3.0, 3.0), // Ajustează offset-ul pentru umbra
+                          blurRadius: 6.0,
+                          color: Colors.black.withOpacity(0.5),
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -53,8 +56,8 @@ class StartScreen extends StatelessWidget {
                 withGradient: true,
                 text: "",
                 rowText: true,
-                colorGradient1: const Color.fromARGB(110, 7, 144, 190),
-                colorGradient2: const Color.fromARGB(130, 255, 255, 255),
+                colorGradient1: Color.fromARGB(108, 14, 14, 14),
+                colorGradient2: Color.fromARGB(107, 255, 255, 255),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
@@ -62,12 +65,12 @@ class StartScreen extends StatelessWidget {
                       "Get Started!",
                       style: TextStyle(
                         fontSize: 20,
-                        color: Colors.white,
+                        color: Color.fromARGB(255, 199, 199, 199),
                       ),
                     ),
                     Icon(
                       Icons.arrow_forward,
-                      color: Colors.white,
+                      color: Color.fromARGB(255, 239, 239, 239),
                     ),
                   ],
                 ),
