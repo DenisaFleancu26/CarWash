@@ -62,12 +62,7 @@ class CustomButton extends StatelessWidget {
               : Center(
                   child: Text(
                   text,
-                  style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      color: withGradient
-                          ? Colors.white
-                          : textColor ?? Colors.black),
+                  style: const TextStyle(fontSize: 20, color: Colors.white),
                 )),
         ),
       ),
