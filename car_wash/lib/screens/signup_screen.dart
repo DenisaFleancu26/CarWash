@@ -22,9 +22,49 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _controllerConfirmPassword =
       TextEditingController();
 
+  String? emailError;
+  String? usernameError;
+  String? passwordError;
+  String? confirmPasswordError;
+
   final User? user = Auth().currentUser;
 
   Future<void> signUp() async {
+    usernameError = null;
+    emailError = null;
+    passwordError = null;
+    confirmPasswordError = null;
+
+    if (_controllerUsername.text.isEmpty) {
+      setState(() {
+        usernameError = "Please enter your Username!";
+      });
+      return;
+    }
+    if (_controllerEmail.text.isEmpty) {
+      setState(() {
+        emailError = "Please enter your Email Address!";
+      });
+      return;
+    }
+    if (_controllerPassword.text.isEmpty) {
+      setState(() {
+        passwordError = "Please enter your Password!";
+      });
+      return;
+    }
+    if (_controllerConfirmPassword.text.isEmpty) {
+      setState(() {
+        confirmPasswordError = "Please enter your Password again!";
+      });
+      return;
+    }
+    if (_controllerPassword.text != _controllerConfirmPassword.text) {
+      setState(() {
+        confirmPasswordError = "The passwords you entered do not match!";
+      });
+      return;
+    }
     try {
       await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
@@ -41,7 +81,19 @@ class _SignupScreenState extends State<SignupScreen> {
             MaterialPageRoute(builder: (context) => const StartScreen()));
       });
     } on FirebaseAuthException catch (e) {
-      print(e);
+      setState(() {
+        switch (e.code) {
+          case 'weak-password':
+            passwordError = 'Password should be at least 6 characters';
+            break;
+          case 'email-is-already-in-use':
+            emailError = 'The Email has already been registered!';
+            break;
+          case 'invalid-email':
+            emailError = 'Your Email Address is invalid!';
+            break;
+        }
+      });
     }
   }
 
@@ -51,13 +103,15 @@ class _SignupScreenState extends State<SignupScreen> {
       TextEditingController controller,
       bool hasObscureText,
       bool obscureText,
-      int nrField) {
+      int nrField,
+      String? errorMessage) {
     return TextField(
       obscureText: hasObscureText ? obscureText : false,
       controller: controller,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: title,
+        errorText: errorMessage,
         hintStyle: TextStyle(
           color: const Color.fromARGB(255, 157, 157, 157),
           shadows: [
@@ -171,22 +225,34 @@ class _SignupScreenState extends State<SignupScreen> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField('Username', Icons.person,
-                            _controllerUsername, false, false, 0),
+                        child: _entryField(
+                            'Username',
+                            Icons.person,
+                            _controllerUsername,
+                            false,
+                            false,
+                            0,
+                            usernameError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
                         child: _entryField('Email Address', Icons.email,
-                            _controllerEmail, false, false, 0),
+                            _controllerEmail, false, false, 0, emailError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField('Password', Icons.lock,
-                            _controllerPassword, true, _obscureText, 1),
+                        child: _entryField(
+                            'Password',
+                            Icons.lock,
+                            _controllerPassword,
+                            true,
+                            _obscureText,
+                            1,
+                            passwordError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -198,7 +264,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             _controllerConfirmPassword,
                             true,
                             _obscureConfirm,
-                            2),
+                            2,
+                            confirmPasswordError),
                       ),
                       const SizedBox(height: 50),
                       Padding(
