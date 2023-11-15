@@ -1,6 +1,9 @@
 import 'dart:ui';
-
+import 'package:car_wash/screens/start_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -19,19 +22,96 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _controllerConfirmPassword =
       TextEditingController();
 
+  String? emailError;
+  String? usernameError;
+  String? passwordError;
+  String? confirmPasswordError;
+
+  final User? user = Auth().currentUser;
+
+  Future<void> signUp() async {
+    usernameError = null;
+    emailError = null;
+    passwordError = null;
+    confirmPasswordError = null;
+
+    if (_controllerUsername.text.isEmpty) {
+      setState(() {
+        usernameError = "Please enter your Username!";
+      });
+      return;
+    }
+    if (_controllerEmail.text.isEmpty) {
+      setState(() {
+        emailError = "Please enter your Email Address!";
+      });
+      return;
+    }
+    if (_controllerPassword.text.isEmpty) {
+      setState(() {
+        passwordError = "Please enter your Password!";
+      });
+      return;
+    }
+    if (_controllerConfirmPassword.text.isEmpty) {
+      setState(() {
+        confirmPasswordError = "Please enter your Password again!";
+      });
+      return;
+    }
+    if (_controllerPassword.text != _controllerConfirmPassword.text) {
+      setState(() {
+        confirmPasswordError = "The passwords you entered do not match!";
+      });
+      return;
+    }
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _controllerEmail.text, password: _controllerPassword.text)
+          .then((value) {
+        FirebaseFirestore.instance
+            .collection('Users')
+            .doc(value.user?.uid)
+            .set({
+          'username': _controllerUsername.text,
+          'email': _controllerEmail.text,
+        });
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const StartScreen()));
+      });
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        switch (e.code) {
+          case 'weak-password':
+            passwordError = 'Password should be at least 6 characters';
+            break;
+          case 'email-is-already-in-use':
+            emailError = 'The Email has already been registered!';
+            break;
+          case 'invalid-email':
+            emailError = 'Your Email Address is invalid!';
+            break;
+        }
+      });
+    }
+  }
+
   Widget _entryField(
       String title,
       IconData iconData,
       TextEditingController controller,
       bool hasObscureText,
       bool obscureText,
-      int nrField) {
+      int nrField,
+      String? errorMessage) {
     return TextField(
       obscureText: hasObscureText ? obscureText : false,
       controller: controller,
       style: const TextStyle(color: Colors.white),
       decoration: InputDecoration(
         hintText: title,
+        errorText: errorMessage,
         hintStyle: TextStyle(
           color: const Color.fromARGB(255, 157, 157, 157),
           shadows: [
@@ -145,22 +225,34 @@ class _SignupScreenState extends State<SignupScreen> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField('Username', Icons.person,
-                            _controllerUsername, false, false, 0),
+                        child: _entryField(
+                            'Username',
+                            Icons.person,
+                            _controllerUsername,
+                            false,
+                            false,
+                            0,
+                            usernameError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
                         child: _entryField('Email Address', Icons.email,
-                            _controllerEmail, false, false, 0),
+                            _controllerEmail, false, false, 0, emailError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField('Password', Icons.lock,
-                            _controllerPassword, true, _obscureText, 1),
+                        child: _entryField(
+                            'Password',
+                            Icons.lock,
+                            _controllerPassword,
+                            true,
+                            _obscureText,
+                            1,
+                            passwordError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -172,7 +264,8 @@ class _SignupScreenState extends State<SignupScreen> {
                             _controllerConfirmPassword,
                             true,
                             _obscureConfirm,
-                            2),
+                            2,
+                            confirmPasswordError),
                       ),
                       const SizedBox(height: 50),
                       Padding(
@@ -180,7 +273,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           horizontal: 15,
                         ),
                         child: CustomButton(
-                          onTap: () => {},
+                          onTap: signUp,
                           withGradient: false,
                           text: "Sign Up",
                           rowText: false,
