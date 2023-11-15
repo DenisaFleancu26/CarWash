@@ -1,6 +1,9 @@
 import 'dart:ui';
-
+import 'package:car_wash/screens/start_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -18,6 +21,29 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _controllerPassword = TextEditingController();
   final TextEditingController _controllerConfirmPassword =
       TextEditingController();
+
+  final User? user = Auth().currentUser;
+
+  Future<void> signUp() async {
+    try {
+      await FirebaseAuth.instance
+          .createUserWithEmailAndPassword(
+              email: _controllerEmail.text, password: _controllerPassword.text)
+          .then((value) {
+        FirebaseFirestore.instance
+            .collection('Users')
+            .doc(value.user?.uid)
+            .set({
+          'username': _controllerUsername.text,
+          'email': _controllerEmail.text,
+        });
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const StartScreen()));
+      });
+    } on FirebaseAuthException catch (e) {
+      print(e);
+    }
+  }
 
   Widget _entryField(
       String title,
@@ -180,7 +206,7 @@ class _SignupScreenState extends State<SignupScreen> {
                           horizontal: 15,
                         ),
                         child: CustomButton(
-                          onTap: () => {},
+                          onTap: signUp,
                           withGradient: false,
                           text: "Sign Up",
                           rowText: false,
