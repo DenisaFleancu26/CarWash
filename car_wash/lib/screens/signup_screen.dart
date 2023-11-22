@@ -1,10 +1,13 @@
+import 'dart:async';
 import 'dart:ui';
 import 'package:car_wash/screens/start_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class SignupScreen extends StatefulWidget {
   const SignupScreen({super.key});
@@ -28,6 +31,51 @@ class _SignupScreenState extends State<SignupScreen> {
   String? confirmPasswordError;
 
   final User? user = Auth().currentUser;
+
+  var isDeviceConnected = false;
+  bool isAlertSet = false;
+
+  Future<void> checkInternetConnection() async {
+    isDeviceConnected = await InternetConnectionChecker().hasConnection;
+    if (!isDeviceConnected && !isAlertSet) {
+      showDialogBox();
+      setState(() => isAlertSet = true);
+    }
+  }
+
+  showDialogBox() => showCupertinoDialog<String>(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('No Internet Connection'),
+          content: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.wifi_off,
+                color: Color.fromARGB(255, 157, 157, 157),
+                size: 50,
+              ),
+              Text('Please check your internet connection and try again!'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context, 'Cancel');
+                setState(() => isAlertSet = false);
+                isDeviceConnected =
+                    await InternetConnectionChecker().hasConnection;
+                if (!isDeviceConnected && !isAlertSet) {
+                  showDialogBox();
+                  setState(() => isAlertSet = true);
+                }
+              },
+              child: const Text('Retry!'),
+            ),
+          ],
+        ),
+      );
 
   Future<void> signUp() async {
     usernameError = null;
@@ -273,7 +321,13 @@ class _SignupScreenState extends State<SignupScreen> {
                           horizontal: 15,
                         ),
                         child: CustomButton(
-                          onTap: signUp,
+                          onTap: () async {
+                            isAlertSet = false;
+                            await checkInternetConnection();
+                            if (isDeviceConnected) {
+                              signUp();
+                            }
+                          },
                           withGradient: false,
                           text: "Sign Up",
                           rowText: false,
