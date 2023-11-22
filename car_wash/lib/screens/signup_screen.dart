@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/start_screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:car_wash/services/auth.dart';
@@ -349,11 +350,18 @@ class _SignupScreenState extends State<SignupScreen> {
                                 "Already have an account?",
                                 style: TextStyle(
                                   color: Colors.white,
+                                  decoration: TextDecoration.underline,
                                   fontSize: 15,
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => {},
+                                onTap: () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginScreen()))
+                                },
                                 child: const SizedBox(
                                   height: 30,
                                   width: 50,
@@ -361,6 +369,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                       child: Text(
                                     "Log in",
                                     style: TextStyle(
+                                        decoration: TextDecoration.underline,
                                         fontSize: 15,
                                         color: Color.fromARGB(255, 19, 19, 19)),
                                   )),
