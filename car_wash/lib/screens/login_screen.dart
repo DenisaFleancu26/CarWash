@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:car_wash/screens/signup_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
+import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:flutter/material.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -18,72 +19,6 @@ class _LoginScreenState extends State<LoginScreen> {
 
   String? emailError;
   String? passwordError;
-
-  Widget _entryField(
-      String title,
-      IconData iconData,
-      TextEditingController controller,
-      bool hasObscureText,
-      String? errorMessage) {
-    return TextField(
-      obscureText: hasObscureText ? _obscureText : false,
-      controller: controller,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: title,
-        errorText: errorMessage,
-        hintStyle: TextStyle(
-          color: const Color.fromARGB(255, 157, 157, 157),
-          shadows: [
-            Shadow(
-              offset: const Offset(2.0, 2.0),
-              blurRadius: 3.0,
-              color: Colors.black.withOpacity(0.25),
-            ),
-          ],
-        ),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color.fromARGB(255, 157, 157, 157)),
-        ),
-        focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Color.fromARGB(255, 29, 29, 29))),
-        prefixIcon: Icon(
-          iconData,
-          color: const Color.fromARGB(255, 157, 157, 157),
-          size: 30,
-          shadows: [
-            Shadow(
-              offset: const Offset(2.0, 2.0),
-              blurRadius: 3.0,
-              color: Colors.black.withOpacity(0.25),
-            ),
-          ],
-        ),
-        contentPadding: const EdgeInsets.all(15),
-        suffixIcon: Visibility(
-          visible: hasObscureText,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                _obscureText = !_obscureText;
-              });
-            },
-            child: Icon(
-              _obscureText ? Icons.visibility_off : Icons.visibility,
-              color: const Color.fromARGB(255, 157, 157, 157),
-              shadows: [
-                Shadow(
-                  offset: const Offset(2.0, 2.0),
-                  blurRadius: 3.0,
-                  color: Colors.black.withOpacity(0.25),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -136,17 +71,34 @@ class _LoginScreenState extends State<LoginScreen> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField('Email Address', Icons.email,
-                            _controllerEmail, false, emailError),
+                        child: CustomEntryField(
+                          onTap: () {},
+                          title: 'Email Address',
+                          iconData: Icons.email,
+                          controller: _controllerEmail,
+                          hasObscureText: false,
+                          obscureText: false,
+                          errorMessage: emailError,
+                        ),
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: _entryField('Password', Icons.lock,
-                            _controllerPassword, true, passwordError),
-                      ),
-                      const SizedBox(height: 30),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 30,
+                          ),
+                          child: CustomEntryField(
+                            onTap: () => {
+                              setState(() {
+                                _obscureText = !_obscureText;
+                              })
+                            },
+                            title: 'Password',
+                            iconData: Icons.lock,
+                            controller: _controllerPassword,
+                            hasObscureText: true,
+                            obscureText: _obscureText,
+                            errorMessage: passwordError,
+                          )),
+                      const SizedBox(height: 20),
                       GestureDetector(
                         onTap: () => {},
                         child: const SizedBox(
@@ -201,7 +153,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                               const SignupScreen()))
                                 },
                                 child: const SizedBox(
-                                  height: 30,
+                                  height: 50,
                                   width: 60,
                                   child: Center(
                                       child: Text(
