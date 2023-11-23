@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/start_screen.dart';
+import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
@@ -145,83 +147,6 @@ class _SignupScreenState extends State<SignupScreen> {
     }
   }
 
-  Widget _entryField(
-      String title,
-      IconData iconData,
-      TextEditingController controller,
-      bool hasObscureText,
-      bool obscureText,
-      int nrField,
-      String? errorMessage) {
-    return TextField(
-      obscureText: hasObscureText ? obscureText : false,
-      controller: controller,
-      style: const TextStyle(color: Colors.white),
-      decoration: InputDecoration(
-        hintText: title,
-        errorText: errorMessage,
-        hintStyle: TextStyle(
-          color: const Color.fromARGB(255, 157, 157, 157),
-          shadows: [
-            Shadow(
-              offset: const Offset(2.0, 2.0),
-              blurRadius: 3.0,
-              color: Colors.black.withOpacity(0.25),
-            ),
-          ],
-        ),
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Color.fromARGB(255, 157, 157, 157)),
-        ),
-        focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Color.fromARGB(255, 29, 29, 29))),
-        prefixIcon: Icon(
-          iconData,
-          color: const Color.fromARGB(255, 157, 157, 157),
-          size: 30,
-          shadows: [
-            Shadow(
-              offset: const Offset(2.0, 2.0),
-              blurRadius: 3.0,
-              color: Colors.black.withOpacity(0.25),
-            ),
-          ],
-        ),
-        contentPadding: const EdgeInsets.all(15),
-        suffixIcon: Visibility(
-          visible: hasObscureText,
-          child: GestureDetector(
-            onTap: () {
-              setState(() {
-                switch (nrField) {
-                  case 1:
-                    _obscureText = !_obscureText;
-                    obscureText = _obscureText;
-                    break;
-                  case 2:
-                    _obscureConfirm = !_obscureConfirm;
-                    obscureText = _obscureConfirm;
-                    break;
-                }
-              });
-            },
-            child: Icon(
-              obscureText ? Icons.visibility_off : Icons.visibility,
-              color: const Color.fromARGB(255, 157, 157, 157),
-              shadows: [
-                Shadow(
-                  offset: const Offset(2.0, 2.0),
-                  blurRadius: 3.0,
-                  color: Colors.black.withOpacity(0.25),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -273,47 +198,61 @@ class _SignupScreenState extends State<SignupScreen> {
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField(
-                            'Username',
-                            Icons.person,
-                            _controllerUsername,
-                            false,
-                            false,
-                            0,
-                            usernameError),
+                        child: CustomEntryField(
+                            onTap: () {},
+                            title: 'Username',
+                            iconData: Icons.person,
+                            controller: _controllerUsername,
+                            hasObscureText: false,
+                            obscureText: false,
+                            errorMessage: usernameError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField('Email Address', Icons.email,
-                            _controllerEmail, false, false, 0, emailError),
+                        child: CustomEntryField(
+                            onTap: () {},
+                            title: 'Email Address',
+                            iconData: Icons.email,
+                            controller: _controllerEmail,
+                            hasObscureText: false,
+                            obscureText: false,
+                            errorMessage: emailError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField(
-                            'Password',
-                            Icons.lock,
-                            _controllerPassword,
-                            true,
-                            _obscureText,
-                            1,
-                            passwordError),
+                        child: CustomEntryField(
+                            onTap: () => {
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  })
+                                },
+                            title: 'Password',
+                            iconData: Icons.lock,
+                            controller: _controllerPassword,
+                            hasObscureText: true,
+                            obscureText: _obscureText,
+                            errorMessage: passwordError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 30,
                         ),
-                        child: _entryField(
-                            'Confirm Password',
-                            Icons.lock,
-                            _controllerConfirmPassword,
-                            true,
-                            _obscureConfirm,
-                            2,
-                            confirmPasswordError),
+                        child: CustomEntryField(
+                            onTap: () => {
+                                  setState(() {
+                                    _obscureConfirm = !_obscureConfirm;
+                                  })
+                                },
+                            title: 'Confirm Password',
+                            iconData: Icons.lock,
+                            controller: _controllerConfirmPassword,
+                            hasObscureText: true,
+                            obscureText: _obscureConfirm,
+                            errorMessage: confirmPasswordError),
                       ),
                       const SizedBox(height: 50),
                       Padding(
@@ -349,20 +288,28 @@ class _SignupScreenState extends State<SignupScreen> {
                                 "Already have an account?",
                                 style: TextStyle(
                                   color: Colors.white,
+                                  decoration: TextDecoration.underline,
                                   fontSize: 15,
                                 ),
                               ),
                               GestureDetector(
-                                onTap: () => {},
+                                onTap: () => {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginScreen()))
+                                },
                                 child: const SizedBox(
-                                  height: 30,
+                                  height: 50,
                                   width: 50,
                                   child: Center(
                                       child: Text(
-                                    "Log in",
+                                    "Log In",
                                     style: TextStyle(
+                                        decoration: TextDecoration.underline,
                                         fontSize: 15,
-                                        color: Color.fromARGB(255, 19, 19, 19)),
+                                        color: Color.fromARGB(255, 0, 0, 0)),
                                   )),
                                 ),
                               ),
