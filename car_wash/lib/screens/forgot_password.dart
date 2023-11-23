@@ -1,8 +1,12 @@
 import 'dart:ui';
 
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -14,6 +18,72 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   String? errorEmail;
   final TextEditingController _controllerEmail = TextEditingController();
+
+  var isDeviceConnected = false;
+  bool isAlertSet = false;
+
+  Future<void> checkInternetConnection() async {
+    isDeviceConnected = await InternetConnectionChecker().hasConnection;
+    if (!isDeviceConnected && !isAlertSet) {
+      showDialogBox();
+      setState(() => isAlertSet = true);
+    }
+  }
+
+  showDialogBox() => showCupertinoDialog<String>(
+        context: context,
+        builder: (BuildContext context) => CupertinoAlertDialog(
+          title: const Text('No Internet Connection'),
+          content: const Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.wifi_off,
+                color: Color.fromARGB(255, 157, 157, 157),
+                size: 50,
+              ),
+              Text('Please check your internet connection and try again!'),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                Navigator.pop(context, 'Cancel');
+                setState(() => isAlertSet = false);
+                isDeviceConnected =
+                    await InternetConnectionChecker().hasConnection;
+                if (!isDeviceConnected && !isAlertSet) {
+                  showDialogBox();
+                  setState(() => isAlertSet = true);
+                }
+              },
+              child: const Text('Retry!'),
+            ),
+          ],
+        ),
+      );
+
+  Future<void> forgotPassword() async {
+    if (_controllerEmail.text.isEmpty) {
+      setState(() {
+        errorEmail = "Please enter your Email Address!";
+      });
+      return;
+    }
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: _controllerEmail.text.trim())
+          .then((value) {
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const LoginScreen()));
+      });
+    } on FirebaseAuthException catch (e) {
+      setState(() {
+        errorEmail = e.message.toString();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +172,13 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                           horizontal: 15,
                         ),
                         child: CustomButton(
-                          onTap: () {},
+                          onTap: () async {
+                            isAlertSet = false;
+                            await checkInternetConnection();
+                            if (isDeviceConnected) {
+                              forgotPassword();
+                            }
+                          },
                           withGradient: false,
                           text: "Recover Password",
                           rowText: false,
