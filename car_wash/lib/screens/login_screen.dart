@@ -99,14 +99,18 @@ class _LoginScreenState extends State<LoginScreen> {
     } on FirebaseAuthException catch (e) {
       setState(() {
         switch (e.code) {
-          case 'weak-password':
-            passwordError = 'Password should be at least 6 characters';
-            break;
-          case 'email-is-already-in-use':
-            emailError = 'The Email has already been registered!';
-            break;
           case 'invalid-email':
             emailError = 'Your Email Address is invalid!';
+            break;
+          case 'wrong-password':
+            passwordError = 'Your password is invalid, please try again!';
+            break;
+          case 'user-not-found':
+            emailError = 'No user corresponding to the given email!';
+            break;
+          case 'user-disabled':
+            emailError =
+                'The user corresponding to the given email has been disabled!';
             break;
         }
       });
