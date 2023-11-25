@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/forgot_password.dart';
 import 'package:car_wash/screens/signup_screen.dart';
 import 'package:car_wash/screens/start_screen.dart';
@@ -92,7 +93,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .signWithEmailAndPassword(
               email: _controllerEmail.text, password: _controllerPassword.text)
           .then((value) {
-        Navigator.popUntil(context, (route) => route.isFirst);
+        //Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const StartScreen()));
       });
@@ -111,6 +112,9 @@ class _LoginScreenState extends State<LoginScreen> {
           case 'user-disabled':
             emailError =
                 'The user corresponding to the given email has been disabled!';
+            break;
+          default:
+            passwordError = 'The mail or password you entered is wrong!';
             break;
         }
       });
