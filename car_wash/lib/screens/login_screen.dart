@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:car_wash/screens/forgot_password.dart';
 import 'package:car_wash/screens/signup_screen.dart';
 import 'package:car_wash/screens/start_screen.dart';
 import 'package:car_wash/services/auth.dart';
@@ -192,7 +193,13 @@ class _LoginScreenState extends State<LoginScreen> {
                           )),
                       const SizedBox(height: 20),
                       GestureDetector(
-                        onTap: () => {},
+                        onTap: () => {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ForgotPasswordScreen())),
+                        },
                         child: const SizedBox(
                           height: 30,
                           width: 200,
