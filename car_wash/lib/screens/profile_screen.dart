@@ -1,3 +1,6 @@
+import 'package:car_wash/services/auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -8,6 +11,33 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  final User? user = Auth().currentUser;
+  String username = '';
+  String email = '';
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails();
+  }
+
+  Future<void> getUserDetails() async {
+    try {
+      final userQuerySnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user?.uid)
+          .get();
+      setState(() {
+        if (userQuerySnapshot.exists) {
+          username = userQuerySnapshot['username'];
+          email = userQuerySnapshot['email'];
+        }
+      });
+    } catch (e) {
+      print('Error getting documents $e');
+    }
+  }
+
   Widget _customProfileButton(String title, IconData icon) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
@@ -103,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 10),
                   Text(
-                    "Denisa Fleancu",
+                    username,
                     style: TextStyle(
                       color: const Color.fromARGB(223, 255, 255, 255),
                       fontSize: MediaQuery.of(context).size.width / 18,
@@ -118,7 +148,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   const SizedBox(height: 5),
                   Text(
-                    "denisafleancu@gmail.com",
+                    email,
                     style: TextStyle(
                       color: const Color.fromARGB(255, 157, 157, 157),
                       fontSize: MediaQuery.of(context).size.width / 28,
