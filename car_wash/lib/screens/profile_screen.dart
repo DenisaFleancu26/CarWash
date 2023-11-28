@@ -1,3 +1,5 @@
+import 'package:car_wash/screens/change_password.dart';
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -38,7 +40,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     }
   }
 
-  Widget _customProfileButton(String title, IconData icon) {
+  Future<void> logOut() async {
+    await Auth().signOut();
+  }
+
+  Widget _customProfileButton(
+      String title, IconData icon, void Function() onTap) {
     return Padding(
       padding: const EdgeInsets.only(left: 20, right: 20),
       child: Column(
@@ -61,7 +68,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
               const SizedBox(width: 10),
               GestureDetector(
-                onTap: () => {},
+                onTap: onTap,
                 child: SizedBox(
                   height: 30,
                   child: Center(
@@ -162,12 +169,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
                   ),
                   const SizedBox(height: 70),
-                  _customProfileButton('Change Password', Icons.lock),
+                  _customProfileButton('Change Password', Icons.lock, () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                const ChangePasswordScreen()));
+                  }),
                   const SizedBox(height: 20),
                   _customProfileButton(
-                      'Transaction', Icons.account_balance_wallet),
+                      'Transaction', Icons.account_balance_wallet, () {}),
                   const SizedBox(height: 20),
-                  _customProfileButton('Logout', Icons.logout),
+                  _customProfileButton('Logout', Icons.logout, () {
+                    logOut();
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const LoginScreen()));
+                  }),
                 ],
               )),
         ),
