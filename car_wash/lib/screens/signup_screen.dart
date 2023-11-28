@@ -127,6 +127,7 @@ class _SignupScreenState extends State<SignupScreen> {
           'username': _controllerUsername.text,
           'email': _controllerEmail.text,
         });
+        Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.push(context,
             MaterialPageRoute(builder: (context) => const StartScreen()));
       });

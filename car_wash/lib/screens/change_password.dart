@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:car_wash/screens/start_screen.dart';
+import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -120,7 +120,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
       await user.reauthenticateWithCredential(credential).then((value) {
         user.updatePassword(_controllerNewPassword.text).then((value) {
           Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const StartScreen()));
+              MaterialPageRoute(builder: (context) => const ProfileScreen()));
         });
       });
     } on FirebaseAuthException {
