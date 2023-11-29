@@ -1,9 +1,8 @@
 import 'dart:ui';
 
-import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/forgot_password.dart';
+import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/signup_screen.dart';
-import 'package:car_wash/screens/start_screen.dart';
 import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
@@ -95,7 +94,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .then((value) {
         //Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const StartScreen()));
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       });
     } on FirebaseAuthException catch (e) {
       setState(() {

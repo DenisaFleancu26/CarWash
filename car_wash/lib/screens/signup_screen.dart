@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
-import 'package:car_wash/screens/start_screen.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:car_wash/services/auth.dart';
@@ -129,7 +129,7 @@ class _SignupScreenState extends State<SignupScreen> {
         });
         Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const StartScreen()));
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       });
     } on FirebaseAuthException catch (e) {
       setState(() {

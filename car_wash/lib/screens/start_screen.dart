@@ -1,3 +1,4 @@
+import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
@@ -52,12 +53,17 @@ class StartScreen extends StatelessWidget {
                 ],
               ),
               CustomButton(
-                onTap: () => {},
+                onTap: () => {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const HomeScreen()))
+                },
                 withGradient: true,
                 text: "",
                 rowText: true,
-                colorGradient1: Color.fromARGB(108, 14, 14, 14),
-                colorGradient2: Color.fromARGB(107, 255, 255, 255),
+                colorGradient1: const Color.fromARGB(108, 14, 14, 14),
+                colorGradient2: const Color.fromARGB(107, 255, 255, 255),
                 child: const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
