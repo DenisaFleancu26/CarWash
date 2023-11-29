@@ -2,7 +2,6 @@ import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
-import 'package:car_wash/screens/signup_screen.dart';
 import 'package:car_wash/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -104,7 +103,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  final items = <Widget>[
+  final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
     Icon(Icons.home, size: 30),
     Icon(Icons.account_circle, size: 30),
