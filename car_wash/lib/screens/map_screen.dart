@@ -1,7 +1,11 @@
 import 'package:car_wash/screens/home_screen.dart';
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+
+import '../services/auth.dart';
 
 class MapScreen extends StatefulWidget {
   const MapScreen({super.key});
@@ -12,6 +16,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   int index = 0;
+  final User? user = Auth().currentUser;
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
@@ -46,10 +51,18 @@ class _MapScreenState extends State<MapScreen> {
               );
               break;
             case 2:
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(builder: (context) => const ProfileScreen()),
-              );
+              if (user != null) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              }
               break;
           }
         }),
