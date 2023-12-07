@@ -1,8 +1,11 @@
 import 'dart:ui';
 
+import 'package:car_wash/screens/home_screen.dart';
+import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -130,9 +133,49 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
     }
   }
 
+  int index = 2;
+
+  final items = const <Widget>[
+    Icon(Icons.map_rounded, size: 30),
+    Icon(Icons.home, size: 30),
+    Icon(Icons.account_circle, size: 30),
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Colors.transparent,
+        color: const Color.fromARGB(255, 255, 255, 255),
+        animationDuration: const Duration(milliseconds: 300),
+        height: 45,
+        index: index,
+        items: items,
+        onTap: (index) => setState(() {
+          this.index = index;
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MapScreen()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+              break;
+            case 2:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const ProfileScreen()),
+              );
+              break;
+          }
+        }),
+      ),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,

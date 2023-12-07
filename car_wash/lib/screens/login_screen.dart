@@ -1,12 +1,14 @@
 import 'dart:ui';
 
-import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/forgot_password.dart';
+import 'package:car_wash/screens/home_screen.dart';
+import 'package:car_wash/screens/map_screen.dart';
+import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/screens/signup_screen.dart';
-import 'package:car_wash/screens/start_screen.dart';
 import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +31,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
   var isDeviceConnected = false;
   bool isAlertSet = false;
+
+  int index = 2;
+  final User? user = Auth().currentUser;
+
+  final items = const <Widget>[
+    Icon(Icons.map_rounded, size: 30),
+    Icon(Icons.home, size: 30),
+    Icon(Icons.account_circle, size: 30),
+  ];
 
   Future<void> checkInternetConnection() async {
     isDeviceConnected = await InternetConnectionChecker().hasConnection;
@@ -95,7 +106,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .then((value) {
         //Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const StartScreen()));
+            MaterialPageRoute(builder: (context) => const HomeScreen()));
       });
     } on FirebaseAuthException catch (e) {
       setState(() {
@@ -124,6 +135,46 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Colors.transparent,
+        color: const Color.fromARGB(255, 255, 255, 255),
+        animationDuration: const Duration(milliseconds: 300),
+        height: 45,
+        index: index,
+        items: items,
+        onTap: (index) => setState(() {
+          this.index = index;
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const MapScreen()),
+              );
+              break;
+            case 1:
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const HomeScreen()),
+              );
+              break;
+            case 2:
+              if (user != null) {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => const ProfileScreen()),
+                );
+              } else {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => const LoginScreen()),
+                );
+              }
+              break;
+          }
+        }),
+      ),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
