@@ -1,11 +1,16 @@
 import 'dart:async';
+import 'dart:ui' as ui;
 
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:custom_info_window/custom_info_window.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_geocoder/geocoder.dart';
+import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
@@ -25,6 +30,12 @@ class _MapScreenState extends State<MapScreen> {
 
   late CameraPosition _cameraPosition;
   final Completer<GoogleMapController> _controller = Completer();
+  final CustomInfoWindowController _customInfoWindowController =
+      CustomInfoWindowController();
+
+  final List<Marker> _marker = [];
+
+  late BitmapDescriptor customIcon;
 
   bool display = true;
   String mapTheme = '';
@@ -75,6 +86,143 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
+  Future<List<Marker>> setCoordonates() async {
+    const query1 = 'Bulevardul Liviu Rebreanu 153, Timișoara 300736';
+    var address1 = await Geocoder.local.findAddressesFromQuery(query1);
+
+    const query2 = 'Strada Amurgului 3, Timișoara 300254';
+    var address2 = await Geocoder.local.findAddressesFromQuery(query2);
+    final Uint8List markerIcon =
+        await getBytesFromAssets('assets/images/carwash_mark.png', 100);
+    final List<Marker> list = [
+      Marker(
+          markerId: const MarkerId('1'),
+          icon: BitmapDescriptor.fromBytes(markerIcon),
+          position: LatLng(address1.first.coordinates.latitude!,
+              address1.first.coordinates.longitude!),
+          onTap: () {
+            _customInfoWindowController.addInfoWindow!(
+              Container(
+                decoration: const BoxDecoration(
+                  borderRadius: BorderRadius.all(Radius.circular(30)),
+                  color: ui.Color.fromARGB(218, 122, 122, 122),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Container(
+                      width: 140,
+                      height: 150,
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30),
+                          bottomLeft: Radius.circular(30),
+                        ),
+                        image: DecorationImage(
+                          image: AssetImage('assets/images/carwash.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        SizedBox(
+                          width: 140,
+                          child: Text(
+                            "Car Wash JET Point",
+                            style: TextStyle(
+                              color:
+                                  const ui.Color.fromARGB(223, 255, 255, 255),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              shadows: [
+                                Shadow(
+                                  offset: const Offset(3.0, 3.0),
+                                  blurRadius: 10.0,
+                                  color: Colors.black.withOpacity(0.30),
+                                ),
+                              ],
+                            ),
+                            softWrap: true,
+                          ),
+                        ),
+                        RatingBar.builder(
+                          initialRating: 4,
+                          itemSize: 20.0,
+                          itemBuilder: (context, _) =>
+                              const Icon(Icons.star, color: Colors.amber),
+                          onRatingUpdate: (rating) {},
+                          ignoreGestures: true,
+                        ),
+                        SizedBox(
+                          width: 140,
+                          child: Text(
+                            "Calea Stan Vidrighin 6, Timișoara 300013",
+                            style: TextStyle(
+                              color:
+                                  const ui.Color.fromARGB(198, 255, 255, 255),
+                              fontSize: 8,
+                              shadows: [
+                                Shadow(
+                                  offset: const Offset(3.0, 3.0),
+                                  blurRadius: 10.0,
+                                  color: Colors.black.withOpacity(0.30),
+                                ),
+                              ],
+                            ),
+                            softWrap: true,
+                            maxLines: 3,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(left: 60),
+                          child: GestureDetector(
+                            onTap: () => {},
+                            child: const SizedBox(
+                              height: 20,
+                              width: 70,
+                              child: Center(
+                                  child: Text(
+                                "View more ➔",
+                                style: TextStyle(
+                                    fontSize: 10,
+                                    decoration: TextDecoration.underline,
+                                    color:
+                                        ui.Color.fromARGB(255, 222, 222, 222)),
+                              )),
+                            ),
+                          ),
+                        ),
+                      ],
+                    )
+                  ],
+                ),
+              ),
+              LatLng(
+                address1.first.coordinates.latitude!,
+                address1.first.coordinates.longitude!,
+              ),
+            );
+          }),
+      Marker(
+        markerId: const MarkerId('2'),
+        icon: BitmapDescriptor.fromBytes(markerIcon),
+        position: LatLng(
+          address2.first.coordinates.latitude!,
+          address2.first.coordinates.longitude!,
+        ),
+        infoWindow: const InfoWindow(title: 'Car Wash'),
+      )
+    ];
+    _marker.addAll(list);
+
+    return _marker;
+  }
+
   Future<void> checkLocationPermission() async {
     await Geolocator.requestPermission();
     if ((await Geolocator.checkPermission() ==
@@ -84,12 +232,23 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       userLocation = true;
     }
+    await setCoordonates();
     getUserLocation().then((cameraPosition) {
       setState(() {
         _cameraPosition = cameraPosition;
         display = false;
       });
     });
+  }
+
+  Future<Uint8List> getBytesFromAssets(String path, int width) async {
+    ByteData data = await rootBundle.load(path);
+    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
+        targetHeight: width);
+    ui.FrameInfo fi = await codec.getNextFrame();
+    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
+        .buffer
+        .asUint8List();
   }
 
   @override
@@ -161,12 +320,25 @@ class _MapScreenState extends State<MapScreen> {
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
                     compassEnabled: false,
+                    markers: Set<Marker>.of(_marker),
                     padding: const EdgeInsets.only(bottom: 60, top: 30),
                     onMapCreated: (GoogleMapController controller) {
                       controller.setMapStyle(mapTheme);
                       _controller.complete(controller);
+                      _customInfoWindowController.googleMapController =
+                          controller;
+                    },
+                    onCameraMove: (position) {
+                      _customInfoWindowController.onCameraMove!();
+                    },
+                    onTap: (position) {
+                      _customInfoWindowController.hideInfoWindow!();
                     },
                   ),
+            CustomInfoWindow(
+                controller: _customInfoWindowController,
+                height: 150,
+                width: 300),
           ],
         ));
   }
