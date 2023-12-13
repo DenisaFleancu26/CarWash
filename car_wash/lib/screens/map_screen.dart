@@ -21,23 +21,27 @@ class MapScreen extends StatefulWidget {
 class _MapScreenState extends State<MapScreen> {
   int index = 0;
   final User? user = Auth().currentUser;
+  bool userLocation = true;
 
-  CameraPosition _cameraPosition = CameraPosition(
-    target: LatLng(45.7494, 21.2272),
-    zoom: 13,
-  );
+  late CameraPosition _cameraPosition;
   final Completer<GoogleMapController> _controller = Completer();
 
   String mapTheme = '';
 
   @override
   void initState() {
+    checkLocationPermission();
     DefaultAssetBundle.of(context)
         .loadString('assets/mapTheme/night_theme.json')
         .then((value) {
       mapTheme = value;
     });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 
   final items = const <Widget>[
@@ -53,6 +57,37 @@ class _MapScreenState extends State<MapScreen> {
       print("Error getting location: $e");
       return Future.error("Error getting location");
     }
+  }
+
+  Future<CameraPosition> getUserLocation() async {
+    if (userLocation) {
+      Position position = await getUserCurrentLocation();
+      return CameraPosition(
+        target: LatLng(position.latitude, position.longitude),
+        zoom: 16,
+      );
+    } else {
+      return const CameraPosition(
+        target: LatLng(45.7494, 21.2272),
+        zoom: 13,
+      );
+    }
+  }
+
+  Future<void> checkLocationPermission() async {
+    await Geolocator.requestPermission();
+    if ((await Geolocator.checkPermission() ==
+            LocationPermission.deniedForever) ||
+        (await Geolocator.checkPermission() == LocationPermission.denied)) {
+      userLocation = false;
+    } else {
+      userLocation = true;
+    }
+    getUserLocation().then((cameraPosition) {
+      setState(() {
+        _cameraPosition = cameraPosition;
+      });
+    });
   }
 
   @override
