@@ -28,8 +28,15 @@ class _MapScreenState extends State<MapScreen> {
   );
   final Completer<GoogleMapController> _controller = Completer();
 
+  String mapTheme = '';
+
   @override
   void initState() {
+    DefaultAssetBundle.of(context)
+        .loadString('assets/mapTheme/night_theme.json')
+        .then((value) {
+      mapTheme = value;
+    });
     super.initState();
   }
 
@@ -103,6 +110,7 @@ class _MapScreenState extends State<MapScreen> {
               compassEnabled: false,
               padding: const EdgeInsets.only(bottom: 60, top: 30),
               onMapCreated: (GoogleMapController controller) {
+                controller.setMapStyle(mapTheme);
                 _controller.complete(controller);
               },
             ),
