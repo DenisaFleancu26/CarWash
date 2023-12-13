@@ -26,6 +26,7 @@ class _MapScreenState extends State<MapScreen> {
   late CameraPosition _cameraPosition;
   final Completer<GoogleMapController> _controller = Completer();
 
+  bool display = true;
   String mapTheme = '';
 
   @override
@@ -86,6 +87,7 @@ class _MapScreenState extends State<MapScreen> {
     getUserLocation().then((cameraPosition) {
       setState(() {
         _cameraPosition = cameraPosition;
+        display = false;
       });
     });
   }
@@ -136,19 +138,35 @@ class _MapScreenState extends State<MapScreen> {
         ),
         body: Stack(
           children: [
-            GoogleMap(
-              initialCameraPosition: _cameraPosition,
-              mapType: MapType.normal,
-              zoomControlsEnabled: false,
-              myLocationEnabled: true,
-              myLocationButtonEnabled: true,
-              compassEnabled: false,
-              padding: const EdgeInsets.only(bottom: 60, top: 30),
-              onMapCreated: (GoogleMapController controller) {
-                controller.setMapStyle(mapTheme);
-                _controller.complete(controller);
-              },
-            ),
+            display
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Container(
+                          height: MediaQuery.of(context).size.height,
+                          width: MediaQuery.of(context).size.width,
+                          alignment: Alignment.center,
+                          color: const Color.fromARGB(255, 18, 18, 18),
+                          child: const CircularProgressIndicator(
+                              color: Color.fromARGB(255, 255, 255, 255)),
+                        )
+                      ],
+                    ),
+                  )
+                : GoogleMap(
+                    initialCameraPosition: _cameraPosition,
+                    mapType: MapType.normal,
+                    zoomControlsEnabled: false,
+                    myLocationEnabled: true,
+                    myLocationButtonEnabled: true,
+                    compassEnabled: false,
+                    padding: const EdgeInsets.only(bottom: 60, top: 30),
+                    onMapCreated: (GoogleMapController controller) {
+                      controller.setMapStyle(mapTheme);
+                      _controller.complete(controller);
+                    },
+                  ),
           ],
         ));
   }
