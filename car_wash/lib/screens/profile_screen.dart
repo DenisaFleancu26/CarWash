@@ -20,6 +20,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   String username = '';
   String email = '';
   int index = 2;
+  bool display = true;
 
   @override
   void initState() {
@@ -42,6 +43,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     } catch (e) {
       print('Error getting documents $e');
     }
+    display = false;
   }
 
   Future<void> logOut() async {
@@ -153,94 +155,117 @@ class _ProfileScreenState extends State<ProfileScreen> {
         }),
       ),
       body: SingleChildScrollView(
-        child: Container(
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-          decoration: const BoxDecoration(
-              image: DecorationImage(
-            image: AssetImage("assets/images/background.png"),
-            fit: BoxFit.cover,
-          )),
-          child: Padding(
-              padding: const EdgeInsets.only(left: 50, right: 50),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  const SizedBox(height: 100),
-                  Text(
-                    "Profile",
-                    style: TextStyle(
-                      color: const Color.fromARGB(223, 255, 255, 255),
-                      fontSize: MediaQuery.of(context).size.width / 10,
-                      shadows: [
-                        Shadow(
-                          offset: const Offset(3.0, 3.0),
-                          blurRadius: 10.0,
-                          color: Colors.black.withOpacity(0.30),
+        child: display
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      height: MediaQuery.of(context).size.height,
+                      width: MediaQuery.of(context).size.width,
+                      decoration: const BoxDecoration(
+                        image: DecorationImage(
+                          image: AssetImage("assets/images/background.png"),
+                          fit: BoxFit.cover,
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Icon(
-                    Icons.account_circle,
-                    size: MediaQuery.of(context).size.width / 2.5,
-                    color: const Color.fromARGB(255, 157, 157, 157),
-                  ),
-                  const SizedBox(height: 10),
-                  Text(
-                    username,
-                    style: TextStyle(
-                      color: const Color.fromARGB(223, 255, 255, 255),
-                      fontSize: MediaQuery.of(context).size.width / 18,
-                      shadows: [
-                        Shadow(
-                          offset: const Offset(3.0, 3.0),
-                          blurRadius: 10.0,
-                          color: Colors.black.withOpacity(0.30),
+                      ),
+                      alignment: Alignment.center,
+                      child: const CircularProgressIndicator(
+                        color: Color.fromARGB(255, 255, 255, 255),
+                        value: 0.6,
+                      ),
+                    )
+                  ],
+                ),
+              )
+            : Container(
+                height: MediaQuery.of(context).size.height,
+                width: MediaQuery.of(context).size.width,
+                decoration: const BoxDecoration(
+                    image: DecorationImage(
+                  image: AssetImage("assets/images/background.png"),
+                  fit: BoxFit.cover,
+                )),
+                child: Padding(
+                    padding: const EdgeInsets.only(left: 50, right: 50),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 100),
+                        Text(
+                          "Profile",
+                          style: TextStyle(
+                            color: const Color.fromARGB(223, 255, 255, 255),
+                            fontSize: MediaQuery.of(context).size.width / 10,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(3.0, 3.0),
+                                blurRadius: 10.0,
+                                color: Colors.black.withOpacity(0.30),
+                              ),
+                            ],
+                          ),
                         ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 5),
-                  Text(
-                    email,
-                    style: TextStyle(
-                      color: const Color.fromARGB(255, 157, 157, 157),
-                      fontSize: MediaQuery.of(context).size.width / 28,
-                      shadows: [
-                        Shadow(
-                          offset: const Offset(3.0, 3.0),
-                          blurRadius: 10.0,
-                          color: Colors.black.withOpacity(0.30),
+                        const SizedBox(height: 20),
+                        Icon(
+                          Icons.account_circle,
+                          size: MediaQuery.of(context).size.width / 2.5,
+                          color: const Color.fromARGB(255, 157, 157, 157),
                         ),
+                        const SizedBox(height: 10),
+                        Text(
+                          username,
+                          style: TextStyle(
+                            color: const Color.fromARGB(223, 255, 255, 255),
+                            fontSize: MediaQuery.of(context).size.width / 18,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(3.0, 3.0),
+                                blurRadius: 10.0,
+                                color: Colors.black.withOpacity(0.30),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 5),
+                        Text(
+                          email,
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 157, 157, 157),
+                            fontSize: MediaQuery.of(context).size.width / 28,
+                            shadows: [
+                              Shadow(
+                                offset: const Offset(3.0, 3.0),
+                                blurRadius: 10.0,
+                                color: Colors.black.withOpacity(0.30),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 70),
+                        _customProfileButton('Change Password', Icons.lock, () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ChangePasswordScreen()));
+                        }),
+                        const SizedBox(height: 20),
+                        _customProfileButton(
+                            'Transaction', Icons.account_balance_wallet, () {}),
+                        const SizedBox(height: 20),
+                        _customProfileButton('Logout', Icons.logout, () {
+                          logOut();
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginScreen()));
+                        }),
                       ],
-                    ),
-                  ),
-                  const SizedBox(height: 70),
-                  _customProfileButton('Change Password', Icons.lock, () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                const ChangePasswordScreen()));
-                  }),
-                  const SizedBox(height: 20),
-                  _customProfileButton(
-                      'Transaction', Icons.account_balance_wallet, () {}),
-                  const SizedBox(height: 20),
-                  _customProfileButton('Logout', Icons.logout, () {
-                    logOut();
-                    Navigator.popUntil(context, (route) => route.isFirst);
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const LoginScreen()));
-                  }),
-                ],
-              )),
-        ),
+                    )),
+              ),
       ),
     );
   }
