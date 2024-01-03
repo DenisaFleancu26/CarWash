@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -39,6 +41,8 @@ class _MapScreenState extends State<MapScreen> {
 
   bool display = true;
   String mapTheme = '';
+
+  List carWashes = [];
 
   @override
   void initState() {
@@ -249,6 +253,40 @@ class _MapScreenState extends State<MapScreen> {
     return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
         .buffer
         .asUint8List();
+  }
+
+  Future<List<CarWash>> fetchCarWashesFromFirebase() async {
+    final managers =
+        await FirebaseFirestore.instance.collection('Managers').get();
+
+    if (managers.docs.isNotEmpty) {
+      for (var manager in managers.docs) {
+        var managerCarWashes = await FirebaseFirestore.instance
+            .collection('Managers')
+            .doc(manager.id)
+            .collection('car-wash')
+            .get();
+        for (var element in managerCarWashes.docs) {
+          Map<int, List<String>> reviews =
+              await getReviews(manager.id, element.id);
+          CarWash carwash = CarWash(
+            name: element['name'],
+            hours: element['hours'],
+            image: element['image'] ?? '',
+            address: element['address'],
+            phone: element['phone'],
+            smallVehicleSeats: element['small-vehicle'],
+            bigVehicleSeats: element['big-vehicle'],
+            price: (element['price']).toDouble(),
+            nrRatings: element['nrRatings'],
+            totalRatings: element['totalRatings'],
+            reviews: reviews,
+          );
+          carWashes.add(carwash);
+        }
+      }
+    }
+    return carWashes;
   }
 
   @override
