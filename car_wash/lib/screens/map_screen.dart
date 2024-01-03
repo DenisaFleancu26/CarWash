@@ -9,6 +9,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geocoder/geocoder.dart';
@@ -41,8 +42,7 @@ class _MapScreenState extends State<MapScreen> {
 
   bool display = true;
   String mapTheme = '';
-
-  List carWashes = [];
+  List<CarWash> carWashes = [];
 
   @override
   void initState() {
@@ -91,19 +91,18 @@ class _MapScreenState extends State<MapScreen> {
   }
 
   Future<List<Marker>> setCoordonates() async {
-    const query1 = 'Bulevardul Liviu Rebreanu 153, Timișoara 300736';
-    var address1 = await Geocoder.local.findAddressesFromQuery(query1);
+    var i = 1;
+    for (var carwash in carWashes) {
+      var address =
+          await Geocoder.local.findAddressesFromQuery(carwash.address);
 
-    const query2 = 'Strada Amurgului 3, Timișoara 300254';
-    var address2 = await Geocoder.local.findAddressesFromQuery(query2);
-    final Uint8List markerIcon =
-        await getBytesFromAssets('assets/images/carwash_mark.png', 100);
-    final List<Marker> list = [
-      Marker(
-          markerId: const MarkerId('1'),
+      final Uint8List markerIcon =
+          await getBytesFromAssets('assets/images/carwash_mark.png', 100);
+      _marker.add(Marker(
+          markerId: MarkerId(i.toString()),
           icon: BitmapDescriptor.fromBytes(markerIcon),
-          position: LatLng(address1.first.coordinates.latitude!,
-              address1.first.coordinates.longitude!),
+          position: LatLng(address.first.coordinates.latitude!,
+              address.first.coordinates.longitude!),
           onTap: () {
             _customInfoWindowController.addInfoWindow!(
               Container(
@@ -118,13 +117,14 @@ class _MapScreenState extends State<MapScreen> {
                     Container(
                       width: 140,
                       height: 150,
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.only(
+                      decoration: BoxDecoration(
+                        borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(30),
                           bottomLeft: Radius.circular(30),
                         ),
                         image: DecorationImage(
-                          image: AssetImage('assets/images/carwash.png'),
+                          image:
+                              FirebaseImageProvider(FirebaseUrl(carwash.image)),
                           fit: BoxFit.cover,
                         ),
                       ),
@@ -137,7 +137,7 @@ class _MapScreenState extends State<MapScreen> {
                         SizedBox(
                           width: 140,
                           child: Text(
-                            "Car Wash JET Point",
+                            carwash.name,
                             style: TextStyle(
                               color:
                                   const ui.Color.fromARGB(223, 255, 255, 255),
@@ -155,7 +155,8 @@ class _MapScreenState extends State<MapScreen> {
                           ),
                         ),
                         RatingBar.builder(
-                          initialRating: 4,
+                          initialRating: carwash.averageRating(
+                              carwash.nrRatings, carwash.totalRatings),
                           itemSize: 20.0,
                           itemBuilder: (context, _) =>
                               const Icon(Icons.star, color: Colors.amber),
@@ -165,7 +166,7 @@ class _MapScreenState extends State<MapScreen> {
                         SizedBox(
                           width: 140,
                           child: Text(
-                            "Calea Stan Vidrighin 6, Timișoara 300013",
+                            carwash.address,
                             style: TextStyle(
                               color:
                                   const ui.Color.fromARGB(198, 255, 255, 255),
@@ -207,23 +208,13 @@ class _MapScreenState extends State<MapScreen> {
                 ),
               ),
               LatLng(
-                address1.first.coordinates.latitude!,
-                address1.first.coordinates.longitude!,
+                address.first.coordinates.latitude!,
+                address.first.coordinates.longitude!,
               ),
             );
-          }),
-      Marker(
-        markerId: const MarkerId('2'),
-        icon: BitmapDescriptor.fromBytes(markerIcon),
-        position: LatLng(
-          address2.first.coordinates.latitude!,
-          address2.first.coordinates.longitude!,
-        ),
-        infoWindow: const InfoWindow(title: 'Car Wash'),
-      )
-    ];
-    _marker.addAll(list);
-
+          }));
+      i++;
+    }
     return _marker;
   }
 
@@ -236,6 +227,7 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       userLocation = true;
     }
+    await fetchCarWashesFromFirebase();
     await setCoordonates();
     getUserLocation().then((cameraPosition) {
       setState(() {
