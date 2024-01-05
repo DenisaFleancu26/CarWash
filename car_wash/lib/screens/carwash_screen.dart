@@ -1,9 +1,11 @@
+import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -11,7 +13,8 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import '../services/auth.dart';
 
 class CarWashScreen extends StatefulWidget {
-  const CarWashScreen({super.key});
+  final CarWash carwash;
+  const CarWashScreen({Key? key, required this.carwash}) : super(key: key);
 
   @override
   State<CarWashScreen> createState() => _CarWashState();
@@ -20,12 +23,55 @@ class CarWashScreen extends StatefulWidget {
 class _CarWashState extends State<CarWashScreen> {
   int index = 1;
   final User? user = Auth().currentUser;
+  int nr = 0;
+  late Map<int, Map<String, int>> reviewList;
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
     Icon(Icons.home, size: 30),
     Icon(Icons.account_circle, size: 30),
   ];
+
+  Widget generateSeats(int nr, IconData icon) {
+    nr++;
+    return Container(
+        width: MediaQuery.of(context).size.width / 5.5,
+        height: MediaQuery.of(context).size.width / 5.5,
+        decoration: BoxDecoration(
+          color: const Color.fromARGB(255, 34, 34, 34),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 2, 2, 2).withOpacity(0.5),
+              spreadRadius: 2,
+              blurRadius: 7,
+              offset: const Offset(0, 2),
+            ),
+          ],
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(
+            color: const Color.fromARGB(255, 2, 196, 21),
+            width: 2.0,
+          ),
+        ),
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            Icon(
+              icon,
+              color: const Color.fromARGB(255, 157, 157, 157),
+              size: MediaQuery.of(context).size.width / 11,
+            ),
+            Text(
+              nr.toString(),
+              style: TextStyle(
+                color: const Color.fromARGB(255, 157, 157, 157),
+                fontWeight: FontWeight.bold,
+                fontSize: MediaQuery.of(context).size.width / 30,
+              ),
+            ),
+          ],
+        ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,9 +122,9 @@ class _CarWashState extends State<CarWashScreen> {
           Container(
             height: MediaQuery.of(context).size.width * 0.64,
             width: MediaQuery.of(context).size.width,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
                 image: DecorationImage(
-              image: AssetImage("assets/images/carwash.png"),
+              image: FirebaseImageProvider(FirebaseUrl(widget.carwash.image)),
               fit: BoxFit.cover,
             )),
             child: Stack(
@@ -101,7 +147,9 @@ class _CarWashState extends State<CarWashScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             RatingBar.builder(
-                              initialRating: 4,
+                              initialRating: widget.carwash.averageRating(
+                                  widget.carwash.nrRatings,
+                                  widget.carwash.totalRatings),
                               itemSize: 25.0,
                               unratedColor:
                                   const Color.fromARGB(195, 255, 255, 255),
@@ -184,7 +232,7 @@ class _CarWashState extends State<CarWashScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Text(
-                        'CarWash Quick JET Romania',
+                        widget.carwash.name,
                         style: TextStyle(
                           color: const Color.fromARGB(255, 255, 255, 255),
                           fontWeight: FontWeight.bold,
@@ -197,7 +245,7 @@ class _CarWashState extends State<CarWashScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Text(
-                        'Calea Stan Vidrighin 6, Timișoara 300013',
+                        widget.carwash.address,
                         style: TextStyle(
                           color: const Color.fromARGB(197, 216, 216, 216),
                           fontSize: MediaQuery.of(context).size.width / 30,
@@ -225,211 +273,12 @@ class _CarWashState extends State<CarWashScreen> {
                       spacing: 17.0,
                       runSpacing: 15.0,
                       children: [
-                        Container(
-                            width: MediaQuery.of(context).size.width / 5.5,
-                            height: MediaQuery.of(context).size.width / 5.5,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 34, 34, 34),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 2, 2, 2)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 2, 196, 21),
-                                width: 2.0,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.drive_eta,
-                                  color:
-                                      const Color.fromARGB(255, 157, 157, 157),
-                                  size: MediaQuery.of(context).size.width / 11,
-                                ),
-                                Text(
-                                  '1',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 157, 157, 157),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 30,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        Container(
-                            width: MediaQuery.of(context).size.width / 5.5,
-                            height: MediaQuery.of(context).size.width / 5.5,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 34, 34, 34),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 2, 2, 2)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: Colors.red,
-                                width: 2.0,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.drive_eta,
-                                  color:
-                                      const Color.fromARGB(255, 157, 157, 157),
-                                  size: MediaQuery.of(context).size.width / 11,
-                                ),
-                                Text(
-                                  '2',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 157, 157, 157),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 30,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        Container(
-                            width: MediaQuery.of(context).size.width / 5.5,
-                            height: MediaQuery.of(context).size.width / 5.5,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 34, 34, 34),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 2, 2, 2)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: Colors.red,
-                                width: 2.0,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.drive_eta,
-                                  color:
-                                      const Color.fromARGB(255, 157, 157, 157),
-                                  size: MediaQuery.of(context).size.width / 11,
-                                ),
-                                Text(
-                                  '3',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 157, 157, 157),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 30,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        Container(
-                            width: MediaQuery.of(context).size.width / 5.5,
-                            height: MediaQuery.of(context).size.width / 5.5,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 34, 34, 34),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 2, 2, 2)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 2, 196, 21),
-                                width: 2.0,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.drive_eta,
-                                  color:
-                                      const Color.fromARGB(255, 157, 157, 157),
-                                  size: MediaQuery.of(context).size.width / 11,
-                                ),
-                                Text(
-                                  '4',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 157, 157, 157),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 30,
-                                  ),
-                                ),
-                              ],
-                            )),
-                        Container(
-                            width: MediaQuery.of(context).size.width / 5.5,
-                            height: MediaQuery.of(context).size.width / 5.5,
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(255, 34, 34, 34),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: const Color.fromARGB(255, 2, 2, 2)
-                                      .withOpacity(0.5),
-                                  spreadRadius: 2,
-                                  blurRadius: 7,
-                                  offset: const Offset(0, 2),
-                                ),
-                              ],
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: const Color.fromARGB(255, 2, 196, 21),
-                                width: 2.0,
-                              ),
-                            ),
-                            padding: const EdgeInsets.all(8.0),
-                            child: Column(
-                              children: [
-                                Icon(
-                                  Icons.local_shipping,
-                                  color:
-                                      const Color.fromARGB(255, 157, 157, 157),
-                                  size: MediaQuery.of(context).size.width / 11,
-                                ),
-                                Text(
-                                  '5',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        255, 157, 157, 157),
-                                    fontWeight: FontWeight.bold,
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 30,
-                                  ),
-                                ),
-                              ],
-                            )),
+                        for (var i = 0;
+                            i < widget.carwash.smallVehicleSeats;
+                            i++)
+                          generateSeats(nr, Icons.drive_eta),
+                        for (var i = 0; i < widget.carwash.bigVehicleSeats; i++)
+                          generateSeats(nr, Icons.local_shipping),
                       ],
                     ),
                     Container(
@@ -448,7 +297,7 @@ class _CarWashState extends State<CarWashScreen> {
                     ),
                     const SizedBox(height: 10),
                     Text(
-                      'Sisteme de suflare puternică pentru a usca eficient vehiculul după spălare. Dispozitive reglabile pentru direcționarea fluxului de aer în zonele dorite. tații self-service cu aspiratoare puternice pentru curățarea interioară a vehiculului. Accesoriile adecvate pentru aspirare eficientă a tapițeriei, covorașelor și altor zone dificil de curățat.',
+                      widget.carwash.facilities,
                       style: TextStyle(
                         color: const Color.fromARGB(255, 181, 181, 181),
                         fontSize: MediaQuery.of(context).size.width / 28,
@@ -470,136 +319,94 @@ class _CarWashState extends State<CarWashScreen> {
                     ),
                     const SizedBox(height: 5),
                     SizedBox(
-                      height: 100,
+                      height: widget.carwash.reviews.isEmpty ? 30 : 100,
                       child: ListView(
                         scrollDirection: Axis.horizontal,
-                        children: <Widget>[
-                          Container(
-                              margin: const EdgeInsets.all(10),
-                              height: 80,
-                              width: MediaQuery.of(context).size.width / 1.3,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30.0),
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(255, 2, 2, 2)
-                                        .withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
+                        children: [
+                          if (widget.carwash.reviews.isEmpty)
+                            Container(
+                              margin: EdgeInsets.only(top: 10),
+                              child: Text(
+                                "No reviews..",
+                                style: TextStyle(
+                                  color:
+                                      const Color.fromARGB(197, 216, 216, 216),
+                                  fontSize:
+                                      MediaQuery.of(context).size.width / 30,
+                                ),
                               ),
-                              padding: const EdgeInsets.only(
-                                  top: 10, left: 20, right: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
+                            )
+                          else
+                            for (var review in widget.carwash.reviews)
+                              Container(
+                                  margin: const EdgeInsets.all(10),
+                                  height: 80,
+                                  width:
+                                      MediaQuery.of(context).size.width / 1.3,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(30.0),
+                                    color:
+                                        const Color.fromARGB(255, 34, 34, 34),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color:
+                                            const Color.fromARGB(255, 2, 2, 2)
+                                                .withOpacity(0.5),
+                                        spreadRadius: 2,
+                                        blurRadius: 7,
+                                        offset: const Offset(0, 2),
+                                      ),
+                                    ],
+                                  ),
+                                  padding: const EdgeInsets.only(
+                                      top: 10, left: 20, right: 20),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
+                                      Row(
+                                        children: [
+                                          Text(
+                                            review.username,
+                                            style: TextStyle(
+                                              color: const Color.fromARGB(
+                                                  255, 255, 255, 255),
+                                              fontSize: MediaQuery.of(context)
+                                                      .size
+                                                      .width /
+                                                  30,
+                                            ),
+                                          ),
+                                          const SizedBox(width: 15),
+                                          RatingBar.builder(
+                                            initialRating:
+                                                review.rating.toDouble(),
+                                            itemSize: 20.0,
+                                            itemBuilder: (context, _) =>
+                                                const Icon(Icons.star,
+                                                    color: Colors.amber),
+                                            onRatingUpdate: (rating) {},
+                                            ignoreGestures: true,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 10),
                                       Text(
-                                        'Username',
+                                        review.feedback,
                                         style: TextStyle(
                                           color: const Color.fromARGB(
-                                              255, 255, 255, 255),
+                                              197, 216, 216, 216),
                                           fontSize: MediaQuery.of(context)
                                                   .size
                                                   .width /
                                               30,
                                         ),
-                                      ),
-                                      const SizedBox(width: 15),
-                                      RatingBar.builder(
-                                        initialRating: 5,
-                                        itemSize: 20.0,
-                                        itemBuilder: (context, _) => const Icon(
-                                            Icons.star,
-                                            color: Colors.amber),
-                                        onRatingUpdate: (rating) {},
-                                        ignoreGestures: true,
+                                        softWrap: true,
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
                                       ),
                                     ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    'I love it! fv df vdf gvd f df v gdfg fd gd f g df g  fd gd  g df g df gfd ff g fd g f g df gd fg d fg  dgvbfgv bf d f b df v d ',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          197, 216, 216, 216),
-                                      fontSize:
-                                          MediaQuery.of(context).size.width /
-                                              30,
-                                    ),
-                                    softWrap: true,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              )),
-                          Container(
-                              margin: const EdgeInsets.all(10),
-                              height: 80,
-                              width: MediaQuery.of(context).size.width / 1.3,
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(30.0),
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(255, 2, 2, 2)
-                                        .withOpacity(0.5),
-                                    spreadRadius: 2,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                              ),
-                              padding: const EdgeInsets.only(
-                                  top: 10, left: 20, right: 20),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Username',
-                                        style: TextStyle(
-                                          color: const Color.fromARGB(
-                                              255, 255, 255, 255),
-                                          fontSize: MediaQuery.of(context)
-                                                  .size
-                                                  .width /
-                                              30,
-                                        ),
-                                      ),
-                                      const SizedBox(width: 15),
-                                      RatingBar.builder(
-                                        initialRating: 5,
-                                        itemSize: 20.0,
-                                        itemBuilder: (context, _) => const Icon(
-                                            Icons.star,
-                                            color: Colors.amber),
-                                        onRatingUpdate: (rating) {},
-                                        ignoreGestures: true,
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 10),
-                                  Text(
-                                    'I love it! fv df vdf gvd f df v gdfg fd gd f g df g  fd gd  g df g df gfd ff g fd g f g df gd fg d fg  dgvbfgv bf d f b df v d ',
-                                    style: TextStyle(
-                                      color: const Color.fromARGB(
-                                          197, 216, 216, 216),
-                                      fontSize:
-                                          MediaQuery.of(context).size.width /
-                                              30,
-                                    ),
-                                    softWrap: true,
-                                    maxLines: 2,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ],
-                              )),
+                                  )),
                         ],
                       ),
                     ),
@@ -615,7 +422,8 @@ class _CarWashState extends State<CarWashScreen> {
                       children: [
                         GestureDetector(
                           onTap: () {
-                            FlutterPhoneDirectCaller.callNumber('+4076545789');
+                            FlutterPhoneDirectCaller.callNumber(
+                                widget.carwash.phone.toString());
                           },
                           child: Container(
                               decoration: BoxDecoration(
