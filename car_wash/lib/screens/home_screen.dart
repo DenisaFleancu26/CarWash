@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/models/review.dart';
+import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
@@ -52,13 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
             .collection('car-wash')
             .get();
         for (var element in managerCarWashes.docs) {
-          Map<int, List<String>> reviews =
-              await getReviews(manager.id, element.id);
+          List<Review> reviews = await getReviews(manager.id, element.id);
           CarWash carwash = CarWash(
             name: element['name'],
             hours: element['hours'],
             image: element['image'] ?? '',
             address: element['address'],
+            facilities: element['facilities'],
             phone: element['phone'],
             smallVehicleSeats: element['small-vehicle'],
             bigVehicleSeats: element['big-vehicle'],
@@ -71,10 +73,16 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     }
-    setState(() {
-      display = false;
-      saveCarWashes = carWashes;
-    });
+    try {
+      setState(() {
+        display = false;
+        saveCarWashes = carWashes;
+      });
+    } catch (e, stackTrace) {
+      if (!mounted) {
+        print('Error: $e\n$stackTrace');
+      }
+    }
 
     return carWashes;
   }
@@ -217,7 +225,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemCount: carWashes.length,
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: ((context) =>
+                                                  CarWashScreen(
+                                                      carwash:
+                                                          carWashes[index]))));
+                                    },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 10),

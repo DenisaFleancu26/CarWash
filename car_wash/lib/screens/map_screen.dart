@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/models/review.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
@@ -259,13 +260,13 @@ class _MapScreenState extends State<MapScreen> {
             .collection('car-wash')
             .get();
         for (var element in managerCarWashes.docs) {
-          Map<int, List<String>> reviews =
-              await getReviews(manager.id, element.id);
+          List<Review> reviews = await getReviews(manager.id, element.id);
           CarWash carwash = CarWash(
             name: element['name'],
             hours: element['hours'],
             image: element['image'] ?? '',
             address: element['address'],
+            facilities: element['facilities'],
             phone: element['phone'],
             smallVehicleSeats: element['small-vehicle'],
             bigVehicleSeats: element['big-vehicle'],
