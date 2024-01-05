@@ -24,6 +24,8 @@ class _HomeScreenState extends State<HomeScreen> {
   int index = 1;
   final User? user = Auth().currentUser;
   List<CarWash> carWashes = [];
+  List<CarWash> saveCarWashes = [];
+  TextEditingController searchController = TextEditingController();
   bool display = true;
 
   final items = const <Widget>[
@@ -71,9 +73,24 @@ class _HomeScreenState extends State<HomeScreen> {
     }
     setState(() {
       display = false;
+      saveCarWashes = carWashes;
     });
 
     return carWashes;
+  }
+
+  void searchCarWashes(String query) {
+    List<CarWash> searchResults = [];
+
+    for (var carwash in carWashes) {
+      if (carwash.name.toLowerCase().contains(query.toLowerCase())) {
+        searchResults.add(carwash);
+      }
+    }
+
+    setState(() {
+      carWashes = searchResults;
+    });
   }
 
   @override
@@ -154,6 +171,47 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       )
                     : Column(children: [
+                        Padding(
+                          padding: EdgeInsets.only(
+                            top: 50,
+                            left: MediaQuery.of(context).size.width * 0.25,
+                            right: 30,
+                          ),
+                          child: TextField(
+                            controller: searchController,
+                            textAlign:
+                                TextAlign.right, // Aliniere text în dreapta
+                            decoration: InputDecoration(
+                              hintText: 'Search a CarWash..',
+                              prefixIcon: IconButton(
+                                icon: const Icon(Icons.arrow_back,
+                                    color: Colors.grey), // Icon de "back"
+                                onPressed: () {
+                                  setState(() {
+                                    carWashes = saveCarWashes;
+                                    searchController.clear();
+                                  });
+                                },
+                              ),
+                              suffixIcon: const Icon(Icons.search,
+                                  color: Color.fromARGB(
+                                      255, 164, 164, 164)), // Icon după text
+                              focusedBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(color: Colors.white),
+                              ),
+                              enabledBorder: const UnderlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Color.fromARGB(255, 82, 82, 82)),
+                              ),
+                              hintStyle: const TextStyle(
+                                  color: Color.fromARGB(255, 164, 164, 164)),
+                            ),
+                            style: const TextStyle(color: Colors.white),
+                            onChanged: (value) {
+                              searchCarWashes(value);
+                            },
+                          ),
+                        ),
                         Expanded(
                             child: ListView.builder(
                                 itemCount: carWashes.length,
