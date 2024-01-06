@@ -231,10 +231,12 @@ class _MapScreenState extends State<MapScreen> {
     await fetchCarWashesFromFirebase();
     await setCoordonates();
     getUserLocation().then((cameraPosition) {
-      setState(() {
-        _cameraPosition = cameraPosition;
-        display = false;
-      });
+      if (mounted) {
+        setState(() {
+          _cameraPosition = cameraPosition;
+          display = false;
+        });
+      }
     });
   }
 

@@ -1,8 +1,10 @@
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/models/review.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
@@ -23,8 +25,12 @@ class CarWashScreen extends StatefulWidget {
 class _CarWashState extends State<CarWashScreen> {
   int index = 1;
   final User? user = Auth().currentUser;
-  int nr = 0;
-  late Map<int, Map<String, int>> reviewList;
+  String username = '';
+  final TextEditingController _userReview = TextEditingController();
+  double rating = 0.0;
+
+  String managerId = '';
+  String carwashId = '';
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
@@ -32,8 +38,51 @@ class _CarWashState extends State<CarWashScreen> {
     Icon(Icons.account_circle, size: 30),
   ];
 
+  Future<void> getUserDetails() async {
+    try {
+      final userQuerySnapshot = await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user?.uid)
+          .get();
+      setState(() {
+        if (userQuerySnapshot.exists) {
+          username = userQuerySnapshot['username'];
+        }
+      });
+    } catch (e) {
+      print('Error getting documents $e');
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getUserDetails();
+    findId(widget.carwash.name, widget.carwash.address);
+  }
+
+  Future findId(String name, String address) async {
+    final managers =
+        await FirebaseFirestore.instance.collection('Managers').get();
+
+    if (managers.docs.isNotEmpty) {
+      for (var manager in managers.docs) {
+        var managerCarWashes = await FirebaseFirestore.instance
+            .collection('Managers')
+            .doc(manager.id)
+            .collection('car-wash')
+            .get();
+        for (var element in managerCarWashes.docs) {
+          if (element['name'] == name && element['address'] == address) {
+            managerId = manager.id;
+            carwashId = element.id;
+          }
+        }
+      }
+    }
+  }
+
   Widget generateSeats(int nr, IconData icon) {
-    nr++;
     return Container(
         width: MediaQuery.of(context).size.width / 5.5,
         height: MediaQuery.of(context).size.width / 5.5,
@@ -276,9 +325,13 @@ class _CarWashState extends State<CarWashScreen> {
                         for (var i = 0;
                             i < widget.carwash.smallVehicleSeats;
                             i++)
-                          generateSeats(nr, Icons.drive_eta),
-                        for (var i = 0; i < widget.carwash.bigVehicleSeats; i++)
-                          generateSeats(nr, Icons.local_shipping),
+                          generateSeats(i + 1, Icons.drive_eta),
+                        for (var i = widget.carwash.smallVehicleSeats;
+                            i <
+                                widget.carwash.bigVehicleSeats +
+                                    widget.carwash.smallVehicleSeats;
+                            i++)
+                          generateSeats(i + 1, Icons.local_shipping),
                       ],
                     ),
                     Container(
@@ -325,7 +378,7 @@ class _CarWashState extends State<CarWashScreen> {
                         children: [
                           if (widget.carwash.reviews.isEmpty)
                             Container(
-                              margin: EdgeInsets.only(top: 10),
+                              margin: const EdgeInsets.only(top: 10),
                               child: Text(
                                 "No reviews..",
                                 style: TextStyle(
@@ -408,6 +461,85 @@ class _CarWashState extends State<CarWashScreen> {
                                     ],
                                   )),
                         ],
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.account_circle,
+                          color: const Color.fromARGB(255, 157, 157, 157),
+                          size: MediaQuery.of(context).size.width / 17,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          username,
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 157, 157, 157),
+                            fontSize: MediaQuery.of(context).size.width / 25,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 5),
+                    RatingBar.builder(
+                      minRating: 1,
+                      itemSize: 30.0,
+                      itemBuilder: (context, _) =>
+                          const Icon(Icons.star, color: Colors.amber),
+                      onRatingUpdate: (rating) => setState(() {
+                        this.rating = rating;
+                      }),
+                    ),
+                    TextField(
+                      controller: _userReview,
+                      decoration: const InputDecoration(
+                        hintText: "Write a review..",
+                        hintStyle: TextStyle(color: Colors.grey),
+                        border: InputBorder.none,
+                        counterStyle: TextStyle(color: Colors.grey),
+                      ),
+                      style: const TextStyle(color: Colors.white),
+                      maxLength: 200,
+                    ),
+                    GestureDetector(
+                      onTap: () async {
+                        if (rating != 0.0 || _userReview.text != '') {
+                          if (rating != 0.0) {
+                            widget.carwash.addRating(
+                                rating.toInt(), managerId, carwashId);
+                          }
+                          widget.carwash.addReview(username, _userReview,
+                              rating.toInt(), managerId, carwashId);
+                        }
+
+                        widget.carwash.reviews =
+                            await getReviews(managerId, carwashId);
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => CarWashScreen(
+                                    carwash: widget.carwash,
+                                  )),
+                        );
+                      },
+                      child: Container(
+                        width: MediaQuery.of(context).size.width / 3,
+                        height: MediaQuery.of(context).size.width / 13,
+                        padding:
+                            const EdgeInsets.only(top: 5, bottom: 5, right: 10),
+                        child: Text(
+                          'Post Review >',
+                          style: TextStyle(
+                            fontSize: MediaQuery.of(context).size.width / 25,
+                            shadows: const [
+                              Shadow(color: Colors.grey, offset: Offset(0, -5))
+                            ],
+                            color: Colors.transparent,
+                            decoration: TextDecoration.underline,
+                            decorationColor: Colors.grey,
+                          ),
+                        ),
                       ),
                     ),
                     Container(

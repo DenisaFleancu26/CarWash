@@ -1,5 +1,6 @@
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 
 class CarWash {
   final String name;
@@ -42,15 +43,19 @@ class CarWash {
         .update({'totalRatings': totalRatings, 'nrRatings': nrRatings});
   }
 
-  Future<void> addReview(
-      String username, String feedback, String manager, String carwash) async {
+  Future<void> addReview(String username, TextEditingController feedback,
+      int rating, String manager, String carwash) async {
     await FirebaseFirestore.instance
         .collection('Managers')
         .doc(manager)
         .collection('car-wash')
         .doc(carwash)
         .collection('review')
-        .add({'username': username, 'feedback': feedback});
+        .add({
+      'username': username,
+      'feedback': feedback.text,
+      'rating': rating
+    });
   }
 
   double averageRating(int nrRatings, int totalRatings) {
@@ -70,8 +75,8 @@ Future<List<Review>> getReviews(String manager, String carwash) async {
   List<Review> reviews = [];
   for (var element in collection.docs) {
     if (element.data().containsKey('username') &&
-        element.data().containsKey('feedback') &&
-        element.data().containsKey('rating')) {
+        (element.data().containsKey('feedback') ||
+            element.data().containsKey('rating'))) {
       Review review = Review(
           username: element['username'],
           feedback: element['feedback'],
