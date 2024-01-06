@@ -1,5 +1,4 @@
 import 'package:car_wash/models/car_wash.dart';
-import 'package:car_wash/models/review.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
@@ -667,7 +666,14 @@ class _CarWashState extends State<CarWashScreen> {
                               ])),
                         ),
                         GestureDetector(
-                          onTap: () {},
+                          onTap: () {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => MapScreen(
+                                      address: widget.carwash.address)),
+                            );
+                          },
                           child: Container(
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(20.0),

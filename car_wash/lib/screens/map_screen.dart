@@ -3,6 +3,7 @@ import 'dart:ui' as ui;
 
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
+import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
@@ -21,7 +22,8 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../services/auth.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final String? address;
+  const MapScreen({Key? key, this.address}) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -135,26 +137,6 @@ class _MapScreenState extends State<MapScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        SizedBox(
-                          width: 140,
-                          child: Text(
-                            carwash.name,
-                            style: TextStyle(
-                              color:
-                                  const ui.Color.fromARGB(223, 255, 255, 255),
-                              fontWeight: FontWeight.bold,
-                              fontSize: 15,
-                              shadows: [
-                                Shadow(
-                                  offset: const Offset(3.0, 3.0),
-                                  blurRadius: 10.0,
-                                  color: Colors.black.withOpacity(0.30),
-                                ),
-                              ],
-                            ),
-                            softWrap: true,
-                          ),
-                        ),
                         Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -183,6 +165,26 @@ class _MapScreenState extends State<MapScreen> {
                         SizedBox(
                           width: 140,
                           child: Text(
+                            carwash.name,
+                            style: TextStyle(
+                              color:
+                                  const ui.Color.fromARGB(223, 255, 255, 255),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15,
+                              shadows: [
+                                Shadow(
+                                  offset: const Offset(3.0, 3.0),
+                                  blurRadius: 10.0,
+                                  color: Colors.black.withOpacity(0.30),
+                                ),
+                              ],
+                            ),
+                            softWrap: true,
+                          ),
+                        ),
+                        SizedBox(
+                          width: 140,
+                          child: Text(
                             carwash.address,
                             style: TextStyle(
                               color:
@@ -203,7 +205,14 @@ class _MapScreenState extends State<MapScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 60),
                           child: GestureDetector(
-                            onTap: () => {},
+                            onTap: () => {
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        CarWashScreen(carwash: carwash)),
+                              ),
+                            },
                             child: const SizedBox(
                               height: 20,
                               width: 70,
@@ -244,8 +253,21 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       userLocation = true;
     }
-    await fetchCarWashesFromFirebase();
-    await setCoordonates();
+    if (widget.address == null) {
+      await fetchCarWashesFromFirebase();
+      await setCoordonates();
+    } else {
+      var address =
+          await Geocoder.local.findAddressesFromQuery(widget.address!);
+      final Uint8List markerIcon =
+          await getBytesFromAssets('assets/images/carwash_mark.png', 100);
+      _marker.add(Marker(
+        markerId: const MarkerId('destination'),
+        icon: BitmapDescriptor.fromBytes(markerIcon),
+        position: LatLng(address.first.coordinates.latitude!,
+            address.first.coordinates.longitude!),
+      ));
+    }
     getUserLocation().then((cameraPosition) {
       if (mounted) {
         setState(() {
