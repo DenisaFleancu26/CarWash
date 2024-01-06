@@ -291,24 +291,62 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       MainAxisAlignment
                                                           .spaceEvenly,
                                                   children: [
-                                                    RatingBar.builder(
-                                                      initialRating: carWashes[
-                                                              index]
-                                                          .averageRating(
-                                                              carWashes[index]
-                                                                  .nrRatings,
-                                                              carWashes[index]
-                                                                  .totalRatings),
-                                                      itemSize: 20.0,
-                                                      itemBuilder: (context,
-                                                              _) =>
-                                                          const Icon(Icons.star,
-                                                              color:
-                                                                  Colors.amber),
-                                                      onRatingUpdate:
-                                                          (rating) {},
-                                                      ignoreGestures: true,
-                                                    ),
+                                                    Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          RatingBar.builder(
+                                                            initialRating: carWashes[
+                                                                    index]
+                                                                .averageRating(
+                                                                    carWashes[
+                                                                            index]
+                                                                        .nrRatings,
+                                                                    carWashes[
+                                                                            index]
+                                                                        .totalRatings),
+                                                            itemSize: 20.0,
+                                                            unratedColor:
+                                                                const Color
+                                                                    .fromARGB(
+                                                                    195,
+                                                                    255,
+                                                                    255,
+                                                                    255),
+                                                            itemBuilder: (context,
+                                                                    _) =>
+                                                                const Icon(
+                                                                    Icons.star,
+                                                                    color: Colors
+                                                                        .amber),
+                                                            onRatingUpdate:
+                                                                (rating) {},
+                                                            ignoreGestures:
+                                                                true,
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 2),
+                                                          Text(
+                                                            '(${carWashes[index].nrRatings})',
+                                                            style: TextStyle(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  195,
+                                                                  190,
+                                                                  190,
+                                                                  190),
+                                                              fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width /
+                                                                  30,
+                                                            ),
+                                                          ),
+                                                        ]),
                                                     SizedBox(
                                                       width:
                                                           MediaQuery.of(context)

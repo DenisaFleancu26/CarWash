@@ -189,11 +189,11 @@ class _CarWashState extends State<CarWashScreen> {
                           BorderRadius.vertical(top: Radius.circular(50)),
                     ),
                     child: Padding(
-                      padding:
-                          const EdgeInsets.only(left: 25, top: 15, right: 10),
-                      child: Column(
+                      padding: const EdgeInsets.only(
+                          left: 25, top: 15, right: 10, bottom: 5),
+                      child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             RatingBar.builder(
                               initialRating: widget.carwash.averageRating(
@@ -207,63 +207,74 @@ class _CarWashState extends State<CarWashScreen> {
                               onRatingUpdate: (rating) {},
                               ignoreGestures: true,
                             ),
+                            const SizedBox(width: 2),
+                            Text(
+                              '(${widget.carwash.nrRatings})',
+                              style: TextStyle(
+                                color: const Color.fromARGB(195, 190, 190, 190),
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 30,
+                              ),
+                            ),
                           ]),
                     ),
                   ),
                 ),
-                Positioned(
-                  top: MediaQuery.of(context).size.width * 0.49,
-                  right: MediaQuery.of(context).size.width * 0.1,
-                  child: Container(
-                      width: MediaQuery.of(context).size.width * 0.52,
-                      height: 35,
+                if (widget.carwash.hours == 'non-stop')
+                  Positioned(
+                    top: MediaQuery.of(context).size.width * 0.49,
+                    right: MediaQuery.of(context).size.width * 0.1,
+                    child: Container(
+                        width: MediaQuery.of(context).size.width * 0.52,
+                        height: 35,
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 2, 196, 21),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.only(top: 8, left: 10),
+                          child: Text(
+                            'CAR WASH SERVICE',
+                            style: TextStyle(
+                              color: const Color.fromARGB(223, 255, 255, 255),
+                              fontWeight: FontWeight.bold,
+                              fontSize: MediaQuery.of(context).size.width / 25,
+                              shadows: [
+                                Shadow(
+                                  offset: const Offset(2.0, 1.0),
+                                  blurRadius: 7.0,
+                                  color: Colors.black.withOpacity(0.30),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )),
+                  ),
+                if (widget.carwash.hours == 'non-stop')
+                  Positioned(
+                    top: 180,
+                    right: MediaQuery.of(context).size.width * 0.05,
+                    child: Container(
+                      width: MediaQuery.of(context).size.width * 0.15,
+                      height: MediaQuery.of(context).size.width * 0.15,
                       decoration: BoxDecoration(
                         color: const Color.fromARGB(255, 2, 196, 21),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.only(top: 8, left: 10),
-                        child: Text(
-                          'CAR WASH SERVICE',
-                          style: TextStyle(
-                            color: const Color.fromARGB(223, 255, 255, 255),
-                            fontWeight: FontWeight.bold,
-                            fontSize: MediaQuery.of(context).size.width / 25,
-                            shadows: [
-                              Shadow(
-                                offset: const Offset(2.0, 1.0),
-                                blurRadius: 7.0,
-                                color: Colors.black.withOpacity(0.30),
-                              ),
-                            ],
+                        borderRadius: BorderRadius.circular(50),
+                        image: const DecorationImage(
+                          image: AssetImage("assets/images/clock.png"),
+                        ),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color.fromARGB(255, 50, 50, 50)
+                                .withOpacity(0.5),
+                            spreadRadius: 3,
+                            blurRadius: 4,
+                            offset: const Offset(0, 3),
                           ),
-                        ),
-                      )),
-                ),
-                Positioned(
-                  top: 180,
-                  right: MediaQuery.of(context).size.width * 0.05,
-                  child: Container(
-                    width: MediaQuery.of(context).size.width * 0.15,
-                    height: MediaQuery.of(context).size.width * 0.15,
-                    decoration: BoxDecoration(
-                      color: const Color.fromARGB(255, 2, 196, 21),
-                      borderRadius: BorderRadius.circular(50),
-                      image: const DecorationImage(
-                        image: AssetImage("assets/images/clock.png"),
+                        ],
                       ),
-                      boxShadow: [
-                        BoxShadow(
-                          color: const Color.fromARGB(255, 50, 50, 50)
-                              .withOpacity(0.5),
-                          spreadRadius: 3,
-                          blurRadius: 4,
-                          offset: const Offset(0, 3),
-                        ),
-                      ],
                     ),
                   ),
-                ),
               ],
             ),
           ),
@@ -341,12 +352,25 @@ class _CarWashState extends State<CarWashScreen> {
                       height: 1,
                       color: const Color.fromARGB(255, 157, 157, 157),
                     ),
-                    Text(
-                      'Facilities',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                        fontSize: MediaQuery.of(context).size.width / 25,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Facilities',
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            fontSize: MediaQuery.of(context).size.width / 25,
+                          ),
+                        ),
+                        if (widget.carwash.hours != 'non-stop')
+                          Text(
+                            widget.carwash.hours,
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              fontSize: MediaQuery.of(context).size.width / 25,
+                            ),
+                          ),
+                      ],
                     ),
                     const SizedBox(height: 10),
                     Text(
@@ -354,6 +378,15 @@ class _CarWashState extends State<CarWashScreen> {
                       style: TextStyle(
                         color: const Color.fromARGB(255, 181, 181, 181),
                         fontSize: MediaQuery.of(context).size.width / 28,
+                      ),
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      'Token: ${widget.carwash.price} RON',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: const Color.fromARGB(255, 255, 255, 255),
+                        fontSize: MediaQuery.of(context).size.width / 23,
                       ),
                     ),
                     Container(

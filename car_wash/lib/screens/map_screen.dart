@@ -155,15 +155,31 @@ class _MapScreenState extends State<MapScreen> {
                             softWrap: true,
                           ),
                         ),
-                        RatingBar.builder(
-                          initialRating: carwash.averageRating(
-                              carwash.nrRatings, carwash.totalRatings),
-                          itemSize: 20.0,
-                          itemBuilder: (context, _) =>
-                              const Icon(Icons.star, color: Colors.amber),
-                          onRatingUpdate: (rating) {},
-                          ignoreGestures: true,
-                        ),
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              RatingBar.builder(
+                                initialRating: carwash.averageRating(
+                                    carwash.nrRatings, carwash.totalRatings),
+                                itemSize: 20.0,
+                                unratedColor:
+                                    const Color.fromARGB(195, 255, 255, 255),
+                                itemBuilder: (context, _) =>
+                                    const Icon(Icons.star, color: Colors.amber),
+                                onRatingUpdate: (rating) {},
+                                ignoreGestures: true,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                '(${carwash.nrRatings})',
+                                style: TextStyle(
+                                  color:
+                                      const Color.fromARGB(195, 190, 190, 190),
+                                  fontSize:
+                                      MediaQuery.of(context).size.width / 30,
+                                ),
+                              ),
+                            ]),
                         SizedBox(
                           width: 140,
                           child: Text(
