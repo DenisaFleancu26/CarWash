@@ -206,7 +206,7 @@ class _MapScreenState extends State<MapScreen> {
                           padding: const EdgeInsets.only(left: 60),
                           child: GestureDetector(
                             onTap: () => {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
@@ -337,26 +337,26 @@ class _MapScreenState extends State<MapScreen> {
             this.index = index;
             switch (index) {
               case 0:
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const MapScreen()),
                 );
                 break;
               case 1:
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
                 break;
               case 2:
                 if (user != null) {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ProfileScreen()),
                   );
                 } else {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const LoginScreen()),

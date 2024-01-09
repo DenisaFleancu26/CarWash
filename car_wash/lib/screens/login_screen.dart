@@ -104,7 +104,7 @@ class _LoginScreenState extends State<LoginScreen> {
           .signWithEmailAndPassword(
               email: _controllerEmail.text, password: _controllerPassword.text)
           .then((value) {
-        //Navigator.popUntil(context, (route) => route.isFirst);
+        Navigator.popUntil(context, (route) => route.isFirst);
         Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const HomeScreen()));
       });
@@ -147,26 +147,26 @@ class _LoginScreenState extends State<LoginScreen> {
           this.index = index;
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MapScreen()),
               );
               break;
             case 1:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
               break;
             case 2:
               if (user != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const ProfileScreen()),
                 );
               } else {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );

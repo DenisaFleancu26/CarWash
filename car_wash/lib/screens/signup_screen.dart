@@ -139,7 +139,7 @@ class _SignupScreenState extends State<SignupScreen> {
           'email': _controllerEmail.text,
         });
         Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.push(context,
+        Navigator.pushReplacement(context,
             MaterialPageRoute(builder: (context) => const HomeScreen()));
       });
     } on FirebaseAuthException catch (e) {
@@ -174,26 +174,26 @@ class _SignupScreenState extends State<SignupScreen> {
           this.index = index;
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MapScreen()),
               );
               break;
             case 1:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
               break;
             case 2:
               if (user != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const ProfileScreen()),
                 );
               } else {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );

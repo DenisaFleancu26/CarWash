@@ -136,26 +136,26 @@ class _CarWashState extends State<CarWashScreen> {
           this.index = index;
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MapScreen()),
               );
               break;
             case 1:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
               break;
             case 2:
               if (user != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const ProfileScreen()),
                 );
               } else {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
@@ -682,7 +682,7 @@ class _CarWashState extends State<CarWashScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => MapScreen(

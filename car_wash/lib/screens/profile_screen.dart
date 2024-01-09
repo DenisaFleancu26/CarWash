@@ -126,26 +126,26 @@ class _ProfileScreenState extends State<ProfileScreen> {
           this.index = index;
           switch (index) {
             case 0:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const MapScreen()),
               );
               break;
             case 1:
-              Navigator.pushReplacement(
+              Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const HomeScreen()),
               );
               break;
             case 2:
               if (user != null) {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(
                       builder: (context) => const ProfileScreen()),
                 );
               } else {
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const LoginScreen()),
                 );
@@ -257,7 +257,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         const SizedBox(height: 20),
                         _customProfileButton('Logout', Icons.logout, () {
                           logOut();
-                          Navigator.popUntil(context, (route) => route.isFirst);
                           Navigator.push(
                               context,
                               MaterialPageRoute(
