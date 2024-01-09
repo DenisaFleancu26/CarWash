@@ -18,6 +18,7 @@ import 'package:flutter_geocoder/geocoder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../services/auth.dart';
 
@@ -80,17 +81,18 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<CameraPosition> getUserLocation() async {
     if (userLocation) {
-      Position position = await getUserCurrentLocation();
-      return CameraPosition(
-        target: LatLng(position.latitude, position.longitude),
-        zoom: 16,
-      );
-    } else {
-      return const CameraPosition(
-        target: LatLng(45.7494, 21.2272),
-        zoom: 13,
-      );
+      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+        Position position = await getUserCurrentLocation();
+        return CameraPosition(
+          target: LatLng(position.latitude, position.longitude),
+          zoom: 12.5,
+        );
+      }
     }
+    return const CameraPosition(
+      target: LatLng(45.7494, 21.2272),
+      zoom: 12.5,
+    );
   }
 
   Future<List<Marker>> setCoordonates() async {
