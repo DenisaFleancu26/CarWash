@@ -451,6 +451,16 @@ class _CarWashState extends State<CarWashScreen> {
                                     children: [
                                       Row(
                                         children: [
+                                          Icon(
+                                            Icons.account_circle,
+                                            color: const Color.fromARGB(
+                                                255, 157, 157, 157),
+                                            size: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                20,
+                                          ),
+                                          const SizedBox(width: 5),
                                           Text(
                                             review.username,
                                             style: TextStyle(
@@ -496,84 +506,89 @@ class _CarWashState extends State<CarWashScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.account_circle,
-                          color: const Color.fromARGB(255, 157, 157, 157),
-                          size: MediaQuery.of(context).size.width / 17,
-                        ),
-                        const SizedBox(width: 5),
-                        Text(
-                          username,
-                          style: TextStyle(
+                    if (username != '')
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.account_circle,
                             color: const Color.fromARGB(255, 157, 157, 157),
-                            fontSize: MediaQuery.of(context).size.width / 25,
+                            size: MediaQuery.of(context).size.width / 17,
                           ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 5),
-                    RatingBar.builder(
-                      minRating: 1,
-                      itemSize: 30.0,
-                      itemBuilder: (context, _) =>
-                          const Icon(Icons.star, color: Colors.amber),
-                      onRatingUpdate: (rating) => setState(() {
-                        this.rating = rating;
-                      }),
-                    ),
-                    TextField(
-                      controller: _userReview,
-                      decoration: const InputDecoration(
-                        hintText: "Write a review..",
-                        hintStyle: TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        counterStyle: TextStyle(color: Colors.grey),
+                          const SizedBox(width: 5),
+                          Text(
+                            username,
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 157, 157, 157),
+                              fontSize: MediaQuery.of(context).size.width / 25,
+                            ),
+                          ),
+                        ],
                       ),
-                      style: const TextStyle(color: Colors.white),
-                      maxLength: 200,
-                    ),
-                    GestureDetector(
-                      onTap: () async {
-                        if (rating != 0.0 || _userReview.text != '') {
-                          if (rating != 0.0) {
-                            widget.carwash.addRating(
+                    if (username != '') const SizedBox(height: 5),
+                    if (username != '')
+                      RatingBar.builder(
+                        minRating: 1,
+                        itemSize: 30.0,
+                        itemBuilder: (context, _) =>
+                            const Icon(Icons.star, color: Colors.amber),
+                        onRatingUpdate: (rating) => setState(() {
+                          this.rating = rating;
+                        }),
+                      ),
+                    if (username != '')
+                      TextField(
+                        controller: _userReview,
+                        decoration: const InputDecoration(
+                          hintText: "Write a review..",
+                          hintStyle: TextStyle(color: Colors.grey),
+                          border: InputBorder.none,
+                          counterStyle: TextStyle(color: Colors.grey),
+                        ),
+                        style: const TextStyle(color: Colors.white),
+                        maxLength: 200,
+                      ),
+                    if (username != '')
+                      GestureDetector(
+                        onTap: () async {
+                          if (rating != 0.0 || _userReview.text != '') {
+                            if (rating != 0.0) {
+                              widget.carwash.addRating(
+                                  rating.toInt(), managerId, carwashId);
+                            }
+                            widget.carwash.addReview(username, _userReview,
                                 rating.toInt(), managerId, carwashId);
                           }
-                          widget.carwash.addReview(username, _userReview,
-                              rating.toInt(), managerId, carwashId);
-                        }
 
-                        widget.carwash.reviews =
-                            await getReviews(managerId, carwashId);
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => CarWashScreen(
-                                    carwash: widget.carwash,
-                                  )),
-                        );
-                      },
-                      child: Container(
-                        width: MediaQuery.of(context).size.width / 3,
-                        height: MediaQuery.of(context).size.width / 13,
-                        padding:
-                            const EdgeInsets.only(top: 5, bottom: 5, right: 10),
-                        child: Text(
-                          'Post Review >',
-                          style: TextStyle(
-                            fontSize: MediaQuery.of(context).size.width / 25,
-                            shadows: const [
-                              Shadow(color: Colors.grey, offset: Offset(0, -5))
-                            ],
-                            color: Colors.transparent,
-                            decoration: TextDecoration.underline,
-                            decorationColor: Colors.grey,
+                          widget.carwash.reviews =
+                              await getReviews(managerId, carwashId);
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CarWashScreen(
+                                      carwash: widget.carwash,
+                                    )),
+                          );
+                        },
+                        child: Container(
+                          width: MediaQuery.of(context).size.width / 3,
+                          height: MediaQuery.of(context).size.width / 13,
+                          padding: const EdgeInsets.only(
+                              top: 5, bottom: 5, right: 10),
+                          child: Text(
+                            'Post Review >',
+                            style: TextStyle(
+                              fontSize: MediaQuery.of(context).size.width / 25,
+                              shadows: const [
+                                Shadow(
+                                    color: Colors.grey, offset: Offset(0, -5))
+                              ],
+                              color: Colors.transparent,
+                              decoration: TextDecoration.underline,
+                              decorationColor: Colors.grey,
+                            ),
                           ),
                         ),
                       ),
-                    ),
                     Container(
                       margin: const EdgeInsets.symmetric(
                         vertical: 15,
