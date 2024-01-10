@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/connectivity_controller.dart';
 import 'package:car_wash/screens/forgot_password.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
@@ -23,27 +24,16 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
-
-  var isDeviceConnected = false;
-  bool isAlertSet = false;
-
   int index = 2;
   final User? user = AuthController().currentUser;
   final AuthController _authController = AuthController();
+  final ConectivityController _conectivityController = ConectivityController();
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
     Icon(Icons.home, size: 30),
     Icon(Icons.account_circle, size: 30),
   ];
-
-  Future<void> checkInternetConnection() async {
-    isDeviceConnected = await InternetConnectionChecker().hasConnection;
-    if (!isDeviceConnected && !isAlertSet) {
-      showDialogBox();
-      setState(() => isAlertSet = true);
-    }
-  }
 
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
@@ -65,12 +55,13 @@ class _LoginScreenState extends State<LoginScreen> {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context, 'Cancel');
-                setState(() => isAlertSet = false);
-                isDeviceConnected =
+                setState(() => _conectivityController.isAlertSet = false);
+                _conectivityController.isDeviceConnected =
                     await InternetConnectionChecker().hasConnection;
-                if (!isDeviceConnected && !isAlertSet) {
+                if (!_conectivityController.isDeviceConnected &&
+                    !_conectivityController.isAlertSet) {
                   showDialogBox();
-                  setState(() => isAlertSet = true);
+                  setState(() => _conectivityController.isAlertSet = true);
                 }
               },
               child: const Text('Retry!'),
@@ -226,9 +217,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         child: CustomButton(
                           onTap: () async {
-                            isAlertSet = false;
-                            await checkInternetConnection();
-                            if (isDeviceConnected) {
+                            _conectivityController.isAlertSet = false;
+                            await _conectivityController
+                                .checkInternetConnection(
+                                    box: () => showDialogBox(),
+                                    onAlert: () => setState(() =>
+                                        _conectivityController.isAlertSet =
+                                            true));
+                            if (_conectivityController.isDeviceConnected) {
                               await _authController.logIn(
                                 onEmailError: (error) => setState(
                                     () => _authController.emailError = error),
