@@ -1,19 +1,16 @@
 import 'dart:ui';
 
-import 'package:car_wash/models/car_wash.dart';
-import 'package:car_wash/models/review.dart';
+import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
-import '../services/auth.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,11 +21,9 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int index = 1;
-  final User? user = Auth().currentUser;
-  List<CarWash> carWashes = [];
-  List<CarWash> saveCarWashes = [];
-  TextEditingController searchController = TextEditingController();
+  final User? user = AuthController().currentUser;
   bool display = true;
+  final CarWashController _carWashController = CarWashController();
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
@@ -39,66 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    fetchCarWashesFromFirebase();
-  }
-
-  Future<List<CarWash>> fetchCarWashesFromFirebase() async {
-    final managers =
-        await FirebaseFirestore.instance.collection('Managers').get();
-
-    if (managers.docs.isNotEmpty) {
-      for (var manager in managers.docs) {
-        var managerCarWashes = await FirebaseFirestore.instance
-            .collection('Managers')
-            .doc(manager.id)
-            .collection('car-wash')
-            .get();
-        for (var element in managerCarWashes.docs) {
-          List<Review> reviews = await getReviews(manager.id, element.id);
-          CarWash carwash = CarWash(
-            name: element['name'],
-            hours: element['hours'],
-            image: element['image'] ?? '',
-            address: element['address'],
-            facilities: element['facilities'],
-            phone: element['phone'],
-            smallVehicleSeats: element['small-vehicle'],
-            bigVehicleSeats: element['big-vehicle'],
-            price: (element['price']).toDouble(),
-            nrRatings: element['nrRatings'],
-            totalRatings: element['totalRatings'],
-            reviews: reviews,
-          );
-          carWashes.add(carwash);
-        }
-      }
-    }
-    try {
-      setState(() {
-        display = false;
-        saveCarWashes = carWashes;
-      });
-    } catch (e, stackTrace) {
-      if (!mounted) {
-        print('Error: $e\n$stackTrace');
-      }
-    }
-
-    return carWashes;
-  }
-
-  void searchCarWashes(String query) {
-    List<CarWash> searchResults = [];
-
-    for (var carwash in carWashes) {
-      if (carwash.name.toLowerCase().contains(query.toLowerCase())) {
-        searchResults.add(carwash);
-      }
-    }
-
-    setState(() {
-      carWashes = searchResults;
-    });
+    _carWashController.fetchCarWashesFromFirebase(
+      displayInfo: () => setState(() => display = false),
+    );
   }
 
   @override
@@ -186,7 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             right: 30,
                           ),
                           child: TextField(
-                            controller: searchController,
+                            controller: _carWashController.searchController,
                             textAlign:
                                 TextAlign.right, // Aliniere text în dreapta
                             decoration: InputDecoration(
@@ -196,8 +134,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                     color: Colors.grey), // Icon de "back"
                                 onPressed: () {
                                   setState(() {
-                                    carWashes = saveCarWashes;
-                                    searchController.clear();
+                                    _carWashController.carWashes =
+                                        _carWashController.saveCarWashes;
+                                    _carWashController.searchController.clear();
                                   });
                                 },
                               ),
@@ -216,13 +155,17 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                             style: const TextStyle(color: Colors.white),
                             onChanged: (value) {
-                              searchCarWashes(value);
+                              _carWashController.searchCarWashes(
+                                query: value,
+                                onSuccess: (result) => setState(() =>
+                                    _carWashController.carWashes = result),
+                              );
                             },
                           ),
                         ),
                         Expanded(
                             child: ListView.builder(
-                                itemCount: carWashes.length,
+                                itemCount: _carWashController.carWashes.length,
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
                                     onTap: () {
@@ -232,7 +175,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                               builder: ((context) =>
                                                   CarWashScreen(
                                                       carwash:
-                                                          carWashes[index]))));
+                                                          _carWashController
+                                                                  .carWashes[
+                                                              index]))));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
@@ -273,12 +218,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           Radius.circular(30),
                                                     ),
                                                     image: DecorationImage(
-                                                      image:
-                                                          FirebaseImageProvider(
-                                                              FirebaseUrl(
-                                                                  carWashes[
-                                                                          index]
-                                                                      .image)),
+                                                      image: FirebaseImageProvider(
+                                                          FirebaseUrl(
+                                                              _carWashController
+                                                                  .carWashes[
+                                                                      index]
+                                                                  .image)),
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),
@@ -300,13 +245,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 .center,
                                                         children: [
                                                           RatingBar.builder(
-                                                            initialRating: carWashes[
+                                                            initialRating: _carWashController
+                                                                .carWashes[
                                                                     index]
                                                                 .averageRating(
-                                                                    carWashes[
+                                                                    _carWashController
+                                                                        .carWashes[
                                                                             index]
                                                                         .nrRatings,
-                                                                    carWashes[
+                                                                    _carWashController
+                                                                        .carWashes[
                                                                             index]
                                                                         .totalRatings),
                                                             itemSize: 20.0,
@@ -331,7 +279,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           const SizedBox(
                                                               width: 2),
                                                           Text(
-                                                            '(${carWashes[index].nrRatings})',
+                                                            '(${_carWashController.carWashes[index].nrRatings})',
                                                             style: TextStyle(
                                                               color: const Color
                                                                   .fromARGB(
@@ -354,7 +302,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .width *
                                                               0.48,
                                                       child: Text(
-                                                        carWashes[index].name,
+                                                        _carWashController
+                                                            .carWashes[index]
+                                                            .name,
                                                         style: TextStyle(
                                                           color: const Color
                                                               .fromARGB(223,
@@ -389,14 +339,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .width *
                                                               0.47,
                                                       child: Text(
-                                                        carWashes[index]
+                                                        _carWashController
+                                                            .carWashes[index]
                                                             .address,
                                                         style: TextStyle(
-                                                          color: Color.fromARGB(
-                                                              197,
-                                                              216,
-                                                              216,
-                                                              216),
+                                                          color: const Color
+                                                              .fromARGB(197,
+                                                              216, 216, 216),
                                                           fontSize: MediaQuery.of(
                                                                       context)
                                                                   .size
@@ -426,17 +375,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .width *
                                                               0.47,
                                                       child: Text(
-                                                        "Token: " +
-                                                            carWashes[index]
-                                                                .price
-                                                                .toString() +
-                                                            " RON",
+                                                        "Token: ${_carWashController.carWashes[index].price} RON",
                                                         style: TextStyle(
-                                                          color: Color.fromARGB(
-                                                              255,
-                                                              255,
-                                                              255,
-                                                              255),
+                                                          color: const Color
+                                                              .fromARGB(255,
+                                                              255, 255, 255),
                                                           fontSize: MediaQuery.of(
                                                                       context)
                                                                   .size

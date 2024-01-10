@@ -1,26 +1,19 @@
-import 'dart:async';
-import 'dart:ui' as ui;
+import 'dart:typed_data';
 
-import 'package:car_wash/models/car_wash.dart';
-import 'package:car_wash/models/review.dart';
+import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/map_controller.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_geocoder/geocoder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:permission_handler/permission_handler.dart';
-
-import '../services/auth.dart';
 
 class MapScreen extends StatefulWidget {
   final String? address;
@@ -32,25 +25,17 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   int index = 0;
-  final User? user = Auth().currentUser;
-  bool userLocation = true;
-
-  late CameraPosition _cameraPosition;
-  final Completer<GoogleMapController> _controller = Completer();
-  final CustomInfoWindowController _customInfoWindowController =
-      CustomInfoWindowController();
-
-  final List<Marker> _marker = [];
-
-  late BitmapDescriptor customIcon;
-
+  final User? user = AuthController().currentUser;
+  final MapController _mapController = MapController();
   bool display = true;
   String mapTheme = '';
-  List<CarWash> carWashes = [];
+  List<Marker> markers = [];
+  final CustomInfoWindowController customInfoWindowController =
+      CustomInfoWindowController();
 
   @override
   void initState() {
-    checkLocationPermission();
+    changeMarks();
     DefaultAssetBundle.of(context)
         .loadString('assets/mapTheme/night_theme.json')
         .then((value) {
@@ -70,50 +55,38 @@ class _MapScreenState extends State<MapScreen> {
     Icon(Icons.account_circle, size: 30),
   ];
 
-  Future<Position> getUserCurrentLocation() async {
-    try {
-      return await Geolocator.getCurrentPosition();
-    } catch (e) {
-      print("Error getting location: $e");
-      return Future.error("Error getting location");
+  void changeMarks() async {
+    await _mapController.checkLocationPermission(
+        location: widget.address ?? '',
+        displayInfo: () => setState(() => display = false));
+    print(_mapController.displayMarkers);
+    if (_mapController.displayMarkers == true) {
+      await setCoordonates();
+      setState(() {
+        _mapController.markers = markers;
+      });
     }
-  }
-
-  Future<CameraPosition> getUserLocation() async {
-    if (userLocation) {
-      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
-        Position position = await getUserCurrentLocation();
-        return CameraPosition(
-          target: LatLng(position.latitude, position.longitude),
-          zoom: 12.5,
-        );
-      }
-    }
-    return const CameraPosition(
-      target: LatLng(45.7494, 21.2272),
-      zoom: 12.5,
-    );
   }
 
   Future<List<Marker>> setCoordonates() async {
     var i = 1;
-    for (var carwash in carWashes) {
+    for (var carwash in _mapController.carWashes) {
       var address =
           await Geocoder.local.findAddressesFromQuery(carwash.address);
 
-      final Uint8List markerIcon =
-          await getBytesFromAssets('assets/images/carwash_mark.png', 100);
-      _marker.add(Marker(
+      final Uint8List markerIcon = await _mapController.getBytesFromAssets(
+          'assets/images/carwash_mark.png', 100);
+      markers.add(Marker(
           markerId: MarkerId(i.toString()),
           icon: BitmapDescriptor.fromBytes(markerIcon),
           position: LatLng(address.first.coordinates.latitude!,
               address.first.coordinates.longitude!),
           onTap: () {
-            _customInfoWindowController.addInfoWindow!(
+            customInfoWindowController.addInfoWindow!(
               Container(
                 decoration: const BoxDecoration(
                   borderRadius: BorderRadius.all(Radius.circular(30)),
-                  color: ui.Color.fromARGB(218, 122, 122, 122),
+                  color: Color.fromARGB(218, 122, 122, 122),
                 ),
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -169,8 +142,7 @@ class _MapScreenState extends State<MapScreen> {
                           child: Text(
                             carwash.name,
                             style: TextStyle(
-                              color:
-                                  const ui.Color.fromARGB(223, 255, 255, 255),
+                              color: const Color.fromARGB(223, 255, 255, 255),
                               fontWeight: FontWeight.bold,
                               fontSize: 15,
                               shadows: [
@@ -189,8 +161,7 @@ class _MapScreenState extends State<MapScreen> {
                           child: Text(
                             carwash.address,
                             style: TextStyle(
-                              color:
-                                  const ui.Color.fromARGB(198, 255, 255, 255),
+                              color: const Color.fromARGB(198, 255, 255, 255),
                               fontSize: 8,
                               shadows: [
                                 Shadow(
@@ -224,8 +195,7 @@ class _MapScreenState extends State<MapScreen> {
                                 style: TextStyle(
                                     fontSize: 10,
                                     decoration: TextDecoration.underline,
-                                    color:
-                                        ui.Color.fromARGB(255, 222, 222, 222)),
+                                    color: Color.fromARGB(255, 222, 222, 222)),
                               )),
                             ),
                           ),
@@ -243,85 +213,8 @@ class _MapScreenState extends State<MapScreen> {
           }));
       i++;
     }
-    return _marker;
-  }
-
-  Future<void> checkLocationPermission() async {
-    await Geolocator.requestPermission();
-    if ((await Geolocator.checkPermission() ==
-            LocationPermission.deniedForever) ||
-        (await Geolocator.checkPermission() == LocationPermission.denied)) {
-      userLocation = false;
-    } else {
-      userLocation = true;
-    }
-    if (widget.address == null) {
-      await fetchCarWashesFromFirebase();
-      await setCoordonates();
-    } else {
-      var address =
-          await Geocoder.local.findAddressesFromQuery(widget.address!);
-      final Uint8List markerIcon =
-          await getBytesFromAssets('assets/images/carwash_mark.png', 100);
-      _marker.add(Marker(
-        markerId: const MarkerId('destination'),
-        icon: BitmapDescriptor.fromBytes(markerIcon),
-        position: LatLng(address.first.coordinates.latitude!,
-            address.first.coordinates.longitude!),
-      ));
-    }
-    getUserLocation().then((cameraPosition) {
-      if (mounted) {
-        setState(() {
-          _cameraPosition = cameraPosition;
-          display = false;
-        });
-      }
-    });
-  }
-
-  Future<Uint8List> getBytesFromAssets(String path, int width) async {
-    ByteData data = await rootBundle.load(path);
-    ui.Codec codec = await ui.instantiateImageCodec(data.buffer.asUint8List(),
-        targetHeight: width);
-    ui.FrameInfo fi = await codec.getNextFrame();
-    return (await fi.image.toByteData(format: ui.ImageByteFormat.png))!
-        .buffer
-        .asUint8List();
-  }
-
-  Future<List<CarWash>> fetchCarWashesFromFirebase() async {
-    final managers =
-        await FirebaseFirestore.instance.collection('Managers').get();
-
-    if (managers.docs.isNotEmpty) {
-      for (var manager in managers.docs) {
-        var managerCarWashes = await FirebaseFirestore.instance
-            .collection('Managers')
-            .doc(manager.id)
-            .collection('car-wash')
-            .get();
-        for (var element in managerCarWashes.docs) {
-          List<Review> reviews = await getReviews(manager.id, element.id);
-          CarWash carwash = CarWash(
-            name: element['name'],
-            hours: element['hours'],
-            image: element['image'] ?? '',
-            address: element['address'],
-            facilities: element['facilities'],
-            phone: element['phone'],
-            smallVehicleSeats: element['small-vehicle'],
-            bigVehicleSeats: element['big-vehicle'],
-            price: (element['price']).toDouble(),
-            nrRatings: element['nrRatings'],
-            totalRatings: element['totalRatings'],
-            reviews: reviews,
-          );
-          carWashes.add(carwash);
-        }
-      }
-    }
-    return carWashes;
+    print(markers);
+    return markers;
   }
 
   @override
@@ -387,29 +280,29 @@ class _MapScreenState extends State<MapScreen> {
                     ),
                   )
                 : GoogleMap(
-                    initialCameraPosition: _cameraPosition,
+                    initialCameraPosition: _mapController.cameraPosition,
                     mapType: MapType.normal,
                     zoomControlsEnabled: false,
                     myLocationEnabled: true,
                     myLocationButtonEnabled: true,
                     compassEnabled: false,
-                    markers: Set<Marker>.of(_marker),
+                    markers: Set<Marker>.of(_mapController.markers),
                     padding: const EdgeInsets.only(bottom: 60, top: 30),
                     onMapCreated: (GoogleMapController controller) {
                       controller.setMapStyle(mapTheme);
-                      _controller.complete(controller);
-                      _customInfoWindowController.googleMapController =
+                      _mapController.controller.complete(controller);
+                      customInfoWindowController.googleMapController =
                           controller;
                     },
                     onCameraMove: (position) {
-                      _customInfoWindowController.onCameraMove!();
+                      customInfoWindowController.onCameraMove!();
                     },
                     onTap: (position) {
-                      _customInfoWindowController.hideInfoWindow!();
+                      customInfoWindowController.hideInfoWindow!();
                     },
                   ),
             CustomInfoWindow(
-                controller: _customInfoWindowController,
+                controller: customInfoWindowController,
                 height: 150,
                 width: 300),
           ],

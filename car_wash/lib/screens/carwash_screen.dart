@@ -1,17 +1,17 @@
+import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/carwash_controller.dart';
+import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-
-import '../services/auth.dart';
 
 class CarWashScreen extends StatefulWidget {
   final CarWash carwash;
@@ -23,13 +23,9 @@ class CarWashScreen extends StatefulWidget {
 
 class _CarWashState extends State<CarWashScreen> {
   int index = 1;
-  final User? user = Auth().currentUser;
-  String username = '';
-  final TextEditingController _userReview = TextEditingController();
-  double rating = 0.0;
-
-  String managerId = '';
-  String carwashId = '';
+  final User? user = AuthController().currentUser;
+  final UserController _userController = UserController();
+  final CarWashController _carWashController = CarWashController();
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
@@ -37,48 +33,15 @@ class _CarWashState extends State<CarWashScreen> {
     Icon(Icons.account_circle, size: 30),
   ];
 
-  Future<void> getUserDetails() async {
-    try {
-      final userQuerySnapshot = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(user?.uid)
-          .get();
-      setState(() {
-        if (userQuerySnapshot.exists) {
-          username = userQuerySnapshot['username'];
-        }
-      });
-    } catch (e) {
-      print('Error getting documents $e');
-    }
-  }
-
   @override
   void initState() {
     super.initState();
-    getUserDetails();
-    findId(widget.carwash.name, widget.carwash.address);
-  }
-
-  Future findId(String name, String address) async {
-    final managers =
-        await FirebaseFirestore.instance.collection('Managers').get();
-
-    if (managers.docs.isNotEmpty) {
-      for (var manager in managers.docs) {
-        var managerCarWashes = await FirebaseFirestore.instance
-            .collection('Managers')
-            .doc(manager.id)
-            .collection('car-wash')
-            .get();
-        for (var element in managerCarWashes.docs) {
-          if (element['name'] == name && element['address'] == address) {
-            managerId = manager.id;
-            carwashId = element.id;
-          }
-        }
-      }
-    }
+    _userController.getUsername(
+      displayUsername: (username) =>
+          setState(() => _userController.username = username),
+    );
+    _carWashController.findId(
+        name: widget.carwash.name, address: widget.carwash.address);
   }
 
   Widget generateSeats(int nr, IconData icon) {
@@ -506,7 +469,7 @@ class _CarWashState extends State<CarWashScreen> {
                       ),
                     ),
                     const SizedBox(height: 10),
-                    if (username != '')
+                    if (_userController.username != '')
                       Row(
                         children: [
                           Icon(
@@ -516,7 +479,7 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                           const SizedBox(width: 5),
                           Text(
-                            username,
+                            _userController.username,
                             style: TextStyle(
                               color: const Color.fromARGB(255, 157, 157, 157),
                               fontSize: MediaQuery.of(context).size.width / 25,
@@ -524,20 +487,21 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                         ],
                       ),
-                    if (username != '') const SizedBox(height: 5),
-                    if (username != '')
+                    if (_userController.username != '')
+                      const SizedBox(height: 5),
+                    if (_userController.username != '')
                       RatingBar.builder(
                         minRating: 1,
                         itemSize: 30.0,
                         itemBuilder: (context, _) =>
                             const Icon(Icons.star, color: Colors.amber),
                         onRatingUpdate: (rating) => setState(() {
-                          this.rating = rating;
+                          _carWashController.rating = rating;
                         }),
                       ),
-                    if (username != '')
+                    if (_userController.username != '')
                       TextField(
-                        controller: _userReview,
+                        controller: _carWashController.userReview,
                         decoration: const InputDecoration(
                           hintText: "Write a review..",
                           hintStyle: TextStyle(color: Colors.grey),
@@ -547,20 +511,29 @@ class _CarWashState extends State<CarWashScreen> {
                         style: const TextStyle(color: Colors.white),
                         maxLength: 200,
                       ),
-                    if (username != '')
+                    if (_userController.username != '')
                       GestureDetector(
                         onTap: () async {
-                          if (rating != 0.0 || _userReview.text != '') {
-                            if (rating != 0.0) {
+                          if (_carWashController.rating != 0.0 ||
+                              _carWashController.userReview.text != '') {
+                            if (_carWashController.rating != 0.0) {
                               widget.carwash.addRating(
-                                  rating.toInt(), managerId, carwashId);
+                                  _carWashController.rating.toInt(),
+                                  _carWashController.managerId,
+                                  _carWashController.carwashId);
                             }
-                            widget.carwash.addReview(username, _userReview,
-                                rating.toInt(), managerId, carwashId);
+                            widget.carwash.addReview(
+                                _userController.username,
+                                _carWashController.userReview,
+                                _carWashController.rating.toInt(),
+                                _carWashController.managerId,
+                                _carWashController.carwashId);
                           }
 
                           widget.carwash.reviews =
-                              await getReviews(managerId, carwashId);
+                              await _carWashController.getReviews(
+                                  manager: _carWashController.managerId,
+                                  carwash: _carWashController.carwashId);
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(

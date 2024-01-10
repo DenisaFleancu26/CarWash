@@ -1,11 +1,10 @@
+import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
-import 'package:car_wash/services/auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -16,38 +15,17 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final User? user = Auth().currentUser;
-  String username = '';
-  String email = '';
   int index = 2;
   bool display = true;
+
+  final AuthController _authController = AuthController();
+  final UserController _userController = UserController();
 
   @override
   void initState() {
     super.initState();
-    getUserDetails();
-  }
-
-  Future<void> getUserDetails() async {
-    try {
-      final userQuerySnapshot = await FirebaseFirestore.instance
-          .collection('Users')
-          .doc(user?.uid)
-          .get();
-      setState(() {
-        if (userQuerySnapshot.exists) {
-          username = userQuerySnapshot['username'];
-          email = userQuerySnapshot['email'];
-        }
-      });
-    } catch (e) {
-      print('Error getting documents $e');
-    }
-    display = false;
-  }
-
-  Future<void> logOut() async {
-    await Auth().signOut();
+    _userController.getUserDetails(
+        displayInfo: () => setState(() => display = false));
   }
 
   Widget _customProfileButton(
@@ -138,7 +116,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
               break;
             case 2:
-              if (user != null) {
+              if (_userController.user != null) {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -215,7 +193,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 10),
                         Text(
-                          username,
+                          _userController.username,
                           style: TextStyle(
                             color: const Color.fromARGB(223, 255, 255, 255),
                             fontSize: MediaQuery.of(context).size.width / 18,
@@ -230,7 +208,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          email,
+                          _userController.email,
                           style: TextStyle(
                             color: const Color.fromARGB(255, 157, 157, 157),
                             fontSize: MediaQuery.of(context).size.width / 28,
@@ -256,7 +234,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             'Transaction', Icons.account_balance_wallet, () {}),
                         const SizedBox(height: 20),
                         _customProfileButton('Logout', Icons.logout, () {
-                          logOut();
+                          _authController.signOut();
                           Navigator.push(
                               context,
                               MaterialPageRoute(
