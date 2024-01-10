@@ -1,12 +1,11 @@
 import 'dart:async';
 import 'dart:ui';
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -24,18 +23,9 @@ class SignupScreen extends StatefulWidget {
 class _SignupScreenState extends State<SignupScreen> {
   bool _obscureText = true;
   bool _obscureConfirm = true;
-  final TextEditingController _controllerUsername = TextEditingController();
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
-  final TextEditingController _controllerConfirmPassword =
-      TextEditingController();
 
-  String? emailError;
-  String? usernameError;
-  String? passwordError;
-  String? confirmPasswordError;
-
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
+  final AuthController _authController = AuthController();
 
   var isDeviceConnected = false;
   bool isAlertSet = false;
@@ -89,75 +79,6 @@ class _SignupScreenState extends State<SignupScreen> {
           ],
         ),
       );
-
-  Future<void> signUp() async {
-    usernameError = null;
-    emailError = null;
-    passwordError = null;
-    confirmPasswordError = null;
-
-    if (_controllerUsername.text.isEmpty) {
-      setState(() {
-        usernameError = "Please enter your Username!";
-      });
-      return;
-    }
-    if (_controllerEmail.text.isEmpty) {
-      setState(() {
-        emailError = "Please enter your Email Address!";
-      });
-      return;
-    }
-    if (_controllerPassword.text.isEmpty) {
-      setState(() {
-        passwordError = "Please enter your Password!";
-      });
-      return;
-    }
-    if (_controllerConfirmPassword.text.isEmpty) {
-      setState(() {
-        confirmPasswordError = "Please enter your Password again!";
-      });
-      return;
-    }
-    if (_controllerPassword.text != _controllerConfirmPassword.text) {
-      setState(() {
-        confirmPasswordError = "The passwords you entered do not match!";
-      });
-      return;
-    }
-    try {
-      await FirebaseAuth.instance
-          .createUserWithEmailAndPassword(
-              email: _controllerEmail.text, password: _controllerPassword.text)
-          .then((value) {
-        FirebaseFirestore.instance
-            .collection('Users')
-            .doc(value.user?.uid)
-            .set({
-          'username': _controllerUsername.text,
-          'email': _controllerEmail.text,
-        });
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        switch (e.code) {
-          case 'weak-password':
-            passwordError = 'Password should be at least 6 characters';
-            break;
-          case 'email-is-already-in-use':
-            emailError = 'The Email has already been registered!';
-            break;
-          case 'invalid-email':
-            emailError = 'Your Email Address is invalid!';
-            break;
-        }
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -254,10 +175,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             onTap: () {},
                             title: 'Username',
                             iconData: Icons.person,
-                            controller: _controllerUsername,
+                            controller: _authController.username,
                             hasObscureText: false,
                             obscureText: false,
-                            errorMessage: usernameError),
+                            errorMessage: _authController.usernameError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -267,10 +188,10 @@ class _SignupScreenState extends State<SignupScreen> {
                             onTap: () {},
                             title: 'Email Address',
                             iconData: Icons.email,
-                            controller: _controllerEmail,
+                            controller: _authController.email,
                             hasObscureText: false,
                             obscureText: false,
-                            errorMessage: emailError),
+                            errorMessage: _authController.emailError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -284,10 +205,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                 },
                             title: 'Password',
                             iconData: Icons.lock,
-                            controller: _controllerPassword,
+                            controller: _authController.password,
                             hasObscureText: true,
                             obscureText: _obscureText,
-                            errorMessage: passwordError),
+                            errorMessage: _authController.passwordError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -301,10 +222,10 @@ class _SignupScreenState extends State<SignupScreen> {
                                 },
                             title: 'Confirm Password',
                             iconData: Icons.lock,
-                            controller: _controllerConfirmPassword,
+                            controller: _authController.confirmPassword,
                             hasObscureText: true,
                             obscureText: _obscureConfirm,
-                            errorMessage: confirmPasswordError),
+                            errorMessage: _authController.confirmPasswordError),
                       ),
                       const SizedBox(height: 50),
                       Padding(
@@ -316,7 +237,26 @@ class _SignupScreenState extends State<SignupScreen> {
                             isAlertSet = false;
                             await checkInternetConnection();
                             if (isDeviceConnected) {
-                              signUp();
+                              await _authController.signUp(
+                                onUsernameError: (error) => setState(() =>
+                                    _authController.usernameError = error),
+                                onEmailError: (error) => setState(
+                                    () => _authController.emailError = error),
+                                onPasswordError: (error) => setState(() =>
+                                    _authController.passwordError = error),
+                                onConfirmPasswordError: (error) => setState(
+                                    () => _authController.confirmPasswordError =
+                                        error),
+                                onSuccess: () => {
+                                  Navigator.popUntil(
+                                      context, (route) => route.isFirst),
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomeScreen())),
+                                },
+                              );
                             }
                           },
                           withGradient: false,

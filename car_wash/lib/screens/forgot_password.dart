@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
@@ -11,8 +12,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
-
-import '../services/auth.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -29,7 +28,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   bool isAlertSet = false;
 
   int index = 2;
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),

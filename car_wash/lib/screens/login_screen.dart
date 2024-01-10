@@ -1,11 +1,11 @@
 import 'dart:ui';
 
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/screens/forgot_password.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/screens/signup_screen.dart';
-import 'package:car_wash/services/auth.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
@@ -23,17 +23,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   bool _obscureText = true;
-  final TextEditingController _controllerEmail = TextEditingController();
-  final TextEditingController _controllerPassword = TextEditingController();
-
-  String? emailError;
-  String? passwordError;
 
   var isDeviceConnected = false;
   bool isAlertSet = false;
 
   int index = 2;
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
+  final AuthController _authController = AuthController();
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
@@ -82,55 +78,6 @@ class _LoginScreenState extends State<LoginScreen> {
           ],
         ),
       );
-
-  Future<void> logIn() async {
-    emailError = null;
-    passwordError = null;
-
-    if (_controllerEmail.text.isEmpty) {
-      setState(() {
-        emailError = "Please enter your Email Address!";
-      });
-      return;
-    }
-    if (_controllerPassword.text.isEmpty) {
-      setState(() {
-        passwordError = "Please enter your Password!";
-      });
-      return;
-    }
-    try {
-      await Auth()
-          .signWithEmailAndPassword(
-              email: _controllerEmail.text, password: _controllerPassword.text)
-          .then((value) {
-        Navigator.popUntil(context, (route) => route.isFirst);
-        Navigator.pushReplacement(context,
-            MaterialPageRoute(builder: (context) => const HomeScreen()));
-      });
-    } on FirebaseAuthException catch (e) {
-      setState(() {
-        switch (e.code) {
-          case 'invalid-email':
-            emailError = 'Your Email Address is invalid!';
-            break;
-          case 'wrong-password':
-            passwordError = 'Your password is invalid, please try again!';
-            break;
-          case 'user-not-found':
-            emailError = 'No user corresponding to the given email!';
-            break;
-          case 'user-disabled':
-            emailError =
-                'The user corresponding to the given email has been disabled!';
-            break;
-          default:
-            passwordError = 'The mail or password you entered is wrong!';
-            break;
-        }
-      });
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -227,10 +174,10 @@ class _LoginScreenState extends State<LoginScreen> {
                           onTap: () {},
                           title: 'Email Address',
                           iconData: Icons.email,
-                          controller: _controllerEmail,
+                          controller: _authController.email,
                           hasObscureText: false,
                           obscureText: false,
-                          errorMessage: emailError,
+                          errorMessage: _authController.emailError,
                         ),
                       ),
                       Padding(
@@ -245,10 +192,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                             title: 'Password',
                             iconData: Icons.lock,
-                            controller: _controllerPassword,
+                            controller: _authController.password,
                             hasObscureText: true,
                             obscureText: _obscureText,
-                            errorMessage: passwordError,
+                            errorMessage: _authController.passwordError,
                           )),
                       const SizedBox(height: 20),
                       GestureDetector(
@@ -282,7 +229,21 @@ class _LoginScreenState extends State<LoginScreen> {
                             isAlertSet = false;
                             await checkInternetConnection();
                             if (isDeviceConnected) {
-                              logIn();
+                              await _authController.logIn(
+                                onEmailError: (error) => setState(
+                                    () => _authController.emailError = error),
+                                onPasswordError: (error) => setState(() =>
+                                    _authController.passwordError = error),
+                                onSuccess: () => {
+                                  Navigator.popUntil(
+                                      context, (route) => route.isFirst),
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const HomeScreen())),
+                                },
+                              );
                             }
                           },
                           withGradient: false,

@@ -1,8 +1,8 @@
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
-import 'package:car_wash/services/auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -16,11 +16,13 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
   String username = '';
   String email = '';
   int index = 2;
   bool display = true;
+
+  final AuthController _authController = AuthController();
 
   @override
   void initState() {
@@ -44,10 +46,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('Error getting documents $e');
     }
     display = false;
-  }
-
-  Future<void> logOut() async {
-    await Auth().signOut();
   }
 
   Widget _customProfileButton(
@@ -256,7 +254,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             'Transaction', Icons.account_balance_wallet, () {}),
                         const SizedBox(height: 20),
                         _customProfileButton('Logout', Icons.logout, () {
-                          logOut();
+                          _authController.signOut();
                           Navigator.push(
                               context,
                               MaterialPageRoute(

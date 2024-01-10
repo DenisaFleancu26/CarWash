@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
@@ -20,8 +21,6 @@ import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../services/auth.dart';
-
 class MapScreen extends StatefulWidget {
   final String? address;
   const MapScreen({Key? key, this.address}) : super(key: key);
@@ -32,7 +31,7 @@ class MapScreen extends StatefulWidget {
 
 class _MapScreenState extends State<MapScreen> {
   int index = 0;
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
   bool userLocation = true;
 
   late CameraPosition _cameraPosition;

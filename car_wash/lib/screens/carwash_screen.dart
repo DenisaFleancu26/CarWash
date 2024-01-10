@@ -1,3 +1,4 @@
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
@@ -11,8 +12,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import '../services/auth.dart';
-
 class CarWashScreen extends StatefulWidget {
   final CarWash carwash;
   const CarWashScreen({Key? key, required this.carwash}) : super(key: key);
@@ -23,7 +22,7 @@ class CarWashScreen extends StatefulWidget {
 
 class _CarWashState extends State<CarWashScreen> {
   int index = 1;
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
   String username = '';
   final TextEditingController _userReview = TextEditingController();
   double rating = 0.0;

@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
@@ -13,8 +14,6 @@ import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
-import '../services/auth.dart';
-
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -24,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int index = 1;
-  final User? user = Auth().currentUser;
+  final User? user = AuthController().currentUser;
   List<CarWash> carWashes = [];
   List<CarWash> saveCarWashes = [];
   TextEditingController searchController = TextEditingController();
