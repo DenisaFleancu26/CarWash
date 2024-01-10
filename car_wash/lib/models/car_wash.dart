@@ -62,28 +62,3 @@ class CarWash {
     return nrRatings == 0 ? 0.0 : totalRatings / nrRatings;
   }
 }
-
-Future<List<Review>> getReviews(String manager, String carwash) async {
-  final collection = await FirebaseFirestore.instance
-      .collection('Managers')
-      .doc(manager)
-      .collection('car-wash')
-      .doc(carwash)
-      .collection('review')
-      .get();
-
-  List<Review> reviews = [];
-  for (var element in collection.docs) {
-    if (element.data().containsKey('username') &&
-        (element.data().containsKey('feedback') ||
-            element.data().containsKey('rating'))) {
-      Review review = Review(
-          username: element['username'],
-          feedback: element['feedback'],
-          rating: element['rating']);
-      reviews.add(review);
-    }
-  }
-
-  return reviews;
-}
