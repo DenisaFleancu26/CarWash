@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/models/review.dart';
+import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
@@ -52,13 +54,13 @@ class _HomeScreenState extends State<HomeScreen> {
             .collection('car-wash')
             .get();
         for (var element in managerCarWashes.docs) {
-          Map<int, List<String>> reviews =
-              await getReviews(manager.id, element.id);
+          List<Review> reviews = await getReviews(manager.id, element.id);
           CarWash carwash = CarWash(
             name: element['name'],
             hours: element['hours'],
             image: element['image'] ?? '',
             address: element['address'],
+            facilities: element['facilities'],
             phone: element['phone'],
             smallVehicleSeats: element['small-vehicle'],
             bigVehicleSeats: element['big-vehicle'],
@@ -71,10 +73,16 @@ class _HomeScreenState extends State<HomeScreen> {
         }
       }
     }
-    setState(() {
-      display = false;
-      saveCarWashes = carWashes;
-    });
+    try {
+      setState(() {
+        display = false;
+        saveCarWashes = carWashes;
+      });
+    } catch (e, stackTrace) {
+      if (!mounted) {
+        print('Error: $e\n$stackTrace');
+      }
+    }
 
     return carWashes;
   }
@@ -108,26 +116,26 @@ class _HomeScreenState extends State<HomeScreen> {
             this.index = index;
             switch (index) {
               case 0:
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const MapScreen()),
                 );
                 break;
               case 1:
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
                 break;
               case 2:
                 if (user != null) {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ProfileScreen()),
                   );
                 } else {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const LoginScreen()),
@@ -217,7 +225,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemCount: carWashes.length,
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
-                                    onTap: () {},
+                                    onTap: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: ((context) =>
+                                                  CarWashScreen(
+                                                      carwash:
+                                                          carWashes[index]))));
+                                    },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 30, vertical: 10),
@@ -275,24 +291,62 @@ class _HomeScreenState extends State<HomeScreen> {
                                                       MainAxisAlignment
                                                           .spaceEvenly,
                                                   children: [
-                                                    RatingBar.builder(
-                                                      initialRating: carWashes[
-                                                              index]
-                                                          .averageRating(
-                                                              carWashes[index]
-                                                                  .nrRatings,
-                                                              carWashes[index]
-                                                                  .totalRatings),
-                                                      itemSize: 20.0,
-                                                      itemBuilder: (context,
-                                                              _) =>
-                                                          const Icon(Icons.star,
-                                                              color:
-                                                                  Colors.amber),
-                                                      onRatingUpdate:
-                                                          (rating) {},
-                                                      ignoreGestures: true,
-                                                    ),
+                                                    Row(
+                                                        mainAxisAlignment:
+                                                            MainAxisAlignment
+                                                                .start,
+                                                        crossAxisAlignment:
+                                                            CrossAxisAlignment
+                                                                .center,
+                                                        children: [
+                                                          RatingBar.builder(
+                                                            initialRating: carWashes[
+                                                                    index]
+                                                                .averageRating(
+                                                                    carWashes[
+                                                                            index]
+                                                                        .nrRatings,
+                                                                    carWashes[
+                                                                            index]
+                                                                        .totalRatings),
+                                                            itemSize: 20.0,
+                                                            unratedColor:
+                                                                const Color
+                                                                    .fromARGB(
+                                                                    195,
+                                                                    255,
+                                                                    255,
+                                                                    255),
+                                                            itemBuilder: (context,
+                                                                    _) =>
+                                                                const Icon(
+                                                                    Icons.star,
+                                                                    color: Colors
+                                                                        .amber),
+                                                            onRatingUpdate:
+                                                                (rating) {},
+                                                            ignoreGestures:
+                                                                true,
+                                                          ),
+                                                          const SizedBox(
+                                                              width: 2),
+                                                          Text(
+                                                            '(${carWashes[index].nrRatings})',
+                                                            style: TextStyle(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  195,
+                                                                  190,
+                                                                  190,
+                                                                  190),
+                                                              fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width /
+                                                                  30,
+                                                            ),
+                                                          ),
+                                                        ]),
                                                     SizedBox(
                                                       width:
                                                           MediaQuery.of(context)

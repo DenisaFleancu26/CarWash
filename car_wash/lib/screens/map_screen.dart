@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:ui' as ui;
 
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/models/review.dart';
+import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
@@ -16,11 +18,13 @@ import 'package:flutter_geocoder/geocoder.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../services/auth.dart';
 
 class MapScreen extends StatefulWidget {
-  const MapScreen({super.key});
+  final String? address;
+  const MapScreen({Key? key, this.address}) : super(key: key);
 
   @override
   State<MapScreen> createState() => _MapScreenState();
@@ -77,17 +81,18 @@ class _MapScreenState extends State<MapScreen> {
 
   Future<CameraPosition> getUserLocation() async {
     if (userLocation) {
-      Position position = await getUserCurrentLocation();
-      return CameraPosition(
-        target: LatLng(position.latitude, position.longitude),
-        zoom: 16,
-      );
-    } else {
-      return const CameraPosition(
-        target: LatLng(45.7494, 21.2272),
-        zoom: 13,
-      );
+      if (await Permission.locationWhenInUse.serviceStatus.isEnabled) {
+        Position position = await getUserCurrentLocation();
+        return CameraPosition(
+          target: LatLng(position.latitude, position.longitude),
+          zoom: 12.5,
+        );
+      }
     }
+    return const CameraPosition(
+      target: LatLng(45.7494, 21.2272),
+      zoom: 12.5,
+    );
   }
 
   Future<List<Marker>> setCoordonates() async {
@@ -134,6 +139,31 @@ class _MapScreenState extends State<MapScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
+                        Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              RatingBar.builder(
+                                initialRating: carwash.averageRating(
+                                    carwash.nrRatings, carwash.totalRatings),
+                                itemSize: 20.0,
+                                unratedColor:
+                                    const Color.fromARGB(195, 255, 255, 255),
+                                itemBuilder: (context, _) =>
+                                    const Icon(Icons.star, color: Colors.amber),
+                                onRatingUpdate: (rating) {},
+                                ignoreGestures: true,
+                              ),
+                              const SizedBox(width: 2),
+                              Text(
+                                '(${carwash.nrRatings})',
+                                style: TextStyle(
+                                  color:
+                                      const Color.fromARGB(195, 190, 190, 190),
+                                  fontSize:
+                                      MediaQuery.of(context).size.width / 30,
+                                ),
+                              ),
+                            ]),
                         SizedBox(
                           width: 140,
                           child: Text(
@@ -153,15 +183,6 @@ class _MapScreenState extends State<MapScreen> {
                             ),
                             softWrap: true,
                           ),
-                        ),
-                        RatingBar.builder(
-                          initialRating: carwash.averageRating(
-                              carwash.nrRatings, carwash.totalRatings),
-                          itemSize: 20.0,
-                          itemBuilder: (context, _) =>
-                              const Icon(Icons.star, color: Colors.amber),
-                          onRatingUpdate: (rating) {},
-                          ignoreGestures: true,
                         ),
                         SizedBox(
                           width: 140,
@@ -186,7 +207,14 @@ class _MapScreenState extends State<MapScreen> {
                         Padding(
                           padding: const EdgeInsets.only(left: 60),
                           child: GestureDetector(
-                            onTap: () => {},
+                            onTap: () => {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        CarWashScreen(carwash: carwash)),
+                              ),
+                            },
                             child: const SizedBox(
                               height: 20,
                               width: 70,
@@ -227,13 +255,28 @@ class _MapScreenState extends State<MapScreen> {
     } else {
       userLocation = true;
     }
-    await fetchCarWashesFromFirebase();
-    await setCoordonates();
+    if (widget.address == null) {
+      await fetchCarWashesFromFirebase();
+      await setCoordonates();
+    } else {
+      var address =
+          await Geocoder.local.findAddressesFromQuery(widget.address!);
+      final Uint8List markerIcon =
+          await getBytesFromAssets('assets/images/carwash_mark.png', 100);
+      _marker.add(Marker(
+        markerId: const MarkerId('destination'),
+        icon: BitmapDescriptor.fromBytes(markerIcon),
+        position: LatLng(address.first.coordinates.latitude!,
+            address.first.coordinates.longitude!),
+      ));
+    }
     getUserLocation().then((cameraPosition) {
-      setState(() {
-        _cameraPosition = cameraPosition;
-        display = false;
-      });
+      if (mounted) {
+        setState(() {
+          _cameraPosition = cameraPosition;
+          display = false;
+        });
+      }
     });
   }
 
@@ -259,13 +302,13 @@ class _MapScreenState extends State<MapScreen> {
             .collection('car-wash')
             .get();
         for (var element in managerCarWashes.docs) {
-          Map<int, List<String>> reviews =
-              await getReviews(manager.id, element.id);
+          List<Review> reviews = await getReviews(manager.id, element.id);
           CarWash carwash = CarWash(
             name: element['name'],
             hours: element['hours'],
             image: element['image'] ?? '',
             address: element['address'],
+            facilities: element['facilities'],
             phone: element['phone'],
             smallVehicleSeats: element['small-vehicle'],
             bigVehicleSeats: element['big-vehicle'],
@@ -296,26 +339,26 @@ class _MapScreenState extends State<MapScreen> {
             this.index = index;
             switch (index) {
               case 0:
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const MapScreen()),
                 );
                 break;
               case 1:
-                Navigator.pushReplacement(
+                Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => const HomeScreen()),
                 );
                 break;
               case 2:
                 if (user != null) {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const ProfileScreen()),
                   );
                 } else {
-                  Navigator.pushReplacement(
+                  Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => const LoginScreen()),
