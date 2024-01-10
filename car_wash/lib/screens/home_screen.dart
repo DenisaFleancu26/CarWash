@@ -2,7 +2,6 @@ import 'dart:ui';
 
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/carwash_controller.dart';
-import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';

@@ -10,10 +10,14 @@ class AuthController {
   String? passwordError;
   String? emailError;
   String? confirmPasswordError;
+  String? currentPasswordError;
+  String? newPasswordError;
   final TextEditingController username = TextEditingController();
   final TextEditingController email = TextEditingController();
   final TextEditingController password = TextEditingController();
   final TextEditingController confirmPassword = TextEditingController();
+  final TextEditingController currentPassword = TextEditingController();
+  final TextEditingController newPassword = TextEditingController();
 
   Future<void> signUp({
     required Function(String?) onUsernameError,
@@ -116,6 +120,77 @@ class AuthController {
           onPasswordError('The mail or password you entered is wrong!');
           break;
       }
+    }
+  }
+
+  Future<void> changePassword({
+    required Function(String?) onCurrentPasswordError,
+    required Function(String?) onConfirmPasswordError,
+    required Function(String?) onNewPasswordError,
+    required Function() onSuccess,
+  }) async {
+    confirmPasswordError = null;
+    currentPasswordError = null;
+    newPasswordError = null;
+
+    User user = FirebaseAuth.instance.currentUser!;
+
+    if (currentPassword.text.isEmpty) {
+      onCurrentPasswordError("Please enter your current password!");
+      return;
+    }
+    if (newPassword.text.isEmpty) {
+      onNewPasswordError("Please enter your new password!");
+      return;
+    }
+    if (newPassword.text == currentPassword.text) {
+      onNewPasswordError("You are already use this password!");
+      return;
+    }
+    if (confirmPassword.text.isEmpty) {
+      onConfirmPasswordError("Please enter your new password again!");
+      return;
+    }
+    if (newPassword.text.length < 6) {
+      onNewPasswordError("Password must be at least 6 characters!");
+      return;
+    }
+    if (newPassword.text != confirmPassword.text) {
+      onConfirmPasswordError("The passwords you entered do not match!");
+      return;
+    }
+
+    try {
+      AuthCredential credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: currentPassword.text,
+      );
+      await user.reauthenticateWithCredential(credential).then((value) {
+        user.updatePassword(newPassword.text).then((value) {
+          onSuccess();
+        });
+      });
+    } on FirebaseAuthException {
+      onCurrentPasswordError('Your password is invalid, please try again!');
+    }
+  }
+
+  Future<void> forgotPassword({
+    required Function(String?) onEmailError,
+    required Function() onSuccess,
+  }) async {
+    if (email.text.isEmpty) {
+      onEmailError("Please enter your Email Address!");
+      return;
+    }
+    try {
+      await FirebaseAuth.instance
+          .sendPasswordResetEmail(email: email.text.trim())
+          .then((value) {
+        onSuccess();
+      });
+    } on FirebaseAuthException catch (e) {
+      onEmailError(e.message.toString());
     }
   }
 

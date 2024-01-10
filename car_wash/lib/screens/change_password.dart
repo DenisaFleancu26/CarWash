@@ -1,12 +1,13 @@
 import 'dart:ui';
 
+import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/connectivity_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -19,32 +20,12 @@ class ChangePasswordScreen extends StatefulWidget {
 }
 
 class _ChangePasswordScreen extends State<ChangePasswordScreen> {
-  User user = FirebaseAuth.instance.currentUser!;
-
-  String? errorCurrentPassword;
-  String? errorNewPassword;
-  String? errorConfirmPassword;
-
   bool _obscureCurrentPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
-
-  final TextEditingController _controllerCurrentPassword =
-      TextEditingController();
-  final TextEditingController _controllerNewPassword = TextEditingController();
-  final TextEditingController _controllerConfirmPassword =
-      TextEditingController();
-
-  var isDeviceConnected = false;
-  bool isAlertSet = false;
-
-  Future<void> checkInternetConnection() async {
-    isDeviceConnected = await InternetConnectionChecker().hasConnection;
-    if (!isDeviceConnected && !isAlertSet) {
-      showDialogBox();
-      setState(() => isAlertSet = true);
-    }
-  }
+  int index = 2;
+  final AuthController _authController = AuthController();
+  final ConectivityController _conectivityController = ConectivityController();
 
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
@@ -66,12 +47,13 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
             TextButton(
               onPressed: () async {
                 Navigator.pop(context, 'Cancel');
-                setState(() => isAlertSet = false);
-                isDeviceConnected =
+                setState(() => _conectivityController.isAlertSet = false);
+                _conectivityController.isDeviceConnected =
                     await InternetConnectionChecker().hasConnection;
-                if (!isDeviceConnected && !isAlertSet) {
+                if (!_conectivityController.isDeviceConnected &&
+                    !_conectivityController.isAlertSet) {
                   showDialogBox();
-                  setState(() => isAlertSet = true);
+                  setState(() => _conectivityController.isAlertSet = true);
                 }
               },
               child: const Text('Retry!'),
@@ -79,61 +61,6 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
           ],
         ),
       );
-
-  Future<void> changePassword() async {
-    errorConfirmPassword = null;
-    errorCurrentPassword = null;
-    errorNewPassword = null;
-
-    if (_controllerCurrentPassword.text.isEmpty) {
-      setState(() {
-        errorCurrentPassword = "Please enter your current password!";
-      });
-      return;
-    }
-    if (_controllerNewPassword.text.isEmpty) {
-      setState(() {
-        errorNewPassword = "Please enter your new password!";
-      });
-      return;
-    }
-    if (_controllerConfirmPassword.text.isEmpty) {
-      setState(() {
-        errorConfirmPassword = "Please enter your new password again!";
-      });
-      return;
-    }
-    if (_controllerNewPassword.text.length < 6) {
-      setState(() {
-        errorNewPassword = "Password must be at least 6 characters!";
-      });
-      return;
-    }
-    if (_controllerNewPassword.text != _controllerConfirmPassword.text) {
-      setState(() {
-        errorConfirmPassword = "The passwords you entered do not match!";
-      });
-      return;
-    }
-    try {
-      AuthCredential credential = EmailAuthProvider.credential(
-        email: user.email!,
-        password: _controllerCurrentPassword.text,
-      );
-      await user.reauthenticateWithCredential(credential).then((value) {
-        user.updatePassword(_controllerNewPassword.text).then((value) {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) => const ProfileScreen()));
-        });
-      });
-    } on FirebaseAuthException {
-      setState(() {
-        errorCurrentPassword = 'Your password is invalid, please try again!';
-      });
-    }
-  }
-
-  int index = 2;
 
   final items = const <Widget>[
     Icon(Icons.map_rounded, size: 30),
@@ -234,10 +161,10 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                 },
                             title: 'Current Password',
                             iconData: Icons.lock,
-                            controller: _controllerCurrentPassword,
+                            controller: _authController.currentPassword,
                             hasObscureText: true,
                             obscureText: _obscureCurrentPassword,
-                            errorMessage: errorCurrentPassword),
+                            errorMessage: _authController.currentPasswordError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -251,10 +178,10 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                 },
                             title: 'New Password',
                             iconData: Icons.lock,
-                            controller: _controllerNewPassword,
+                            controller: _authController.newPassword,
                             hasObscureText: true,
                             obscureText: _obscureNewPassword,
-                            errorMessage: errorNewPassword),
+                            errorMessage: _authController.newPasswordError),
                       ),
                       Padding(
                         padding: const EdgeInsets.symmetric(
@@ -269,10 +196,10 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                 },
                             title: 'Confirm New Password',
                             iconData: Icons.lock,
-                            controller: _controllerConfirmPassword,
+                            controller: _authController.confirmPassword,
                             hasObscureText: true,
                             obscureText: _obscureConfirmPassword,
-                            errorMessage: errorConfirmPassword),
+                            errorMessage: _authController.confirmPasswordError),
                       ),
                       const SizedBox(height: 60),
                       Padding(
@@ -281,10 +208,30 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                         ),
                         child: CustomButton(
                           onTap: () async {
-                            isAlertSet = false;
-                            await checkInternetConnection();
-                            if (isDeviceConnected) {
-                              changePassword();
+                            _conectivityController.isAlertSet = false;
+                            await _conectivityController
+                                .checkInternetConnection(
+                                    box: () => showDialogBox(),
+                                    onAlert: () => setState(() =>
+                                        _conectivityController.isAlertSet =
+                                            true));
+                            if (_conectivityController.isDeviceConnected) {
+                              _authController.changePassword(
+                                  onCurrentPasswordError: (error) => setState(
+                                      () => _authController
+                                          .currentPasswordError = error),
+                                  onNewPasswordError: (error) => setState(() =>
+                                      _authController.newPasswordError = error),
+                                  onConfirmPasswordError: (error) => setState(
+                                      () => _authController
+                                          .confirmPasswordError = error),
+                                  onSuccess: () => {
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const ProfileScreen())),
+                                      });
                             }
                           },
                           withGradient: false,
