@@ -2,6 +2,7 @@ import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/login_screen.dart';
+import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -71,11 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          Container(
-            margin: const EdgeInsets.symmetric(vertical: 5),
-            height: 1,
-            color: const Color.fromARGB(255, 157, 157, 157),
-          ),
+          const HorizontalLine(distance: 5)
         ],
       ),
     );

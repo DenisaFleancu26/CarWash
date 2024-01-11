@@ -3,6 +3,7 @@ import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/map_screen.dart';
+import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
@@ -73,6 +74,52 @@ class _CarWashState extends State<CarWashScreen> {
             ),
           ],
         ));
+  }
+
+  Widget meniuButton({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20.0),
+          color: const Color.fromARGB(255, 34, 34, 34),
+          boxShadow: [
+            BoxShadow(
+              color: const Color.fromARGB(255, 2, 2, 2).withOpacity(0.5),
+              spreadRadius: 1,
+              blurRadius: 7,
+              offset: const Offset(0, 2),
+            ),
+          ],
+          border: Border.all(
+            color: const Color.fromARGB(255, 26, 26, 26),
+            width: 2,
+          ),
+        ),
+        padding: const EdgeInsets.all(10.0),
+        child: Row(
+          children: [
+            Icon(
+              icon,
+              size: MediaQuery.of(context).size.width / 20,
+              color: const Color.fromARGB(197, 216, 216, 216),
+            ),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: TextStyle(
+                color: const Color.fromARGB(197, 216, 216, 216),
+                fontSize: MediaQuery.of(context).size.width / 23,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -229,13 +276,7 @@ class _CarWashState extends State<CarWashScreen> {
                         maxLines: 3,
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
-                      height: 1,
-                      color: const Color.fromARGB(255, 157, 157, 157),
-                    ),
+                    const HorizontalLine(distance: 15),
                     Text(
                       'Availability',
                       style: TextStyle(
@@ -260,13 +301,7 @@ class _CarWashState extends State<CarWashScreen> {
                           generateSeats(i + 1, Icons.local_shipping),
                       ],
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
-                      height: 1,
-                      color: const Color.fromARGB(255, 157, 157, 157),
-                    ),
+                    const HorizontalLine(distance: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -304,13 +339,7 @@ class _CarWashState extends State<CarWashScreen> {
                         fontSize: MediaQuery.of(context).size.width / 23,
                       ),
                     ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
-                      height: 1,
-                      color: const Color.fromARGB(255, 157, 157, 157),
-                    ),
+                    const HorizontalLine(distance: 15),
                     Text(
                       'Clients Review',
                       style: TextStyle(
@@ -515,98 +544,26 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                         ),
                       ),
-                    Container(
-                      margin: const EdgeInsets.symmetric(
-                        vertical: 15,
-                      ),
-                      height: 1,
-                      color: const Color.fromARGB(255, 157, 157, 157),
-                    ),
+                    const HorizontalLine(distance: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        GestureDetector(
+                        meniuButton(
+                          icon: Icons.phone,
+                          label: 'Call',
                           onTap: () {
                             FlutterPhoneDirectCaller.callNumber(
                                 widget.carwash.phone.toString());
                           },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(255, 2, 2, 2)
-                                        .withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                                border: Border.all(
-                                  color: const Color.fromARGB(255, 26, 26, 26),
-                                  width: 2,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(children: [
-                                Icon(Icons.phone,
-                                    size:
-                                        MediaQuery.of(context).size.width / 20,
-                                    color: const Color.fromARGB(
-                                        197, 216, 216, 216)),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Call',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        197, 216, 216, 216),
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 23,
-                                  ),
-                                ),
-                              ])),
                         ),
-                        GestureDetector(
+                        meniuButton(
+                          icon: Icons.shopping_cart,
+                          label: 'Buy tokens',
                           onTap: () {},
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(255, 2, 2, 2)
-                                        .withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                                border: Border.all(
-                                  color: const Color.fromARGB(255, 26, 26, 26),
-                                  width: 2,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(children: [
-                                Icon(Icons.shopping_cart,
-                                    size:
-                                        MediaQuery.of(context).size.width / 20,
-                                    color: const Color.fromARGB(
-                                        197, 216, 216, 216)),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Buy tokens',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        197, 216, 216, 216),
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 23,
-                                  ),
-                                ),
-                              ])),
                         ),
-                        GestureDetector(
+                        meniuButton(
+                          icon: Icons.map,
+                          label: 'Map',
                           onTap: () {
                             Navigator.push(
                               context,
@@ -615,42 +572,6 @@ class _CarWashState extends State<CarWashScreen> {
                                       address: widget.carwash.address)),
                             );
                           },
-                          child: Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(20.0),
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: const Color.fromARGB(255, 2, 2, 2)
-                                        .withOpacity(0.5),
-                                    spreadRadius: 1,
-                                    blurRadius: 7,
-                                    offset: const Offset(0, 2),
-                                  ),
-                                ],
-                                border: Border.all(
-                                  color: const Color.fromARGB(255, 26, 26, 26),
-                                  width: 2,
-                                ),
-                              ),
-                              padding: const EdgeInsets.all(10.0),
-                              child: Row(children: [
-                                Icon(Icons.map,
-                                    size:
-                                        MediaQuery.of(context).size.width / 20,
-                                    color: const Color.fromARGB(
-                                        197, 216, 216, 216)),
-                                const SizedBox(width: 5),
-                                Text(
-                                  'Map',
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(
-                                        197, 216, 216, 216),
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 23,
-                                  ),
-                                ),
-                              ])),
                         ),
                       ],
                     ),
