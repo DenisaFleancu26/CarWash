@@ -3,8 +3,11 @@ import 'dart:ui';
 
 import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/widgets/custom_window.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:custom_info_window/custom_info_window.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
@@ -17,6 +20,8 @@ class MapController {
   List<CarWash> carWashes = [];
   final CarWashController _carWashController = CarWashController();
   List<Marker> markers = [];
+  final CustomInfoWindowController customInfoWindowController =
+      CustomInfoWindowController();
 
   bool displayMarkers = true;
 
@@ -47,10 +52,10 @@ class MapController {
     );
   }
 
-  Future<void> checkLocationPermission({
-    required String location,
-    required Function() displayInfo,
-  }) async {
+  Future<void> checkLocationPermission(
+      {required String location,
+      required Function() displayInfo,
+      required BuildContext context}) async {
     await Geolocator.requestPermission();
     if ((await Geolocator.checkPermission() ==
             LocationPermission.deniedForever) ||
@@ -61,6 +66,9 @@ class MapController {
     }
     if (location == '') {
       await fetchCarWashesFromFirebase();
+      print('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\');
+      await setCoordonates(context: context);
+      print('////////////////////////////////');
     } else {
       displayMarkers = false;
       var address = await Geocoder.local.findAddressesFromQuery(location);
@@ -123,5 +131,29 @@ class MapController {
     }
 
     return carWashes;
+  }
+
+  Future setCoordonates({required BuildContext context}) async {
+    var i = 1;
+
+    final Uint8List markerIcon =
+        await getBytesFromAssets('assets/images/carwash_mark.png', 100);
+    for (var carwash in carWashes) {
+      var address =
+          await Geocoder.local.findAddressesFromQuery(carwash.address);
+      markers.add(Marker(
+          markerId: MarkerId(i.toString()),
+          icon: BitmapDescriptor.fromBytes(markerIcon),
+          position: LatLng(address.first.coordinates.latitude!,
+              address.first.coordinates.longitude!),
+          onTap: () {
+            customInfoWindowController.addInfoWindow!(
+              CustomWindow(carwash: carwash),
+              LatLng(address.first.coordinates.latitude!,
+                  address.first.coordinates.longitude!),
+            );
+          }));
+      i++;
+    }
   }
 }
