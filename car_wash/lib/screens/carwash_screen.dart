@@ -158,7 +158,7 @@ class _CarWashState extends State<CarWashScreen> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             RatingBar.builder(
-                              initialRating: widget.carwash.averageRating(
+                              initialRating: _carWashController.averageRating(
                                   widget.carwash.nrRatings,
                                   widget.carwash.totalRatings),
                               itemSize: 25.0,
@@ -495,27 +495,10 @@ class _CarWashState extends State<CarWashScreen> {
                       ),
                     if (_userController.username != '')
                       GestureDetector(
-                        onTap: () async {
-                          if (_carWashController.rating != 0.0 ||
-                              _carWashController.userReview.text != '') {
-                            if (_carWashController.rating != 0.0) {
-                              widget.carwash.addRating(
-                                  _carWashController.rating.toInt(),
-                                  _carWashController.managerId,
-                                  _carWashController.carwashId);
-                            }
-                            widget.carwash.addReview(
-                                _userController.username,
-                                _carWashController.userReview,
-                                _carWashController.rating.toInt(),
-                                _carWashController.managerId,
-                                _carWashController.carwashId);
-                          }
-
-                          widget.carwash.reviews =
-                              await _carWashController.getReviews(
-                                  manager: _carWashController.managerId,
-                                  carwash: _carWashController.carwashId);
+                        onTap: () {
+                          _carWashController.postReviewButton(
+                              carwash: widget.carwash,
+                              username: _userController.username);
                           Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(

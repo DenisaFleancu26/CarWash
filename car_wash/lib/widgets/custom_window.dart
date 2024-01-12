@@ -1,3 +1,4 @@
+import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
@@ -5,9 +6,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CustomWindow extends StatelessWidget {
-  const CustomWindow({super.key, required this.carwash});
+  CustomWindow({super.key, required this.carwash});
 
   final CarWash carwash;
+  final CarWashController _carWashController = CarWashController();
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class CustomWindow extends StatelessWidget {
             children: [
               Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 RatingBar.builder(
-                  initialRating: carwash.averageRating(
+                  initialRating: _carWashController.averageRating(
                       carwash.nrRatings, carwash.totalRatings),
                   itemSize: 20.0,
                   unratedColor: const Color.fromARGB(195, 255, 255, 255),

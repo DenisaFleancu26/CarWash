@@ -116,7 +116,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                         child: Text(
                           "Enter your email below to recive your password reset instruction!",
                           style: TextStyle(
-                            color: Color.fromARGB(255, 157, 157, 157),
+                            color: const Color.fromARGB(255, 157, 157, 157),
                             fontSize: MediaQuery.of(context).size.width / 25,
                             shadows: [
                               Shadow(

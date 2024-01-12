@@ -114,4 +114,67 @@ class CarWashController {
 
     return reviews;
   }
+
+  Future<void> postReviewButton(
+      {required CarWash carwash, required String username}) async {
+    if (rating != 0.0 || userReview.text != '') {
+      if (rating != 0.0) {
+        addRating(
+            carwash: carwash,
+            rating: rating.toInt(),
+            manager: managerId,
+            carwashID: carwashId);
+      }
+      addReview(
+          username: username,
+          feedback: userReview,
+          rating: rating.toInt(),
+          manager: managerId,
+          carwash: carwashId);
+    }
+
+    carwash.reviews = await getReviews(manager: managerId, carwash: carwashId);
+  }
+
+  Future<void> addRating(
+      {required CarWash carwash,
+      required int rating,
+      required String manager,
+      required String carwashID}) async {
+    carwash.totalRatings += rating;
+    carwash.nrRatings++;
+
+    await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(manager)
+        .collection('car-wash')
+        .doc(carwashID)
+        .update({
+      'totalRatings': carwash.totalRatings,
+      'nrRatings': carwash.nrRatings
+    });
+  }
+
+  Future<void> addReview(
+      {required String username,
+      required TextEditingController feedback,
+      required int rating,
+      required String manager,
+      required String carwash}) async {
+    await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(manager)
+        .collection('car-wash')
+        .doc(carwash)
+        .collection('review')
+        .add({
+      'username': username,
+      'feedback': feedback.text,
+      'rating': rating
+    });
+  }
+
+  double averageRating(int nrRatings, int totalRatings) {
+    return nrRatings == 0 ? 0.0 : totalRatings / nrRatings;
+  }
 }

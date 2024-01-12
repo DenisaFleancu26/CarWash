@@ -66,9 +66,7 @@ class MapController {
     }
     if (location == '') {
       await fetchCarWashesFromFirebase();
-      print('\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\');
-      await setCoordonates(context: context);
-      print('////////////////////////////////');
+      await setCoordonates();
     } else {
       displayMarkers = false;
       var address = await Geocoder.local.findAddressesFromQuery(location);
@@ -133,7 +131,7 @@ class MapController {
     return carWashes;
   }
 
-  Future setCoordonates({required BuildContext context}) async {
+  Future setCoordonates() async {
     var i = 1;
 
     final Uint8List markerIcon =

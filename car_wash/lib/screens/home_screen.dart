@@ -197,18 +197,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                 .center,
                                                         children: [
                                                           RatingBar.builder(
-                                                            initialRating: _carWashController
-                                                                .carWashes[
-                                                                    index]
-                                                                .averageRating(
-                                                                    _carWashController
-                                                                        .carWashes[
-                                                                            index]
-                                                                        .nrRatings,
-                                                                    _carWashController
-                                                                        .carWashes[
-                                                                            index]
-                                                                        .totalRatings),
+                                                            initialRating: _carWashController.averageRating(
+                                                                _carWashController
+                                                                    .carWashes[
+                                                                        index]
+                                                                    .nrRatings,
+                                                                _carWashController
+                                                                    .carWashes[
+                                                                        index]
+                                                                    .totalRatings),
                                                             itemSize: 20.0,
                                                             unratedColor:
                                                                 const Color

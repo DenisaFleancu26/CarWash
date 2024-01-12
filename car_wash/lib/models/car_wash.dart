@@ -1,6 +1,4 @@
 import 'package:car_wash/models/review.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
 
 class CarWash {
   final String name;
@@ -30,35 +28,4 @@ class CarWash {
     required this.nrRatings,
     required this.reviews,
   });
-
-  Future<void> addRating(int rating, String manager, String carwash) async {
-    totalRatings += rating;
-    nrRatings++;
-
-    await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(manager)
-        .collection('car-wash')
-        .doc(carwash)
-        .update({'totalRatings': totalRatings, 'nrRatings': nrRatings});
-  }
-
-  Future<void> addReview(String username, TextEditingController feedback,
-      int rating, String manager, String carwash) async {
-    await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(manager)
-        .collection('car-wash')
-        .doc(carwash)
-        .collection('review')
-        .add({
-      'username': username,
-      'feedback': feedback.text,
-      'rating': rating
-    });
-  }
-
-  double averageRating(int nrRatings, int totalRatings) {
-    return nrRatings == 0 ? 0.0 : totalRatings / nrRatings;
-  }
 }
