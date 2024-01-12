@@ -2,13 +2,10 @@ import 'dart:ui';
 
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/connectivity_controller.dart';
-import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
-import 'package:car_wash/screens/map_screen.dart';
-import 'package:car_wash/screens/profile_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/custom_entry_field.dart';
-import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,12 +23,6 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   final User? user = AuthController().currentUser;
   final AuthController _authController = AuthController();
   final ConectivityController _conectivityController = ConectivityController();
-
-  final items = const <Widget>[
-    Icon(Icons.map_rounded, size: 30),
-    Icon(Icons.home, size: 30),
-    Icon(Icons.account_circle, size: 30),
-  ];
 
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
@@ -72,45 +63,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: CurvedNavigationBar(
-        backgroundColor: Colors.transparent,
-        color: const Color.fromARGB(255, 255, 255, 255),
-        animationDuration: const Duration(milliseconds: 300),
-        height: 45,
-        index: index,
-        items: items,
-        onTap: (index) => setState(() {
-          this.index = index;
-          switch (index) {
-            case 0:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const MapScreen()),
-              );
-              break;
-            case 1:
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const HomeScreen()),
-              );
-              break;
-            case 2:
-              if (user != null) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const ProfileScreen()),
-                );
-              } else {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const LoginScreen()),
-                );
-              }
-              break;
-          }
-        }),
-      ),
+      bottomNavigationBar: CustomNavigationBar(user: user, index: index),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,
@@ -163,7 +116,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                         child: Text(
                           "Enter your email below to recive your password reset instruction!",
                           style: TextStyle(
-                            color: Color.fromARGB(255, 157, 157, 157),
+                            color: const Color.fromARGB(255, 157, 157, 157),
                             fontSize: MediaQuery.of(context).size.width / 25,
                             shadows: [
                               Shadow(
