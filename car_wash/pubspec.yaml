@@ -49,6 +49,8 @@ dependencies:
   firebase_cached_image: ^0.5.2
   flutter_phone_direct_caller: ^2.1.1
   permission_handler: ^11.0.0
+  flutter_stripe: ^9.0.0
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

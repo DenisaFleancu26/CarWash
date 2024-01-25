@@ -1,7 +1,9 @@
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/carwash_controller.dart';
+import 'package:car_wash/controllers/payment_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
@@ -21,9 +23,12 @@ class CarWashScreen extends StatefulWidget {
 
 class _CarWashState extends State<CarWashScreen> {
   int index = 1;
+  int tokens = 0;
   final User? user = AuthController().currentUser;
   final UserController _userController = UserController();
   final CarWashController _carWashController = CarWashController();
+
+  final PaymentController _paymentController = PaymentController();
 
   @override
   void initState() {
@@ -78,7 +83,7 @@ class _CarWashState extends State<CarWashScreen> {
 
   Widget meniuButton({
     required IconData icon,
-    required String label,
+    String? label,
     required VoidCallback onTap,
   }) {
     return GestureDetector(
@@ -108,17 +113,130 @@ class _CarWashState extends State<CarWashScreen> {
               size: MediaQuery.of(context).size.width / 20,
               color: const Color.fromARGB(197, 216, 216, 216),
             ),
-            const SizedBox(width: 5),
-            Text(
-              label,
-              style: TextStyle(
-                color: const Color.fromARGB(197, 216, 216, 216),
-                fontSize: MediaQuery.of(context).size.width / 23,
+            if (label != null) const SizedBox(width: 5),
+            if (label != null)
+              Text(
+                label,
+                style: TextStyle(
+                  color: const Color.fromARGB(197, 216, 216, 216),
+                  fontSize: MediaQuery.of(context).size.width / 23,
+                ),
               ),
-            ),
           ],
         ),
       ),
+    );
+  }
+
+  Future showBottomSheet() {
+    return showModalBottomSheet(
+      context: context,
+      backgroundColor: const Color.fromARGB(255, 216, 216, 216),
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.only(
+          topRight: Radius.circular(50),
+          topLeft: Radius.circular(50),
+        ),
+      ),
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return Container(
+              height: MediaQuery.of(context).size.width * 0.4,
+              padding: const EdgeInsets.only(),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      meniuButton(
+                          icon: Icons.remove,
+                          onTap: () {
+                            setState(() {
+                              if (tokens > 0) tokens--;
+                            });
+                          }),
+                      Row(
+                        children: [
+                          Text(
+                            'Tokens:',
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 34, 34, 34),
+                              fontSize: MediaQuery.of(context).size.width / 20,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            '$tokens',
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 34, 34, 34),
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      meniuButton(
+                          icon: Icons.add,
+                          onTap: () {
+                            setState(() {
+                              tokens++;
+                            });
+                          })
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Row(
+                        children: [
+                          Text(
+                            'Total:',
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 34, 34, 34),
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 20,
+                                fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            '${widget.carwash.price * tokens} RON',
+                            style: TextStyle(
+                                color: const Color.fromARGB(255, 34, 34, 34),
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                      meniuButton(
+                        icon: Icons.credit_card,
+                        label: 'Make Payment',
+                        onTap: () async {
+                          if (tokens > 0) {
+                            if (user != null) {
+                              await _paymentController.makePayment(
+                                  (widget.carwash.price * tokens * 100));
+                            } else {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()));
+                            }
+                          }
+                        },
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          },
+        );
+      },
     );
   }
 
@@ -542,7 +660,9 @@ class _CarWashState extends State<CarWashScreen> {
                         meniuButton(
                           icon: Icons.shopping_cart,
                           label: 'Buy tokens',
-                          onTap: () {},
+                          onTap: () {
+                            showBottomSheet();
+                          },
                         ),
                         meniuButton(
                           icon: Icons.map,
