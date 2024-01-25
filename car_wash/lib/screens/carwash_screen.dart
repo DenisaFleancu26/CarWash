@@ -1,7 +1,9 @@
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/carwash_controller.dart';
+import 'package:car_wash/controllers/payment_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
@@ -25,6 +27,8 @@ class _CarWashState extends State<CarWashScreen> {
   final User? user = AuthController().currentUser;
   final UserController _userController = UserController();
   final CarWashController _carWashController = CarWashController();
+
+  final PaymentController _paymentController = PaymentController();
 
   @override
   void initState() {
@@ -208,9 +212,23 @@ class _CarWashState extends State<CarWashScreen> {
                         ],
                       ),
                       meniuButton(
-                          icon: Icons.credit_card,
-                          label: 'Make Payment',
-                          onTap: () {})
+                        icon: Icons.credit_card,
+                        label: 'Make Payment',
+                        onTap: () async {
+                          if (tokens > 0) {
+                            if (user != null) {
+                              await _paymentController.makePayment(
+                                  (widget.carwash.price * tokens * 100));
+                            } else {
+                              Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const LoginScreen()));
+                            }
+                          }
+                        },
+                      )
                     ],
                   )
                 ],
