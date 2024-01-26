@@ -234,6 +234,7 @@ class _CarWashState extends State<CarWashScreen> {
                                                             _carWashController
                                                                 .carwashId,
                                                         tokens: tokens,
+                                                        carWash: widget.carwash,
                                                       )))
                                       });
                             } else {

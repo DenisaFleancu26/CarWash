@@ -1,14 +1,20 @@
+import 'package:car_wash/controllers/transaction_controller.dart';
+import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:randomstring_dart/randomstring_dart.dart';
 
 class QRScreen extends StatefulWidget {
   final String? carwashId;
   final int tokens;
-  const QRScreen({Key? key, required this.carwashId, required this.tokens})
+  final CarWash carWash;
+  const QRScreen(
+      {Key? key,
+      required this.carwashId,
+      required this.tokens,
+      required this.carWash})
       : super(key: key);
 
   @override
@@ -17,6 +23,21 @@ class QRScreen extends StatefulWidget {
 
 class _QRScreenState extends State<QRScreen> {
   int index = 1;
+
+  final TransactionController _transactionController = TransactionController();
+  String qr = '';
+
+  @override
+  void initState() {
+    qr =
+        '${widget.carwashId} ${widget.tokens} ${RandomString().getRandomString()}';
+    _transactionController.saveTransaction(
+        dataQR: qr,
+        carwash: widget.carWash.name,
+        address: widget.carWash.address,
+        totalPrice: widget.tokens * widget.carWash.price);
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +59,7 @@ class _QRScreenState extends State<QRScreen> {
             child: Column(
               children: [
                 QrImageView(
-                  data:
-                      '${widget.carwashId} ${widget.tokens} ${RandomString().getRandomString()}',
+                  data: qr,
                   version: QrVersions.auto,
                   size: MediaQuery.of(context).size.width * 0.7,
                 ),
