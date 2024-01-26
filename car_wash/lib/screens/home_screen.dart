@@ -34,7 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         extendBody: true,
-        bottomNavigationBar: CustomNavigationBar(user: user, index: index),
+        bottomNavigationBar: CustomNavigationBar(index: index),
         body: SingleChildScrollView(
             padding: const EdgeInsets.only(),
             child: Container(

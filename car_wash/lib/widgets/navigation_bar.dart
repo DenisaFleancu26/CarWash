@@ -1,3 +1,4 @@
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
@@ -7,10 +8,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class CustomNavigationBar extends StatefulWidget {
-  final User? user;
   final int index;
-  const CustomNavigationBar({Key? key, this.user, required this.index})
-      : super(key: key);
+  const CustomNavigationBar({Key? key, required this.index}) : super(key: key);
 
   @override
   State<CustomNavigationBar> createState() => _CustomNavigationBarState();
@@ -22,6 +21,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
     Icon(Icons.home, size: 30),
     Icon(Icons.account_circle, size: 30),
   ];
+  final User? user = AuthController().currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +47,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
             );
             break;
           case 2:
-            if (widget.user != null) {
+            if (user != null) {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const ProfileScreen()),

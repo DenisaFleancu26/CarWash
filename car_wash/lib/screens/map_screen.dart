@@ -44,7 +44,7 @@ class _MapScreenState extends State<MapScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         extendBody: true,
-        bottomNavigationBar: CustomNavigationBar(user: user, index: index),
+        bottomNavigationBar: CustomNavigationBar(index: index),
         body: Stack(
           children: [
             display
