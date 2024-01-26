@@ -66,7 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: CustomNavigationBar(user: user, index: index),
+      bottomNavigationBar: CustomNavigationBar(index: index),
       body: SingleChildScrollView(
         child: Container(
           height: MediaQuery.of(context).size.height,

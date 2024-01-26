@@ -262,7 +262,7 @@ class _CarWashState extends State<CarWashScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
-      bottomNavigationBar: CustomNavigationBar(user: user, index: index),
+      bottomNavigationBar: CustomNavigationBar(index: index),
       body: SingleChildScrollView(
           child: Column(
         children: [
