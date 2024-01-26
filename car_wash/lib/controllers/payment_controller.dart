@@ -6,6 +6,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 
 class PaymentController {
   Map<String, dynamic>? paymentIntent;
+  bool successfulPayment = false;
 
   Future<void> makePayment(double total) async {
     try {
@@ -26,7 +27,7 @@ class PaymentController {
           )
           .then((value) {});
 
-      displayPaymentSheet();
+      await displayPaymentSheet();
     } catch (e, s) {
       print('exception:$e$s');
     }
@@ -35,6 +36,7 @@ class PaymentController {
   displayPaymentSheet() async {
     try {
       await Stripe.instance.presentPaymentSheet().then((value) {
+        successfulPayment = true;
         paymentIntent = null;
       }).onError((error, stackTrace) {
         print('Error is:--->$error $stackTrace');

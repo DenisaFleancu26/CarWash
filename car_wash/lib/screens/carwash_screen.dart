@@ -5,6 +5,7 @@ import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
+import 'package:car_wash/screens/qr_screen.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -217,8 +218,24 @@ class _CarWashState extends State<CarWashScreen> {
                         onTap: () async {
                           if (tokens > 0) {
                             if (user != null) {
-                              await _paymentController.makePayment(
-                                  (widget.carwash.price * tokens * 100));
+                              await _paymentController
+                                  .makePayment(
+                                      (widget.carwash.price * tokens * 100))
+                                  .then((value) => {
+                                        if (_paymentController
+                                                .successfulPayment ==
+                                            true)
+                                          Navigator.push(
+                                              context,
+                                              MaterialPageRoute(
+                                                  builder: (context) =>
+                                                      QRScreen(
+                                                        carwashId:
+                                                            _carWashController
+                                                                .carwashId,
+                                                        tokens: tokens,
+                                                      )))
+                                      });
                             } else {
                               Navigator.pushReplacement(
                                   context,

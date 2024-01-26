@@ -51,6 +51,8 @@ dependencies:
   permission_handler: ^11.0.0
   flutter_stripe: ^9.0.0
   http: ^1.1.0
+  qr_flutter: ^4.1.0
+  randomstring_dart: ^0.0.4
 
 dev_dependencies:
   flutter_test:
