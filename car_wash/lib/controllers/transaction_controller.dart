@@ -11,7 +11,8 @@ class TransactionController {
       {required String dataQR,
       required String carwash,
       required String address,
-      required double totalPrice}) async {
+      required double totalPrice,
+      required String date}) async {
     await FirebaseFirestore.instance
         .collection('Users')
         .doc(user?.uid)
@@ -21,6 +22,7 @@ class TransactionController {
       "carWash": carwash,
       "address": address,
       "totalPrice": totalPrice,
+      'date': date
     });
   }
 
@@ -34,11 +36,11 @@ class TransactionController {
     if (collection.docs.isNotEmpty) {
       for (var element in collection.docs) {
         TransactionModel transaction = TransactionModel(
-          dataQR: element['dataQR'],
-          carwash: element['carWash'],
-          address: element['address'],
-          totalPrice: element['totalPrice'],
-        );
+            dataQR: element['dataQR'],
+            carwash: element['carWash'],
+            address: element['address'],
+            totalPrice: element['totalPrice'],
+            date: element['date']);
         transactions.add(transaction);
       }
     }

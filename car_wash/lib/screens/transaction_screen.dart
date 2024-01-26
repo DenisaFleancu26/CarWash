@@ -126,7 +126,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                               15),
                                                       color: Colors.white),
                                                   child: QrImageView(
-                                                    data: '123456',
+                                                    data: _transactionController
+                                                        .transactions[index]
+                                                        .dataQR,
                                                     version: QrVersions.auto,
                                                     size: MediaQuery.of(context)
                                                             .size
@@ -135,7 +137,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                   ),
                                                 ),
                                                 Text(
-                                                  '10/10/1010',
+                                                  _transactionController
+                                                      .transactions[index].date,
                                                   style: TextStyle(
                                                     color: Colors.grey,
                                                     fontSize:

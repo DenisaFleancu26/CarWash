@@ -27,6 +27,7 @@ class _QRScreenState extends State<QRScreen> {
 
   final TransactionController _transactionController = TransactionController();
   String qr = '';
+  DateTime currentDate = DateTime.now();
 
   @override
   void initState() {
@@ -36,7 +37,8 @@ class _QRScreenState extends State<QRScreen> {
         dataQR: qr,
         carwash: widget.carWash.name,
         address: widget.carWash.address,
-        totalPrice: widget.tokens * widget.carWash.price);
+        totalPrice: widget.tokens * widget.carWash.price,
+        date: "${currentDate.day}/${currentDate.month}/${currentDate.year}");
     super.initState();
   }
 
