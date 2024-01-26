@@ -2,6 +2,7 @@ import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/screens/change_password.dart';
 import 'package:car_wash/screens/login_screen.dart';
+import 'package:car_wash/screens/transaction_screen.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -182,7 +183,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         }),
                         const SizedBox(height: 20),
                         _customProfileButton(
-                            'Transaction', Icons.account_balance_wallet, () {}),
+                            'Transaction', Icons.account_balance_wallet, () {
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const TransactionScreen()));
+                        }),
                         const SizedBox(height: 20),
                         _customProfileButton('Logout', Icons.logout, () {
                           _authController.signOut();

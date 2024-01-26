@@ -1,5 +1,6 @@
 import 'package:car_wash/controllers/transaction_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/screens/transaction_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +66,12 @@ class _QRScreenState extends State<QRScreen> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                 CustomButton(
-                  onTap: () {},
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const TransactionScreen()));
+                  },
                   withGradient: false,
                   text: "Done",
                   rowText: false,

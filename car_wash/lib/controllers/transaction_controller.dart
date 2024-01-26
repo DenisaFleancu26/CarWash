@@ -1,9 +1,11 @@
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:car_wash/models/transaction.dart';
 
 class TransactionController {
   final User? user = AuthController().currentUser;
+  List<TransactionModel> transactions = [];
 
   Future<void> saveTransaction(
       {required String dataQR,
@@ -20,5 +22,27 @@ class TransactionController {
       "address": address,
       "totalPrice": totalPrice,
     });
+  }
+
+  Future<void> fetchTransactions({required Function() displayInfo}) async {
+    final collection = await FirebaseFirestore.instance
+        .collection('Users')
+        .doc(user?.uid)
+        .collection('transaction')
+        .get();
+
+    if (collection.docs.isNotEmpty) {
+      for (var element in collection.docs) {
+        TransactionModel transaction = TransactionModel(
+          dataQR: element['dataQR'],
+          carwash: element['carWash'],
+          address: element['address'],
+          totalPrice: element['totalPrice'],
+        );
+        transactions.add(transaction);
+      }
+    }
+
+    displayInfo();
   }
 }
