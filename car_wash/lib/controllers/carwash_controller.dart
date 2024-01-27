@@ -1,3 +1,4 @@
+import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -8,6 +9,7 @@ class CarWashController {
   List<CarWash> saveCarWashes = [];
   TextEditingController searchController = TextEditingController();
   final TextEditingController userReview = TextEditingController();
+  AuthController _authController = AuthController();
   String managerId = '';
   String carwashId = '';
   double rating = 0.0;
@@ -15,19 +17,23 @@ class CarWashController {
   Future<List<CarWash>> fetchCarWashesFromFirebase({
     required Function() displayInfo,
   }) async {
-    final managers =
-        await FirebaseFirestore.instance.collection('Managers').get();
+    if (AuthController().currentUser != null) {
+      await _authController.checkIsManager(
+        id: AuthController().currentUser!.uid,
+      );
+    }
 
-    if (managers.docs.isNotEmpty) {
-      for (var manager in managers.docs) {
-        var managerCarWashes = await FirebaseFirestore.instance
-            .collection('Managers')
-            .doc(manager.id)
-            .collection('car-wash')
-            .get();
-        for (var element in managerCarWashes.docs) {
-          List<Review> reviews =
-              await getReviews(manager: manager.id, carwash: element.id);
+    if (_authController.isManager == true) {
+      final manager = await FirebaseFirestore.instance
+          .collection('Managers')
+          .doc(AuthController().currentUser!.uid)
+          .collection('car-wash')
+          .get();
+
+      if (manager.docs.isNotEmpty) {
+        for (var element in manager.docs) {
+          List<Review> reviews = await getReviews(
+              manager: AuthController().currentUser!.uid, carwash: element.id);
           CarWash carwash = CarWash(
             name: element['name'],
             hours: element['hours'],
@@ -45,8 +51,39 @@ class CarWashController {
           carWashes.add(carwash);
         }
       }
-    }
+    } else {
+      final managers =
+          await FirebaseFirestore.instance.collection('Managers').get();
 
+      if (managers.docs.isNotEmpty) {
+        for (var manager in managers.docs) {
+          var managerCarWashes = await FirebaseFirestore.instance
+              .collection('Managers')
+              .doc(manager.id)
+              .collection('car-wash')
+              .get();
+          for (var element in managerCarWashes.docs) {
+            List<Review> reviews =
+                await getReviews(manager: manager.id, carwash: element.id);
+            CarWash carwash = CarWash(
+              name: element['name'],
+              hours: element['hours'],
+              image: element['image'] ?? '',
+              address: element['address'],
+              facilities: element['facilities'],
+              phone: element['phone'],
+              smallVehicleSeats: element['small-vehicle'],
+              bigVehicleSeats: element['big-vehicle'],
+              price: (element['price']).toDouble(),
+              nrRatings: element['nrRatings'],
+              totalRatings: element['totalRatings'],
+              reviews: reviews,
+            );
+            carWashes.add(carwash);
+          }
+        }
+      }
+    }
     displayInfo();
     saveCarWashes = carWashes;
 
