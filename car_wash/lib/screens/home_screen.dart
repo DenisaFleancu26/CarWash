@@ -126,10 +126,13 @@ class _HomeScreenState extends State<HomeScreen> {
                                           MaterialPageRoute(
                                               builder: ((context) =>
                                                   CarWashScreen(
-                                                      carwash:
-                                                          _carWashController
-                                                                  .carWashes[
-                                                              index]))));
+                                                    carwash: _carWashController
+                                                        .carWashes[index],
+                                                    isManager:
+                                                        _carWashController
+                                                            .authController
+                                                            .isManager,
+                                                  ))));
                                     },
                                     child: Padding(
                                       padding: const EdgeInsets.symmetric(

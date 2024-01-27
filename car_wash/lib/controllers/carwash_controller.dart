@@ -9,7 +9,7 @@ class CarWashController {
   List<CarWash> saveCarWashes = [];
   TextEditingController searchController = TextEditingController();
   final TextEditingController userReview = TextEditingController();
-  final AuthController _authController = AuthController();
+  final AuthController authController = AuthController();
   String managerId = '';
   String carwashId = '';
   double rating = 0.0;
@@ -18,12 +18,12 @@ class CarWashController {
     required Function() displayInfo,
   }) async {
     if (AuthController().currentUser != null) {
-      await _authController.checkIsManager(
+      await authController.checkIsManager(
         id: AuthController().currentUser!.uid,
       );
     }
 
-    if (_authController.isManager == true) {
+    if (authController.isManager == true) {
       final manager = await FirebaseFirestore.instance
           .collection('Managers')
           .doc(AuthController().currentUser!.uid)

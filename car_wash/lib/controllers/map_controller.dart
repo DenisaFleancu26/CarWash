@@ -108,7 +108,10 @@ class MapController {
               address.first.coordinates.longitude!),
           onTap: () {
             customInfoWindowController.addInfoWindow!(
-              CustomWindow(carwash: carwash),
+              CustomWindow(
+                carwash: carwash,
+                isManager: _carWashController.authController.isManager,
+              ),
               LatLng(address.first.coordinates.latitude!,
                   address.first.coordinates.longitude!),
             );

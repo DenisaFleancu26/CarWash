@@ -16,7 +16,10 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CarWashScreen extends StatefulWidget {
   final CarWash carwash;
-  const CarWashScreen({Key? key, required this.carwash}) : super(key: key);
+  final bool isManager;
+  const CarWashScreen(
+      {Key? key, required this.carwash, required this.isManager})
+      : super(key: key);
 
   @override
   State<CarWashScreen> createState() => _CarWashState();
@@ -28,18 +31,17 @@ class _CarWashState extends State<CarWashScreen> {
   final User? user = AuthController().currentUser;
   final UserController _userController = UserController();
   final CarWashController _carWashController = CarWashController();
-
   final PaymentController _paymentController = PaymentController();
 
   @override
   void initState() {
-    super.initState();
     _userController.getUsername(
         displayUsername: (username) =>
             setState(() => _userController.username = username),
         collection: 'Users');
     _carWashController.findId(
         name: widget.carwash.name, address: widget.carwash.address);
+    super.initState();
   }
 
   Widget generateSeats(int nr, IconData icon) {
@@ -640,6 +642,7 @@ class _CarWashState extends State<CarWashScreen> {
                             MaterialPageRoute(
                                 builder: (context) => CarWashScreen(
                                       carwash: widget.carwash,
+                                      isManager: false,
                                     )),
                           );
                         },
@@ -667,21 +670,35 @@ class _CarWashState extends State<CarWashScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        meniuButton(
-                          icon: Icons.phone,
-                          label: 'Call',
-                          onTap: () {
-                            FlutterPhoneDirectCaller.callNumber(
-                                widget.carwash.phone.toString());
-                          },
-                        ),
-                        meniuButton(
-                          icon: Icons.shopping_cart,
-                          label: 'Buy tokens',
-                          onTap: () {
-                            showBottomSheet();
-                          },
-                        ),
+                        if (!widget.isManager)
+                          meniuButton(
+                            icon: Icons.phone,
+                            label: 'Call',
+                            onTap: () {
+                              FlutterPhoneDirectCaller.callNumber(
+                                  widget.carwash.phone.toString());
+                            },
+                          ),
+                        if (widget.isManager)
+                          meniuButton(
+                            icon: Icons.campaign,
+                            label: 'Announcement',
+                            onTap: () {},
+                          ),
+                        if (!widget.isManager)
+                          meniuButton(
+                            icon: Icons.shopping_cart,
+                            label: 'Buy tokens',
+                            onTap: () {
+                              showBottomSheet();
+                            },
+                          ),
+                        if (widget.isManager)
+                          meniuButton(
+                            icon: Icons.local_offer,
+                            label: 'Offer',
+                            onTap: () {},
+                          ),
                         meniuButton(
                           icon: Icons.map,
                           label: 'Map',
