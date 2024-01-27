@@ -5,6 +5,7 @@ import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/transaction_screen.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -20,12 +21,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   final AuthController _authController = AuthController();
   final UserController _userController = UserController();
+  final User? user = AuthController().currentUser;
 
   @override
   void initState() {
     super.initState();
-    _userController.getUserDetails(
-        displayInfo: () => setState(() => display = false));
+    _authController.checkIsManager(id: user!.uid).whenComplete(() => {
+          if (_authController.isManager)
+            {
+              _userController.getUserDetails(
+                  displayInfo: () => setState(() => display = false),
+                  collection: 'Managers')
+            }
+          else
+            {
+              _userController.getUserDetails(
+                  displayInfo: () => setState(() => display = false),
+                  collection: 'Users')
+            }
+        });
   }
 
   Widget _customProfileButton(
@@ -181,15 +195,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   builder: (context) =>
                                       const ChangePasswordScreen()));
                         }),
-                        const SizedBox(height: 20),
-                        _customProfileButton(
-                            'Transaction', Icons.account_balance_wallet, () {
-                          Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const TransactionScreen()));
-                        }),
+                        if (!_authController.isManager)
+                          const SizedBox(height: 20),
+                        if (!_authController.isManager)
+                          _customProfileButton(
+                              'Transaction', Icons.account_balance_wallet, () {
+                            Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const TransactionScreen()));
+                          }),
                         const SizedBox(height: 20),
                         _customProfileButton('Logout', Icons.logout, () {
                           _authController.signOut();

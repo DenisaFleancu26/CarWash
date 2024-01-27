@@ -7,12 +7,11 @@ class UserController {
   String username = '';
   String email = '';
 
-  Future<void> getUserDetails({
-    required Function() displayInfo,
-  }) async {
+  Future<void> getUserDetails(
+      {required Function() displayInfo, required String collection}) async {
     try {
       final userQuerySnapshot = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection(collection)
           .doc(user?.uid)
           .get();
       if (userQuerySnapshot.exists) {
@@ -25,12 +24,12 @@ class UserController {
     displayInfo();
   }
 
-  Future<void> getUsername({
-    required Function(String username) displayUsername,
-  }) async {
+  Future<void> getUsername(
+      {required Function(String username) displayUsername,
+      required String collection}) async {
     try {
       final userQuerySnapshot = await FirebaseFirestore.instance
-          .collection('Users')
+          .collection(collection)
           .doc(user?.uid)
           .get();
       if (userQuerySnapshot.exists) {

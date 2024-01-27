@@ -19,6 +19,8 @@ class AuthController {
   final TextEditingController currentPassword = TextEditingController();
   final TextEditingController newPassword = TextEditingController();
 
+  bool isManager = false;
+
   Future<void> signUp({
     required Function(String?) onUsernameError,
     required Function(String?) onEmailError,
@@ -196,5 +198,19 @@ class AuthController {
 
   Future<void> signOut() async {
     await _firebaseAuth.signOut();
+  }
+
+  Future<void> checkIsManager({required String id}) async {
+    try {
+      final querySnapshot =
+          await FirebaseFirestore.instance.collection('Managers').doc(id).get();
+      if (querySnapshot.exists) {
+        isManager = true;
+      } else {
+        isManager = false;
+      }
+    } catch (error) {
+      print("Error checking manager: $error");
+    }
   }
 }

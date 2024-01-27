@@ -35,9 +35,9 @@ class _CarWashState extends State<CarWashScreen> {
   void initState() {
     super.initState();
     _userController.getUsername(
-      displayUsername: (username) =>
-          setState(() => _userController.username = username),
-    );
+        displayUsername: (username) =>
+            setState(() => _userController.username = username),
+        collection: 'Users');
     _carWashController.findId(
         name: widget.carwash.name, address: widget.carwash.address);
   }
