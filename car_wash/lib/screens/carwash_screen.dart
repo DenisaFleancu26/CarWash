@@ -771,8 +771,9 @@ class _CarWashState extends State<CarWashScreen> {
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) => AnnouncementScreen(
-                                        carwashId:
-                                            _carWashController.carwashId)),
+                                          carwash: widget.carwash,
+                                          controller: _carWashController,
+                                        )),
                               );
                             },
                           ),

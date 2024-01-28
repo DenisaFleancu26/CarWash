@@ -1,12 +1,15 @@
 import 'package:car_wash/controllers/carwash_controller.dart';
-import 'package:car_wash/screens/transaction_screen.dart';
+import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class AnnouncementScreen extends StatefulWidget {
-  final String carwashId;
-  const AnnouncementScreen({Key? key, required this.carwashId})
+  final CarWash carwash;
+  final CarWashController controller;
+  const AnnouncementScreen(
+      {Key? key, required this.carwash, required this.controller})
       : super(key: key);
 
   @override
@@ -15,7 +18,7 @@ class AnnouncementScreen extends StatefulWidget {
 
 class _AnnouncementScreenState extends State<AnnouncementScreen> {
   int index = 1;
-  final CarWashController _carWashController = CarWashController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,7 +89,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                               offset: const Offset(0, 4))
                         ]),
                     child: TextField(
-                      controller: _carWashController.announcementController,
+                      controller: widget.controller.announcementController,
                       decoration: InputDecoration(
                         hintText: "Write an announcement...",
                         hintStyle: const TextStyle(color: Colors.grey),
@@ -106,11 +109,18 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.07),
                 CustomButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const TransactionScreen()));
+                  onTap: () async {
+                    await widget.controller
+                        .postAnnouncement(
+                            manager: widget.controller.managerId,
+                            carwash: widget.controller.carwashId)
+                        .whenComplete(() => Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CarWashScreen(
+                                      carwash: widget.carwash,
+                                      isManager: true,
+                                    ))));
                   },
                   withGradient: false,
                   text: "Post",

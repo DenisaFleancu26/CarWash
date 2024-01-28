@@ -225,4 +225,19 @@ class CarWashController {
         .doc(carwashId)
         .update({'brokenSpots': brokenSpots});
   }
+
+  Future<void> postAnnouncement(
+      {required String manager, required String carwash}) async {
+    await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(manager)
+        .collection('car-wash')
+        .doc(carwash)
+        .collection('announcement')
+        .add({
+      'message': announcementController.text,
+      'date':
+          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
+    });
+  }
 }
