@@ -1,4 +1,5 @@
 import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/models/announcement.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -35,21 +36,23 @@ class CarWashController {
         for (var element in manager.docs) {
           List<Review> reviews = await getReviews(
               manager: AuthController().currentUser!.uid, carwash: element.id);
+          List<Announcement> announcements = await getAnnouncements(
+              manager: AuthController().currentUser!.uid, carwash: element.id);
           CarWash carwash = CarWash(
-            name: element['name'],
-            hours: element['hours'],
-            image: element['image'] ?? '',
-            address: element['address'],
-            facilities: element['facilities'],
-            phone: element['phone'],
-            smallVehicleSeats: element['small-vehicle'],
-            bigVehicleSeats: element['big-vehicle'],
-            price: (element['price']).toDouble(),
-            nrRatings: element['nrRatings'],
-            totalRatings: element['totalRatings'],
-            reviews: reviews,
-            brokenSpots: element['brokenSpots'],
-          );
+              name: element['name'],
+              hours: element['hours'],
+              image: element['image'] ?? '',
+              address: element['address'],
+              facilities: element['facilities'],
+              phone: element['phone'],
+              smallVehicleSeats: element['small-vehicle'],
+              bigVehicleSeats: element['big-vehicle'],
+              price: (element['price']).toDouble(),
+              nrRatings: element['nrRatings'],
+              totalRatings: element['totalRatings'],
+              reviews: reviews,
+              brokenSpots: element['brokenSpots'],
+              announcements: announcements);
           carWashes.add(carwash);
         }
       }
@@ -67,6 +70,8 @@ class CarWashController {
           for (var element in managerCarWashes.docs) {
             List<Review> reviews =
                 await getReviews(manager: manager.id, carwash: element.id);
+            List<Announcement> announcements = await getAnnouncements(
+                manager: manager.id, carwash: element.id);
             CarWash carwash = CarWash(
                 name: element['name'],
                 hours: element['hours'],
@@ -80,7 +85,8 @@ class CarWashController {
                 nrRatings: element['nrRatings'],
                 totalRatings: element['totalRatings'],
                 reviews: reviews,
-                brokenSpots: element['brokenSpots']);
+                brokenSpots: element['brokenSpots'],
+                announcements: announcements);
             carWashes.add(carwash);
           }
         }
@@ -226,18 +232,61 @@ class CarWashController {
         .update({'brokenSpots': brokenSpots});
   }
 
-  Future<void> postAnnouncement(
-      {required String manager, required String carwash}) async {
+  Future<void> postAnnouncement({required CarWash carwash}) async {
     await FirebaseFirestore.instance
         .collection('Managers')
-        .doc(manager)
+        .doc(managerId)
         .collection('car-wash')
-        .doc(carwash)
+        .doc(carwashId)
         .collection('announcement')
         .add({
       'message': announcementController.text,
       'date':
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
+
+    Announcement add = Announcement(
+        message: announcementController.text,
+        date:
+            "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
+    carwash.announcements.add(add);
+  }
+
+  Future<List<Announcement>> getAnnouncements(
+      {required String manager, required String carwash}) async {
+    final collection = await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(manager)
+        .collection('car-wash')
+        .doc(carwash)
+        .collection('announcement')
+        .get();
+
+    List<Announcement> announcements = [];
+    for (var element in collection.docs) {
+      Announcement add =
+          Announcement(message: element['message'], date: element['date']);
+      announcements.add(add);
+    }
+
+    return announcements;
+  }
+
+  Future<void> deleteAnnouncement(
+      {required Announcement announcement, required CarWash carwash}) async {
+    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(managerId)
+        .collection('car-wash')
+        .doc(carwashId)
+        .collection('announcement')
+        .where('message', isEqualTo: announcement.message)
+        .where('date', isEqualTo: announcement.date)
+        .get();
+
+    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
+      await doc.reference.delete();
+    }
+    carwash.announcements.remove(announcement);
   }
 }

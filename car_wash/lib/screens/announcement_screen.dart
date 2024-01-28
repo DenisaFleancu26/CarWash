@@ -18,7 +18,7 @@ class AnnouncementScreen extends StatefulWidget {
 
 class _AnnouncementScreenState extends State<AnnouncementScreen> {
   int index = 1;
-
+  String errorMessage = '';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,6 +94,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                         hintText: "Write an announcement...",
                         hintStyle: const TextStyle(color: Colors.grey),
                         border: InputBorder.none,
+                        errorText: errorMessage,
                         focusedBorder: OutlineInputBorder(
                           borderSide:
                               const BorderSide(width: 1.5, color: Colors.grey),
@@ -102,25 +103,29 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                         contentPadding: const EdgeInsets.only(
                             left: 20, top: 15, bottom: 15),
                       ),
-                      keyboardType: TextInputType.multiline,
                       maxLines: 10,
+                      textInputAction: TextInputAction.done,
+                      onEditingComplete: () => FocusScope.of(context).unfocus(),
                     ),
                   ),
                 ),
                 SizedBox(height: MediaQuery.of(context).size.height * 0.07),
                 CustomButton(
                   onTap: () async {
-                    await widget.controller
-                        .postAnnouncement(
-                            manager: widget.controller.managerId,
-                            carwash: widget.controller.carwashId)
-                        .whenComplete(() => Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CarWashScreen(
-                                      carwash: widget.carwash,
-                                      isManager: true,
-                                    ))));
+                    if (widget.controller.announcementController.text.isEmpty) {
+                      errorMessage = 'Please enter your announcement!';
+                    } else {
+                      errorMessage = '';
+                      await widget.controller
+                          .postAnnouncement(carwash: widget.carwash)
+                          .whenComplete(() => Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => CarWashScreen(
+                                        carwash: widget.carwash,
+                                        isManager: true,
+                                      ))));
+                    }
                   },
                   withGradient: false,
                   text: "Post",

@@ -148,7 +148,7 @@ class _CarWashState extends State<CarWashScreen> {
                       onTap: () {
                         _carWashController.updateBrokenSpots(
                             brokenSpots: widget.carwash.brokenSpots);
-                        Navigator.push(
+                        Navigator.pushReplacement(
                             context,
                             MaterialPageRoute(
                                 builder: (context) => CarWashScreen(
@@ -464,6 +464,106 @@ class _CarWashState extends State<CarWashScreen> {
                         maxLines: 3,
                       ),
                     ),
+                    if (widget.carwash.announcements.isNotEmpty)
+                      const HorizontalLine(distance: 15),
+                    if (widget.carwash.announcements.isNotEmpty)
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            Icons.error_outline,
+                            size: MediaQuery.of(context).size.width / 20,
+                            color: const Color.fromARGB(255, 240, 0, 0),
+                          ),
+                          const SizedBox(width: 5),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.65,
+                            child: Text(
+                              'New Announcement!',
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 240, 0, 0),
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              softWrap: true,
+                            ),
+                          )
+                        ],
+                      ),
+                    for (var add in widget.carwash.announcements)
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const SizedBox(height: 15),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text('Posted on ${add.date}',
+                                  style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width / 30,
+                                    color: Colors.grey,
+                                  )),
+                              if (widget.isManager)
+                                GestureDetector(
+                                  onTap: () => {
+                                    _carWashController
+                                        .deleteAnnouncement(
+                                            announcement: add,
+                                            carwash: widget.carwash)
+                                        .whenComplete(() async {
+                                      widget.carwash.announcements =
+                                          await _carWashController
+                                              .getAnnouncements(
+                                                  manager: _carWashController
+                                                      .managerId,
+                                                  carwash: _carWashController
+                                                      .carwashId)
+                                              .whenComplete(() =>
+                                                  Navigator.pushReplacement(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              CarWashScreen(
+                                                                carwash: widget
+                                                                    .carwash,
+                                                                isManager: true,
+                                                              ))));
+                                    }),
+                                  },
+                                  child: SizedBox(
+                                    height:
+                                        MediaQuery.of(context).size.width / 25,
+                                    width:
+                                        MediaQuery.of(context).size.width / 7,
+                                    child: Center(
+                                      child: Text("Delete ➔",
+                                          style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                30,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            color: Colors.grey,
+                                          )),
+                                    ),
+                                  ),
+                                )
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Text(
+                            add.message,
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 255, 255, 255),
+                              fontSize: MediaQuery.of(context).size.width / 28,
+                            ),
+                          ),
+                        ],
+                      ),
                     const HorizontalLine(distance: 15),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
