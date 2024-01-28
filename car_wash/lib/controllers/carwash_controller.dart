@@ -9,6 +9,7 @@ class CarWashController {
   List<CarWash> saveCarWashes = [];
   TextEditingController searchController = TextEditingController();
   final TextEditingController userReview = TextEditingController();
+  TextEditingController announcementController = TextEditingController();
   final AuthController authController = AuthController();
   String managerId = '';
   String carwashId = '';

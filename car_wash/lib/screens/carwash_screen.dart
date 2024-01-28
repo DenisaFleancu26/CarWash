@@ -3,6 +3,7 @@ import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/controllers/payment_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/screens/announcement_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/qr_screen.dart';
@@ -765,7 +766,15 @@ class _CarWashState extends State<CarWashScreen> {
                           MeniuButton(
                             icon: Icons.campaign,
                             label: 'Announcement',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AnnouncementScreen(
+                                        carwashId:
+                                            _carWashController.carwashId)),
+                              );
+                            },
                           ),
                         if (!widget.isManager)
                           MeniuButton(
