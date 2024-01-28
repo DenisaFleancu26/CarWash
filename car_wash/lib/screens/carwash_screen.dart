@@ -6,8 +6,12 @@ import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/qr_screen.dart';
+import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
+import 'package:car_wash/widgets/meniu_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
+import 'package:car_wash/widgets/spot_button.dart';
+import 'package:car_wash/widgets/spot_generate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
@@ -32,6 +36,7 @@ class _CarWashState extends State<CarWashScreen> {
   final UserController _userController = UserController();
   final CarWashController _carWashController = CarWashController();
   final PaymentController _paymentController = PaymentController();
+  Set<int> activatedButtons = {};
 
   @override
   void initState() {
@@ -44,91 +49,135 @@ class _CarWashState extends State<CarWashScreen> {
     super.initState();
   }
 
-  Widget generateSeats(int nr, IconData icon) {
-    return Container(
-        width: MediaQuery.of(context).size.width / 5.5,
-        height: MediaQuery.of(context).size.width / 5.5,
-        decoration: BoxDecoration(
-          color: const Color.fromARGB(255, 34, 34, 34),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 2, 2, 2).withOpacity(0.5),
-              spreadRadius: 2,
-              blurRadius: 7,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          borderRadius: BorderRadius.circular(20.0),
-          border: Border.all(
-            color: const Color.fromARGB(255, 2, 196, 21),
-            width: 2.0,
+  Future showSpots() {
+    return showModalBottomSheet(
+        context: context,
+        backgroundColor: const Color.fromARGB(255, 216, 216, 216),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(50),
+            topLeft: Radius.circular(50),
           ),
         ),
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Icon(
-              icon,
-              color: const Color.fromARGB(255, 157, 157, 157),
-              size: MediaQuery.of(context).size.width / 11,
-            ),
-            Text(
-              nr.toString(),
-              style: TextStyle(
-                color: const Color.fromARGB(255, 157, 157, 157),
-                fontWeight: FontWeight.bold,
-                fontSize: MediaQuery.of(context).size.width / 30,
-              ),
-            ),
-          ],
-        ));
+        builder: (context) {
+          return StatefulBuilder(builder: (context, setState) {
+            return Container(
+              margin: const EdgeInsets.only(top: 20, left: 30),
+              height: MediaQuery.of(context).size.height * 0.4,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Select the broken spot:',
+                      style: TextStyle(
+                        color: const Color.fromARGB(255, 34, 34, 34),
+                        fontSize: MediaQuery.of(context).size.width / 20,
+                      ),
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Wrap(
+                      spacing: 17.0,
+                      runSpacing: 15.0,
+                      children: [
+                        for (var i = 0;
+                            i < widget.carwash.smallVehicleSeats;
+                            i++)
+                          SeatButton(
+                            nr: i + 1,
+                            icon: Icons.drive_eta,
+                            activated:
+                                widget.carwash.brokenSpots.contains(i + 1)
+                                    ? true
+                                    : false,
+                            onButtonPressed: (index, isPressed) {
+                              updateActivatedIndices(index, isPressed);
+                            },
+                          ),
+                        for (var i = widget.carwash.smallVehicleSeats;
+                            i <
+                                widget.carwash.bigVehicleSeats +
+                                    widget.carwash.smallVehicleSeats;
+                            i++)
+                          SeatButton(
+                            nr: i + 1,
+                            icon: Icons.local_shipping,
+                            activated:
+                                widget.carwash.brokenSpots.contains(i + 1)
+                                    ? true
+                                    : false,
+                            onButtonPressed: (index, isPressed) {
+                              updateActivatedIndices(index, isPressed);
+                            },
+                          ),
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Icon(
+                          Icons.info,
+                          size: MediaQuery.of(context).size.width / 25,
+                          color: Colors.grey,
+                        ),
+                        const SizedBox(width: 5),
+                        SizedBox(
+                          width: MediaQuery.of(context).size.width * 0.65,
+                          child: Text(
+                            'You can select one or more spots!',
+                            style: TextStyle(
+                              color: Colors.grey,
+                              fontSize: MediaQuery.of(context).size.width / 30,
+                            ),
+                            softWrap: true,
+                          ),
+                        )
+                      ],
+                    ),
+                    const SizedBox(
+                      height: 20,
+                    ),
+                    CustomButton(
+                      onTap: () {
+                        _carWashController.updateBrokenSpots(
+                            brokenSpots: widget.carwash.brokenSpots);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => CarWashScreen(
+                                      carwash: widget.carwash,
+                                      isManager: widget.isManager,
+                                    )));
+                      },
+                      withGradient: false,
+                      text: "Save",
+                      rowText: false,
+                      color: const Color.fromARGB(255, 34, 34, 34),
+                      width: MediaQuery.of(context).size.width * 0.8,
+                      height: 40,
+                    ),
+                  ]),
+            );
+          });
+        });
   }
 
-  Widget meniuButton({
-    required IconData icon,
-    String? label,
-    required VoidCallback onTap,
-  }) {
-    return GestureDetector(
-      onTap: onTap,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20.0),
-          color: const Color.fromARGB(255, 34, 34, 34),
-          boxShadow: [
-            BoxShadow(
-              color: const Color.fromARGB(255, 2, 2, 2).withOpacity(0.5),
-              spreadRadius: 1,
-              blurRadius: 7,
-              offset: const Offset(0, 2),
-            ),
-          ],
-          border: Border.all(
-            color: const Color.fromARGB(255, 26, 26, 26),
-            width: 2,
-          ),
-        ),
-        padding: const EdgeInsets.all(10.0),
-        child: Row(
-          children: [
-            Icon(
-              icon,
-              size: MediaQuery.of(context).size.width / 20,
-              color: const Color.fromARGB(197, 216, 216, 216),
-            ),
-            if (label != null) const SizedBox(width: 5),
-            if (label != null)
-              Text(
-                label,
-                style: TextStyle(
-                  color: const Color.fromARGB(197, 216, 216, 216),
-                  fontSize: MediaQuery.of(context).size.width / 23,
-                ),
-              ),
-          ],
-        ),
-      ),
-    );
+  void updateActivatedIndices(int index, bool isPressed) {
+    setState(() {
+      if (isPressed) {
+        if (!widget.carwash.brokenSpots.contains(index)) {
+          widget.carwash.brokenSpots.add(index);
+        }
+      } else {
+        widget.carwash.brokenSpots.remove(index);
+      }
+    });
   }
 
   Future showBottomSheet() {
@@ -153,7 +202,7 @@ class _CarWashState extends State<CarWashScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      meniuButton(
+                      MeniuButton(
                           icon: Icons.remove,
                           onTap: () {
                             setState(() {
@@ -180,7 +229,7 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                         ],
                       ),
-                      meniuButton(
+                      MeniuButton(
                           icon: Icons.add,
                           onTap: () {
                             setState(() {
@@ -214,7 +263,7 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                         ],
                       ),
-                      meniuButton(
+                      MeniuButton(
                         icon: Icons.credit_card,
                         label: 'Make Payment',
                         onTap: () async {
@@ -240,7 +289,7 @@ class _CarWashState extends State<CarWashScreen> {
                                                       )))
                                       });
                             } else {
-                              Navigator.pushReplacement(
+                              Navigator.push(
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
@@ -415,12 +464,37 @@ class _CarWashState extends State<CarWashScreen> {
                       ),
                     ),
                     const HorizontalLine(distance: 15),
-                    Text(
-                      'Availability',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 255, 255, 255),
-                        fontSize: MediaQuery.of(context).size.width / 25,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Availability',
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 255, 255, 255),
+                            fontSize: MediaQuery.of(context).size.width / 25,
+                          ),
+                        ),
+                        if (widget.isManager)
+                          GestureDetector(
+                            onTap: () => {
+                              showSpots(),
+                            },
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.width / 25,
+                              width: MediaQuery.of(context).size.width / 3,
+                              child: Center(
+                                child: Text("Mark a broken spot ➔",
+                                    style: TextStyle(
+                                      fontSize:
+                                          MediaQuery.of(context).size.width /
+                                              30,
+                                      decoration: TextDecoration.underline,
+                                      color: Colors.grey,
+                                    )),
+                              ),
+                            ),
+                          )
+                      ],
                     ),
                     const SizedBox(height: 10),
                     Wrap(
@@ -430,13 +504,21 @@ class _CarWashState extends State<CarWashScreen> {
                         for (var i = 0;
                             i < widget.carwash.smallVehicleSeats;
                             i++)
-                          generateSeats(i + 1, Icons.drive_eta),
+                          SpotGenerate(
+                              contain:
+                                  widget.carwash.brokenSpots.contains(i + 1),
+                              icon: Icons.drive_eta,
+                              nr: i + 1),
                         for (var i = widget.carwash.smallVehicleSeats;
                             i <
                                 widget.carwash.bigVehicleSeats +
                                     widget.carwash.smallVehicleSeats;
                             i++)
-                          generateSeats(i + 1, Icons.local_shipping),
+                          SpotGenerate(
+                              contain:
+                                  widget.carwash.brokenSpots.contains(i + 1),
+                              icon: Icons.local_shipping,
+                              nr: i + 1),
                       ],
                     ),
                     const HorizontalLine(distance: 15),
@@ -671,7 +753,7 @@ class _CarWashState extends State<CarWashScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         if (!widget.isManager)
-                          meniuButton(
+                          MeniuButton(
                             icon: Icons.phone,
                             label: 'Call',
                             onTap: () {
@@ -680,13 +762,13 @@ class _CarWashState extends State<CarWashScreen> {
                             },
                           ),
                         if (widget.isManager)
-                          meniuButton(
+                          MeniuButton(
                             icon: Icons.campaign,
                             label: 'Announcement',
                             onTap: () {},
                           ),
                         if (!widget.isManager)
-                          meniuButton(
+                          MeniuButton(
                             icon: Icons.shopping_cart,
                             label: 'Buy tokens',
                             onTap: () {
@@ -694,12 +776,12 @@ class _CarWashState extends State<CarWashScreen> {
                             },
                           ),
                         if (widget.isManager)
-                          meniuButton(
+                          MeniuButton(
                             icon: Icons.local_offer,
                             label: 'Offer',
                             onTap: () {},
                           ),
-                        meniuButton(
+                        MeniuButton(
                           icon: Icons.map,
                           label: 'Map',
                           onTap: () {

@@ -47,6 +47,7 @@ class CarWashController {
             nrRatings: element['nrRatings'],
             totalRatings: element['totalRatings'],
             reviews: reviews,
+            brokenSpots: element['brokenSpots'],
           );
           carWashes.add(carwash);
         }
@@ -66,19 +67,19 @@ class CarWashController {
             List<Review> reviews =
                 await getReviews(manager: manager.id, carwash: element.id);
             CarWash carwash = CarWash(
-              name: element['name'],
-              hours: element['hours'],
-              image: element['image'] ?? '',
-              address: element['address'],
-              facilities: element['facilities'],
-              phone: element['phone'],
-              smallVehicleSeats: element['small-vehicle'],
-              bigVehicleSeats: element['big-vehicle'],
-              price: (element['price']).toDouble(),
-              nrRatings: element['nrRatings'],
-              totalRatings: element['totalRatings'],
-              reviews: reviews,
-            );
+                name: element['name'],
+                hours: element['hours'],
+                image: element['image'] ?? '',
+                address: element['address'],
+                facilities: element['facilities'],
+                phone: element['phone'],
+                smallVehicleSeats: element['small-vehicle'],
+                bigVehicleSeats: element['big-vehicle'],
+                price: (element['price']).toDouble(),
+                nrRatings: element['nrRatings'],
+                totalRatings: element['totalRatings'],
+                reviews: reviews,
+                brokenSpots: element['brokenSpots']);
             carWashes.add(carwash);
           }
         }
@@ -213,5 +214,14 @@ class CarWashController {
 
   double averageRating(int nrRatings, int totalRatings) {
     return nrRatings == 0 ? 0.0 : totalRatings / nrRatings;
+  }
+
+  Future<void> updateBrokenSpots({required List brokenSpots}) async {
+    await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(managerId)
+        .collection('car-wash')
+        .doc(carwashId)
+        .update({'brokenSpots': brokenSpots});
   }
 }

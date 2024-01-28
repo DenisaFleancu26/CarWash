@@ -13,19 +13,20 @@ class CarWash {
   int totalRatings;
   int nrRatings;
   List<Review> reviews;
+  List brokenSpots;
 
-  CarWash({
-    required this.name,
-    required this.hours,
-    required this.image,
-    required this.address,
-    required this.facilities,
-    required this.phone,
-    required this.smallVehicleSeats,
-    required this.bigVehicleSeats,
-    required this.price,
-    required this.totalRatings,
-    required this.nrRatings,
-    required this.reviews,
-  });
+  CarWash(
+      {required this.name,
+      required this.hours,
+      required this.image,
+      required this.address,
+      required this.facilities,
+      required this.phone,
+      required this.smallVehicleSeats,
+      required this.bigVehicleSeats,
+      required this.price,
+      required this.totalRatings,
+      required this.nrRatings,
+      required this.reviews,
+      required this.brokenSpots});
 }
