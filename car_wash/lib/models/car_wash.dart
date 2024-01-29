@@ -16,6 +16,9 @@ class CarWash {
   List<Review> reviews;
   List brokenSpots;
   List<Announcement> announcements;
+  int offerType;
+  double offerValue;
+  String offerDate;
 
   CarWash(
       {required this.name,
@@ -31,5 +34,8 @@ class CarWash {
       required this.nrRatings,
       required this.reviews,
       required this.brokenSpots,
-      required this.announcements});
+      required this.announcements,
+      required this.offerType,
+      required this.offerValue,
+      required this.offerDate});
 }

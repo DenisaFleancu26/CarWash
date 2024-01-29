@@ -120,249 +120,314 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemCount: _carWashController.carWashes.length,
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
-                                    onTap: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: ((context) =>
-                                                  CarWashScreen(
-                                                    carwash: _carWashController
-                                                        .carWashes[index],
-                                                    isManager:
-                                                        _carWashController
-                                                            .authController
-                                                            .isManager,
-                                                  ))));
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          horizontal: 30, vertical: 10),
-                                      child: ClipRRect(
-                                        borderRadius: BorderRadius.circular(30),
-                                        child: BackdropFilter(
-                                          filter: ImageFilter.blur(
-                                            sigmaX: 4,
-                                            sigmaY: 4,
-                                          ),
-                                          child: Container(
-                                            height: 160,
-                                            decoration: const BoxDecoration(
-                                              borderRadius: BorderRadius.all(
-                                                  Radius.circular(30)),
-                                              color: Color.fromARGB(
-                                                  70, 122, 122, 122),
-                                            ),
-                                            child: Row(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.start,
-                                              children: [
-                                                Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width *
-                                                      0.33,
-                                                  height: 160,
-                                                  decoration: BoxDecoration(
-                                                    borderRadius:
-                                                        const BorderRadius.only(
-                                                      topLeft:
-                                                          Radius.circular(30),
-                                                      bottomLeft:
-                                                          Radius.circular(30),
-                                                    ),
-                                                    image: DecorationImage(
-                                                      image: FirebaseImageProvider(
-                                                          FirebaseUrl(
-                                                              _carWashController
-                                                                  .carWashes[
-                                                                      index]
-                                                                  .image)),
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
+                                      onTap: () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: ((context) =>
+                                                    CarWashScreen(
+                                                      carwash:
+                                                          _carWashController
+                                                              .carWashes[index],
+                                                      isManager:
+                                                          _carWashController
+                                                              .authController
+                                                              .isManager,
+                                                    ))));
+                                      },
+                                      child: Stack(children: [
+                                        Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 30, vertical: 10),
+                                          child: ClipRRect(
+                                            borderRadius:
+                                                BorderRadius.circular(30),
+                                            child: BackdropFilter(
+                                              filter: ImageFilter.blur(
+                                                sigmaX: 4,
+                                                sigmaY: 4,
+                                              ),
+                                              child: Container(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.19,
+                                                decoration: const BoxDecoration(
+                                                  borderRadius:
+                                                      BorderRadius.all(
+                                                          Radius.circular(30)),
+                                                  color: Color.fromARGB(
+                                                      70, 122, 122, 122),
                                                 ),
-                                                const SizedBox(width: 10),
-                                                Column(
+                                                child: Row(
                                                   crossAxisAlignment:
                                                       CrossAxisAlignment.start,
                                                   mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
+                                                      MainAxisAlignment.start,
                                                   children: [
-                                                    Row(
-                                                        mainAxisAlignment:
-                                                            MainAxisAlignment
-                                                                .start,
-                                                        crossAxisAlignment:
-                                                            CrossAxisAlignment
-                                                                .center,
-                                                        children: [
-                                                          RatingBar.builder(
-                                                            initialRating: _carWashController.averageRating(
-                                                                _carWashController
-                                                                    .carWashes[
-                                                                        index]
-                                                                    .nrRatings,
-                                                                _carWashController
-                                                                    .carWashes[
-                                                                        index]
-                                                                    .totalRatings),
-                                                            itemSize: 20.0,
-                                                            unratedColor:
-                                                                const Color
-                                                                    .fromARGB(
-                                                                    195,
-                                                                    255,
-                                                                    255,
-                                                                    255),
-                                                            itemBuilder: (context,
-                                                                    _) =>
-                                                                const Icon(
-                                                                    Icons.star,
-                                                                    color: Colors
-                                                                        .amber),
-                                                            onRatingUpdate:
-                                                                (rating) {},
-                                                            ignoreGestures:
-                                                                true,
-                                                          ),
-                                                          const SizedBox(
-                                                              width: 2),
-                                                          Text(
-                                                            '(${_carWashController.carWashes[index].nrRatings})',
+                                                    Container(
+                                                      width:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.33,
+                                                      height:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.19,
+                                                      decoration: BoxDecoration(
+                                                        borderRadius:
+                                                            const BorderRadius
+                                                                .only(
+                                                          topLeft:
+                                                              Radius.circular(
+                                                                  30),
+                                                          bottomLeft:
+                                                              Radius.circular(
+                                                                  30),
+                                                        ),
+                                                        image: DecorationImage(
+                                                          image: FirebaseImageProvider(
+                                                              FirebaseUrl(
+                                                                  _carWashController
+                                                                      .carWashes[
+                                                                          index]
+                                                                      .image)),
+                                                          fit: BoxFit.cover,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    const SizedBox(width: 10),
+                                                    Column(
+                                                      crossAxisAlignment:
+                                                          CrossAxisAlignment
+                                                              .start,
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .spaceEvenly,
+                                                      children: [
+                                                        Row(
+                                                            mainAxisAlignment:
+                                                                MainAxisAlignment
+                                                                    .start,
+                                                            crossAxisAlignment:
+                                                                CrossAxisAlignment
+                                                                    .center,
+                                                            children: [
+                                                              RatingBar.builder(
+                                                                initialRating: _carWashController.averageRating(
+                                                                    _carWashController
+                                                                        .carWashes[
+                                                                            index]
+                                                                        .nrRatings,
+                                                                    _carWashController
+                                                                        .carWashes[
+                                                                            index]
+                                                                        .totalRatings),
+                                                                itemSize: 20.0,
+                                                                unratedColor:
+                                                                    const Color
+                                                                        .fromARGB(
+                                                                        195,
+                                                                        255,
+                                                                        255,
+                                                                        255),
+                                                                itemBuilder: (context,
+                                                                        _) =>
+                                                                    const Icon(
+                                                                        Icons
+                                                                            .star,
+                                                                        color: Colors
+                                                                            .amber),
+                                                                onRatingUpdate:
+                                                                    (rating) {},
+                                                                ignoreGestures:
+                                                                    true,
+                                                              ),
+                                                              const SizedBox(
+                                                                  width: 2),
+                                                              Text(
+                                                                '(${_carWashController.carWashes[index].nrRatings})',
+                                                                style:
+                                                                    TextStyle(
+                                                                  color: const Color
+                                                                      .fromARGB(
+                                                                      195,
+                                                                      190,
+                                                                      190,
+                                                                      190),
+                                                                  fontSize: MediaQuery.of(
+                                                                              context)
+                                                                          .size
+                                                                          .width /
+                                                                      30,
+                                                                ),
+                                                              ),
+                                                            ]),
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width *
+                                                              0.48,
+                                                          child: Text(
+                                                            _carWashController
+                                                                .carWashes[
+                                                                    index]
+                                                                .name,
                                                             style: TextStyle(
                                                               color: const Color
                                                                   .fromARGB(
-                                                                  195,
-                                                                  190,
-                                                                  190,
-                                                                  190),
+                                                                  223,
+                                                                  255,
+                                                                  255,
+                                                                  255),
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
                                                               fontSize: MediaQuery.of(
                                                                           context)
                                                                       .size
                                                                       .width /
-                                                                  30,
+                                                                  20,
+                                                              shadows: [
+                                                                Shadow(
+                                                                  offset:
+                                                                      const Offset(
+                                                                          3.0,
+                                                                          3.0),
+                                                                  blurRadius:
+                                                                      10.0,
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.30),
+                                                                ),
+                                                              ],
                                                             ),
+                                                            softWrap: true,
                                                           ),
-                                                        ]),
-                                                    SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
-                                                                  .size
-                                                                  .width *
-                                                              0.48,
-                                                      child: Text(
-                                                        _carWashController
-                                                            .carWashes[index]
-                                                            .name,
-                                                        style: TextStyle(
-                                                          color: const Color
-                                                              .fromARGB(223,
-                                                              255, 255, 255),
-                                                          fontWeight:
-                                                              FontWeight.bold,
-                                                          fontSize: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width /
-                                                              20,
-                                                          shadows: [
-                                                            Shadow(
-                                                              offset:
-                                                                  const Offset(
-                                                                      3.0, 3.0),
-                                                              blurRadius: 10.0,
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.30),
-                                                            ),
-                                                          ],
                                                         ),
-                                                        softWrap: true,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
                                                                   .size
                                                                   .width *
                                                               0.47,
-                                                      child: Text(
-                                                        _carWashController
-                                                            .carWashes[index]
-                                                            .address,
-                                                        style: TextStyle(
-                                                          color: const Color
-                                                              .fromARGB(197,
-                                                              216, 216, 216),
-                                                          fontSize: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width /
-                                                              50,
-                                                          shadows: [
-                                                            Shadow(
-                                                              offset:
-                                                                  const Offset(
-                                                                      3.0, 3.0),
-                                                              blurRadius: 10.0,
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.30),
+                                                          child: Text(
+                                                            _carWashController
+                                                                .carWashes[
+                                                                    index]
+                                                                .address,
+                                                            style: TextStyle(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  197,
+                                                                  216,
+                                                                  216,
+                                                                  216),
+                                                              fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width /
+                                                                  50,
+                                                              shadows: [
+                                                                Shadow(
+                                                                  offset:
+                                                                      const Offset(
+                                                                          3.0,
+                                                                          3.0),
+                                                                  blurRadius:
+                                                                      10.0,
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.30),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
+                                                            softWrap: true,
+                                                            maxLines: 3,
+                                                          ),
                                                         ),
-                                                        softWrap: true,
-                                                        maxLines: 3,
-                                                      ),
-                                                    ),
-                                                    SizedBox(
-                                                      width:
-                                                          MediaQuery.of(context)
+                                                        SizedBox(
+                                                          width: MediaQuery.of(
+                                                                      context)
                                                                   .size
                                                                   .width *
                                                               0.47,
-                                                      child: Text(
-                                                        "Token: ${_carWashController.carWashes[index].price} RON",
-                                                        style: TextStyle(
-                                                          color: const Color
-                                                              .fromARGB(255,
-                                                              255, 255, 255),
-                                                          fontSize: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width /
-                                                              23,
-                                                          shadows: [
-                                                            Shadow(
-                                                              offset:
-                                                                  const Offset(
-                                                                      3.0, 3.0),
-                                                              blurRadius: 10.0,
-                                                              color: Colors
-                                                                  .black
-                                                                  .withOpacity(
-                                                                      0.30),
+                                                          child: Text(
+                                                            "Token: ${_carWashController.carWashes[index].price} RON",
+                                                            style: TextStyle(
+                                                              color: const Color
+                                                                  .fromARGB(
+                                                                  255,
+                                                                  255,
+                                                                  255,
+                                                                  255),
+                                                              fontSize: MediaQuery.of(
+                                                                          context)
+                                                                      .size
+                                                                      .width /
+                                                                  23,
+                                                              shadows: [
+                                                                Shadow(
+                                                                  offset:
+                                                                      const Offset(
+                                                                          3.0,
+                                                                          3.0),
+                                                                  blurRadius:
+                                                                      10.0,
+                                                                  color: Colors
+                                                                      .black
+                                                                      .withOpacity(
+                                                                          0.30),
+                                                                ),
+                                                              ],
                                                             ),
-                                                          ],
+                                                            softWrap: true,
+                                                            maxLines: 3,
+                                                          ),
                                                         ),
-                                                        softWrap: true,
-                                                        maxLines: 3,
-                                                      ),
+                                                      ],
                                                     ),
                                                   ],
-                                                )
-                                              ],
+                                                ),
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                                    ),
-                                  );
+                                        if (_carWashController
+                                                .carWashes[index].offerType !=
+                                            0)
+                                          Positioned(
+                                            bottom: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.099,
+                                            left: MediaQuery.of(context)
+                                                    .size
+                                                    .width *
+                                                0.047,
+                                            child: Container(
+                                              width: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.25,
+                                              height: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.25,
+                                              decoration: const BoxDecoration(
+                                                image: DecorationImage(
+                                                  image: AssetImage(
+                                                      "assets/images/offer.png"),
+                                                ),
+                                              ),
+                                            ),
+                                          ),
+                                      ]));
                                 }))
                       ]))));
   }

@@ -1,7 +1,7 @@
 import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
-import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
+import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 
@@ -39,211 +39,288 @@ class _OfferScreenState extends State<OfferScreen> {
                 top: MediaQuery.of(context).size.height * 0.15,
                 left: MediaQuery.of(context).size.width * 0.1,
                 right: MediaQuery.of(context).size.width * 0.1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'What type of offer are you looking for today?',
-                  style: TextStyle(
-                      color: const Color.fromARGB(255, 0, 0, 0),
-                      fontSize: MediaQuery.of(context).size.width / 20,
-                      fontWeight: FontWeight.bold),
-                ),
-                Padding(
-                    padding: EdgeInsets.only(
-                        top: MediaQuery.of(context).size.height * 0.05),
-                    child: Container(
-                        alignment: Alignment.topCenter,
-                        child: Container(
-                            height: MediaQuery.of(context).size.height * 0.06,
-                            padding: const EdgeInsets.all(2),
-                            width: MediaQuery.of(context).size.width * 1,
-                            decoration: const BoxDecoration(
-                              color: Color.fromARGB(255, 34, 34, 34),
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(15)),
-                            ),
-                            child: Row(
-                              children: <Widget>[
-                                Expanded(
-                                    child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            offer = 1;
-                                          });
-                                        },
-                                        child: Container(
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              color: offer == 1
-                                                  ? const Color.fromARGB(
-                                                      255, 255, 255, 255)
-                                                  : const Color.fromARGB(
-                                                      255, 34, 34, 34),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(15))),
-                                          child: Text("X% discount",
-                                              style: TextStyle(
-                                                color: offer == 1
-                                                    ? const Color.fromARGB(
-                                                        255, 34, 34, 34)
-                                                    : const Color.fromARGB(
-                                                        255, 255, 255, 255),
-                                                fontSize: MediaQuery.of(context)
-                                                        .size
-                                                        .width /
-                                                    25,
-                                              )),
-                                        ))),
-                                Expanded(
-                                    child: InkWell(
-                                        onTap: () {
-                                          setState(() {
-                                            offer = 2;
-                                          });
-                                        },
-                                        child: Container(
-                                          padding:
-                                              const EdgeInsets.only(left: 10),
-                                          alignment: Alignment.center,
-                                          decoration: BoxDecoration(
-                                              color: offer == 2
-                                                  ? const Color.fromARGB(
-                                                      255, 255, 255, 255)
-                                                  : const Color.fromARGB(
-                                                      255, 34, 34, 34),
-                                              borderRadius:
-                                                  const BorderRadius.all(
-                                                      Radius.circular(15))),
-                                          child:
-                                              Text("Buy X tokens, get one free",
-                                                  style: TextStyle(
+            child: widget.carwash.offerType == 0
+                ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'What type of offer are you looking for today?',
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: MediaQuery.of(context).size.width / 20,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      Padding(
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.05),
+                          child: Container(
+                              alignment: Alignment.topCenter,
+                              child: Container(
+                                  height:
+                                      MediaQuery.of(context).size.height * 0.06,
+                                  padding: const EdgeInsets.all(2),
+                                  width: MediaQuery.of(context).size.width * 1,
+                                  decoration: const BoxDecoration(
+                                    color: Color.fromARGB(255, 34, 34, 34),
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(15)),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      Expanded(
+                                          child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  offer = 1;
+                                                });
+                                              },
+                                              child: Container(
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
+                                                    color: offer == 1
+                                                        ? const Color.fromARGB(
+                                                            255, 255, 255, 255)
+                                                        : const Color.fromARGB(
+                                                            255, 34, 34, 34),
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                15))),
+                                                child: Text("X% discount",
+                                                    style: TextStyle(
+                                                      color: offer == 1
+                                                          ? const Color
+                                                              .fromARGB(
+                                                              255, 34, 34, 34)
+                                                          : const Color
+                                                              .fromARGB(255,
+                                                              255, 255, 255),
+                                                      fontSize:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              25,
+                                                    )),
+                                              ))),
+                                      Expanded(
+                                          child: InkWell(
+                                              onTap: () {
+                                                setState(() {
+                                                  offer = 2;
+                                                });
+                                              },
+                                              child: Container(
+                                                padding: const EdgeInsets.only(
+                                                    left: 10),
+                                                alignment: Alignment.center,
+                                                decoration: BoxDecoration(
                                                     color: offer == 2
                                                         ? const Color.fromARGB(
-                                                            255, 34, 34, 34)
+                                                            255, 255, 255, 255)
                                                         : const Color.fromARGB(
-                                                            255, 255, 255, 255),
-                                                    fontSize:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width /
-                                                            25,
-                                                  )),
-                                        ))),
-                              ],
-                            )))),
-                Padding(
-                  padding: EdgeInsets.only(
-                    top: MediaQuery.of(context).size.height * 0.06,
-                  ),
-                  child: Text(
-                      offer == 1
-                          ? "What percentage do you want for the discount?"
-                          : "How many tokens need to be purchased to receive one for free?",
-                      style: TextStyle(
+                                                            255, 34, 34, 34),
+                                                    borderRadius:
+                                                        const BorderRadius.all(
+                                                            Radius.circular(
+                                                                15))),
+                                                child: Text(
+                                                    "Buy X tokens, get one free",
+                                                    style: TextStyle(
+                                                      color: offer == 2
+                                                          ? const Color
+                                                              .fromARGB(
+                                                              255, 34, 34, 34)
+                                                          : const Color
+                                                              .fromARGB(255,
+                                                              255, 255, 255),
+                                                      fontSize:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width /
+                                                              25,
+                                                    )),
+                                              ))),
+                                    ],
+                                  )))),
+                      Padding(
+                        padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.06,
+                        ),
+                        child: Text(
+                            offer == 1
+                                ? "What percentage do you want for the discount?"
+                                : "How many tokens need to be purchased to receive one for free?",
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 34, 34, 34),
+                              fontSize: MediaQuery.of(context).size.width / 25,
+                            )),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(
+                            top: MediaQuery.of(context).size.height * 0.03,
+                            bottom: 10),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(20),
+                              color: Colors.white,
+                              boxShadow: [
+                                errorMessage == ''
+                                    ? BoxShadow(
+                                        color: Colors.black.withOpacity(0.25),
+                                        spreadRadius: 0,
+                                        blurRadius: 4,
+                                        offset: const Offset(0, 4))
+                                    : const BoxShadow(
+                                        spreadRadius: 1,
+                                        color: Color.fromARGB(255, 255, 0, 0),
+                                      )
+                              ]),
+                          child: TextField(
+                            controller: widget.controller.offerController,
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              hintText: offer == 1 ? 'X%...' : 'X...',
+                              hintStyle: const TextStyle(color: Colors.grey),
+                              border: InputBorder.none,
+                              errorText: errorMessage,
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                    width: 1.5, color: Colors.grey),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              contentPadding: const EdgeInsets.only(
+                                left: 20,
+                                top: 15,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Icon(
+                            offer == 1 ? Icons.info : null,
+                            size: MediaQuery.of(context).size.width / 25,
+                            color: const Color.fromARGB(197, 216, 216, 216),
+                          ),
+                          const SizedBox(width: 5),
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width * 0.65,
+                            child: Text(
+                              offer == 1
+                                  ? 'It will be applied to the final price.'
+                                  : '',
+                              style: TextStyle(
+                                color: Colors.grey,
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 33,
+                              ),
+                              softWrap: true,
+                            ),
+                          )
+                        ],
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      CustomButton(
+                        onTap: () {
+                          if (widget.controller.offerController.text.isEmpty) {
+                            setState(() {
+                              errorMessage = offer == 1
+                                  ? 'Please enter the percentage!'
+                                  : 'Please enter the number of tokens!';
+                            });
+                          } else {
+                            widget.carwash.offerType = offer;
+                            widget.carwash.offerValue = double.parse(
+                                widget.controller.offerController.text);
+                            widget.carwash.offerDate =
+                                "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
+                            widget.controller
+                                .makeOffer(
+                                    offerType: offer, carwash: widget.carwash)
+                                .whenComplete(() => Navigator.pushReplacement(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => OfferScreen(
+                                              controller: widget.controller,
+                                              carwash: widget.carwash,
+                                            ))));
+                          }
+                        },
+                        withGradient: false,
+                        text: "Make Offer",
+                        rowText: false,
                         color: const Color.fromARGB(255, 34, 34, 34),
-                        fontSize: MediaQuery.of(context).size.width / 25,
-                      )),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(
-                      top: MediaQuery.of(context).size.height * 0.03,
-                      bottom: 10),
-                  child: Container(
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        color: Colors.white,
-                        boxShadow: [
-                          errorMessage == ''
-                              ? BoxShadow(
-                                  color: Colors.black.withOpacity(0.25),
-                                  spreadRadius: 0,
-                                  blurRadius: 4,
-                                  offset: const Offset(0, 4))
-                              : const BoxShadow(
-                                  spreadRadius: 1,
-                                  color: Color.fromARGB(255, 255, 0, 0),
-                                )
-                        ]),
-                    child: TextField(
-                      controller: widget.controller.offerController,
-                      keyboardType: TextInputType.number,
-                      decoration: InputDecoration(
-                        hintText: offer == 1 ? 'X%...' : 'X...',
-                        hintStyle: const TextStyle(color: Colors.grey),
-                        border: InputBorder.none,
-                        errorText: errorMessage,
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              const BorderSide(width: 1.5, color: Colors.grey),
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        contentPadding: const EdgeInsets.only(
-                          left: 20,
-                          top: 15,
-                        ),
+                        width: MediaQuery.of(context).size.width * 0.7,
+                        height: 40,
                       ),
-                    ),
-                  ),
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Icon(
-                      offer == 1 ? Icons.info : null,
-                      size: MediaQuery.of(context).size.width / 25,
-                      color: const Color.fromARGB(197, 216, 216, 216),
-                    ),
-                    const SizedBox(width: 5),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.65,
-                      child: Text(
-                        offer == 1
-                            ? 'It will be applied to the final price.'
-                            : '',
+                    ],
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(
+                        "Today's Offer",
                         style: TextStyle(
-                          color: Colors.grey,
-                          fontSize: MediaQuery.of(context).size.width / 33,
-                        ),
-                        softWrap: true,
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: MediaQuery.of(context).size.width / 10,
+                            fontWeight: FontWeight.bold),
                       ),
-                    )
-                  ],
-                ),
-                SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.05,
-                ),
-                CustomButton(
-                  onTap: () {
-                    if (widget.controller.offerController.text.isEmpty) {
-                      setState(() {
-                        errorMessage = offer == 1
-                            ? 'Please enter the percentage!'
-                            : 'Please enter the number of tokens!';
-                      });
-                    } else {
-                      widget.controller
-                          .makeOffer(offerType: offer)
-                          .whenComplete(() => Navigator.pushReplacement(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => CarWashScreen(
-                                        carwash: widget.carwash,
-                                        isManager: true,
-                                      ))));
-                    }
-                  },
-                  withGradient: false,
-                  text: "Make Offer",
-                  rowText: false,
-                  color: const Color.fromARGB(255, 0, 0, 0),
-                  width: MediaQuery.of(context).size.width * 0.7,
-                  height: 40,
-                ),
-              ],
-            )),
+                      HorizontalLine(
+                          distance: MediaQuery.of(context).size.height * 0.05),
+                      Text(
+                        widget.carwash.offerType == 1
+                            ? "${widget.carwash.offerValue}% discount"
+                            : "Buy ${widget.carwash.offerValue.toInt()} tokens, get one free",
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: MediaQuery.of(context).size.width / 15,
+                            fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.center,
+                      ),
+                      HorizontalLine(
+                          distance: MediaQuery.of(context).size.height * 0.05),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.05,
+                      ),
+                      Text(
+                        "Do you want to disable the offer?",
+                        style: TextStyle(
+                            color: const Color.fromARGB(255, 0, 0, 0),
+                            fontSize: MediaQuery.of(context).size.width / 23),
+                      ),
+                      SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.03,
+                      ),
+                      CustomButton(
+                        onTap: () {
+                          widget.controller.offerController.clear();
+                          widget.carwash.offerType = 0;
+                          widget.carwash.offerValue = 0;
+                          widget.carwash.offerDate = "";
+                          widget.controller
+                              .disableOffer()
+                              .whenComplete(() => Navigator.pushReplacement(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => OfferScreen(
+                                            controller: widget.controller,
+                                            carwash: widget.carwash,
+                                          ))));
+                        },
+                        withGradient: false,
+                        text: "Disable",
+                        rowText: false,
+                        color: const Color.fromARGB(255, 34, 34, 34),
+                        width: MediaQuery.of(context).size.width,
+                        height: 40,
+                      ),
+                    ],
+                  )),
       )),
     );
   }

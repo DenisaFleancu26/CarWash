@@ -53,7 +53,10 @@ class CarWashController {
               totalRatings: element['totalRatings'],
               reviews: reviews,
               brokenSpots: element['brokenSpots'],
-              announcements: announcements);
+              announcements: announcements,
+              offerType: element['offerType'],
+              offerValue: element['offerValue'].toDouble(),
+              offerDate: element['offerDate']);
           carWashes.add(carwash);
         }
       }
@@ -87,7 +90,10 @@ class CarWashController {
                 totalRatings: element['totalRatings'],
                 reviews: reviews,
                 brokenSpots: element['brokenSpots'],
-                announcements: announcements);
+                announcements: announcements,
+                offerType: element['offerType'],
+                offerValue: element['offerValue'].toDouble(),
+                offerDate: element['offerDate']);
             carWashes.add(carwash);
           }
         }
@@ -291,7 +297,8 @@ class CarWashController {
     carwash.announcements.remove(announcement);
   }
 
-  Future<void> makeOffer({required int offerType}) async {
+  Future<void> makeOffer(
+      {required int offerType, required CarWash carwash}) async {
     await FirebaseFirestore.instance
         .collection('Managers')
         .doc(managerId)
@@ -299,7 +306,18 @@ class CarWashController {
         .doc(carwashId)
         .update({
       'offerType': offerType,
-      'offerValue': double.parse(offerController.text)
+      'offerValue': double.parse(offerController.text),
+      'offerDate':
+          "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
+  }
+
+  Future<void> disableOffer() async {
+    await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(managerId)
+        .collection('car-wash')
+        .doc(carwashId)
+        .update({'offerType': 0, 'offerValue': 0, 'offerDate': ""});
   }
 }
