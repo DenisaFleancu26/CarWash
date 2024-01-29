@@ -11,6 +11,7 @@ class CarWashController {
   TextEditingController searchController = TextEditingController();
   final TextEditingController userReview = TextEditingController();
   TextEditingController announcementController = TextEditingController();
+  TextEditingController offerController = TextEditingController();
   final AuthController authController = AuthController();
   String managerId = '';
   String carwashId = '';
@@ -288,5 +289,17 @@ class CarWashController {
       await doc.reference.delete();
     }
     carwash.announcements.remove(announcement);
+  }
+
+  Future<void> makeOffer({required int offerType}) async {
+    await FirebaseFirestore.instance
+        .collection('Managers')
+        .doc(managerId)
+        .collection('car-wash')
+        .doc(carwashId)
+        .update({
+      'offerType': offerType,
+      'offerValue': double.parse(offerController.text)
+    });
   }
 }

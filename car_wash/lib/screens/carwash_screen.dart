@@ -6,6 +6,7 @@ import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/announcement_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
+import 'package:car_wash/screens/offer_screen.dart';
 import 'package:car_wash/screens/qr_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
@@ -889,7 +890,16 @@ class _CarWashState extends State<CarWashScreen> {
                           MeniuButton(
                             icon: Icons.local_offer,
                             label: 'Offer',
-                            onTap: () {},
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => OfferScreen(
+                                          controller: _carWashController,
+                                          carwash: widget.carwash,
+                                        )),
+                              );
+                            },
                           ),
                         MeniuButton(
                           icon: Icons.map,

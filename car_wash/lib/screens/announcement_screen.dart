@@ -82,11 +82,16 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                         borderRadius: BorderRadius.circular(20),
                         color: Colors.white,
                         boxShadow: [
-                          BoxShadow(
-                              color: Colors.black.withOpacity(0.25),
-                              spreadRadius: 0,
-                              blurRadius: 4,
-                              offset: const Offset(0, 4))
+                          errorMessage == ''
+                              ? BoxShadow(
+                                  color: Colors.black.withOpacity(0.25),
+                                  spreadRadius: 0,
+                                  blurRadius: 4,
+                                  offset: const Offset(0, 4))
+                              : const BoxShadow(
+                                  spreadRadius: 1,
+                                  color: Color.fromARGB(255, 255, 0, 0),
+                                )
                         ]),
                     child: TextField(
                       controller: widget.controller.announcementController,
@@ -113,7 +118,9 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                 CustomButton(
                   onTap: () async {
                     if (widget.controller.announcementController.text.isEmpty) {
-                      errorMessage = 'Please enter your announcement!';
+                      setState(() {
+                        errorMessage = 'Please enter your announcement!';
+                      });
                     } else {
                       errorMessage = '';
                       await widget.controller
