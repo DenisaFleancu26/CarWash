@@ -56,7 +56,10 @@ class CarWashController {
               announcements: announcements,
               offerType: element['offerType'],
               offerValue: element['offerValue'].toDouble(),
-              offerDate: element['offerDate']);
+              offerDate: element['offerDate'] ==
+                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
+                  ? element['offerDate']
+                  : '');
           carWashes.add(carwash);
         }
       }
@@ -93,7 +96,10 @@ class CarWashController {
                 announcements: announcements,
                 offerType: element['offerType'],
                 offerValue: element['offerValue'].toDouble(),
-                offerDate: element['offerDate']);
+                offerDate: element['offerDate'] ==
+                        "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
+                    ? element['offerDate']
+                    : '');
             carWashes.add(carwash);
           }
         }
@@ -318,6 +324,6 @@ class CarWashController {
         .doc(managerId)
         .collection('car-wash')
         .doc(carwashId)
-        .update({'offerType': 0, 'offerValue': 0, 'offerDate': ""});
+        .update({'offerType': 0, 'offerValue': 0, 'offerDate': ''});
   }
 }

@@ -39,7 +39,8 @@ class _OfferScreenState extends State<OfferScreen> {
                 top: MediaQuery.of(context).size.height * 0.15,
                 left: MediaQuery.of(context).size.width * 0.1,
                 right: MediaQuery.of(context).size.width * 0.1),
-            child: widget.carwash.offerType == 0
+            child: (widget.carwash.offerType == 0 ||
+                    widget.carwash.offerDate == '')
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [

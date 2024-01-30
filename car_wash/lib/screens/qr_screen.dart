@@ -32,12 +32,18 @@ class _QRScreenState extends State<QRScreen> {
   @override
   void initState() {
     qr =
-        '${widget.carwashId} ${widget.tokens} ${RandomString().getRandomString()}';
+        '${widget.carwashId} ${widget.carWash.offerType == 2 && widget.carWash.offerDate != '' && widget.tokens >= widget.carWash.offerValue ? widget.tokens + widget.tokens ~/ widget.carWash.offerValue : widget.tokens} ${RandomString().getRandomString()}';
     _transactionController.saveTransaction(
         dataQR: qr,
         carwash: widget.carWash.name,
         address: widget.carWash.address,
-        totalPrice: widget.tokens * widget.carWash.price,
+        totalPrice:
+            (widget.carWash.offerType == 1 && widget.carWash.offerDate != '')
+                ? widget.carWash.price *
+                    widget.tokens *
+                    (100 - widget.carWash.offerValue) /
+                    100
+                : widget.carWash.price * widget.tokens,
         date: "${currentDate.day}/${currentDate.month}/${currentDate.year}");
     super.initState();
   }

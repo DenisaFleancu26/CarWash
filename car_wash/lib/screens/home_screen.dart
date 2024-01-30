@@ -398,9 +398,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                         ),
-                                        if (_carWashController
-                                                .carWashes[index].offerType !=
-                                            0)
+                                        if (_carWashController.carWashes[index]
+                                                    .offerType !=
+                                                0 &&
+                                            _carWashController.carWashes[index]
+                                                    .offerDate !=
+                                                '')
                                           Positioned(
                                             bottom: MediaQuery.of(context)
                                                     .size

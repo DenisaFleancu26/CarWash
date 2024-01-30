@@ -195,12 +195,40 @@ class _CarWashState extends State<CarWashScreen> {
       builder: (context) {
         return StatefulBuilder(
           builder: (context, setState) {
-            return Container(
-              height: MediaQuery.of(context).size.width * 0.4,
-              padding: const EdgeInsets.only(),
+            return SizedBox(
+              height: (widget.carwash.offerType == 0 ||
+                      widget.carwash.offerDate == '')
+                  ? MediaQuery.of(context).size.width * 0.4
+                  : MediaQuery.of(context).size.width * 0.7,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  if (widget.carwash.offerType != 0 &&
+                      widget.carwash.offerDate != '')
+                    Text(
+                      textAlign: TextAlign.center,
+                      "Today's Offer:",
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 23, 156, 0),
+                          fontSize: MediaQuery.of(context).size.width / 13,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  if (widget.carwash.offerType != 0 &&
+                      widget.carwash.offerDate != '')
+                    Text(
+                      textAlign: TextAlign.center,
+                      widget.carwash.offerType == 1
+                          ? "${widget.carwash.offerValue}% discount to the final price!"
+                          : "Buy ${widget.carwash.offerValue.toInt()} tokens, get one free",
+                      style: TextStyle(
+                          color: const Color.fromARGB(255, 23, 156, 0),
+                          fontSize: MediaQuery.of(context).size.width / 18,
+                          fontWeight: FontWeight.bold),
+                    ),
+                  if (widget.carwash.offerType != 0 &&
+                      widget.carwash.offerDate != '')
+                    HorizontalLine(
+                        distance: MediaQuery.of(context).size.height * 0.03),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -256,7 +284,10 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            '${widget.carwash.price * tokens} RON',
+                            widget.carwash.offerType == 1 &&
+                                    widget.carwash.offerDate != ''
+                                ? '${widget.carwash.price * tokens * (100 - widget.carwash.offerValue) / 100} RON'
+                                : '${widget.carwash.price * tokens} RON',
                             style: TextStyle(
                                 color: const Color.fromARGB(255, 34, 34, 34),
                                 fontSize:
@@ -272,8 +303,12 @@ class _CarWashState extends State<CarWashScreen> {
                           if (tokens > 0) {
                             if (user != null) {
                               await _paymentController
-                                  .makePayment(
-                                      (widget.carwash.price * tokens * 100))
+                                  .makePayment((widget.carwash.offerType == 1 &&
+                                          widget.carwash.offerDate != '')
+                                      ? widget.carwash.price *
+                                          tokens *
+                                          (100 - widget.carwash.offerValue)
+                                      : widget.carwash.price * tokens * 100)
                                   .then((value) => {
                                         if (_paymentController
                                                 .successfulPayment ==
