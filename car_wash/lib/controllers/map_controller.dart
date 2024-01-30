@@ -2,10 +2,7 @@ import 'dart:async';
 import 'dart:ui';
 
 import 'package:car_wash/controllers/carwash_controller.dart';
-import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/widgets/custom_window.dart';
-import 'package:car_wash/models/review.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:custom_info_window/custom_info_window.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +14,6 @@ import 'package:permission_handler/permission_handler.dart';
 class MapController {
   bool userLocation = true;
   late CameraPosition cameraPosition;
-  List<CarWash> carWashes = [];
   final CarWashController _carWashController = CarWashController();
   List<Marker> markers = [];
   final CustomInfoWindowController customInfoWindowController =
@@ -65,7 +61,9 @@ class MapController {
       userLocation = true;
     }
     if (location == '') {
-      await fetchCarWashesFromFirebase();
+      if (_carWashController.carWashes.isEmpty) {
+        await _carWashController.fetchCarWashesFromFirebase(displayInfo: () {});
+      }
       await setCoordonates();
     } else {
       displayMarkers = false;
@@ -95,48 +93,12 @@ class MapController {
         .asUint8List();
   }
 
-  Future<List<CarWash>> fetchCarWashesFromFirebase() async {
-    final managers =
-        await FirebaseFirestore.instance.collection('Managers').get();
-
-    if (managers.docs.isNotEmpty) {
-      for (var manager in managers.docs) {
-        var managerCarWashes = await FirebaseFirestore.instance
-            .collection('Managers')
-            .doc(manager.id)
-            .collection('car-wash')
-            .get();
-        for (var element in managerCarWashes.docs) {
-          List<Review> reviews = await _carWashController.getReviews(
-              manager: manager.id, carwash: element.id);
-          CarWash carwash = CarWash(
-            name: element['name'],
-            hours: element['hours'],
-            image: element['image'] ?? '',
-            address: element['address'],
-            facilities: element['facilities'],
-            phone: element['phone'],
-            smallVehicleSeats: element['small-vehicle'],
-            bigVehicleSeats: element['big-vehicle'],
-            price: (element['price']).toDouble(),
-            nrRatings: element['nrRatings'],
-            totalRatings: element['totalRatings'],
-            reviews: reviews,
-          );
-          carWashes.add(carwash);
-        }
-      }
-    }
-
-    return carWashes;
-  }
-
   Future setCoordonates() async {
     var i = 1;
 
     final Uint8List markerIcon =
         await getBytesFromAssets('assets/images/carwash_mark.png', 100);
-    for (var carwash in carWashes) {
+    for (var carwash in _carWashController.carWashes) {
       var address =
           await Geocoder.local.findAddressesFromQuery(carwash.address);
       markers.add(Marker(
@@ -146,7 +108,10 @@ class MapController {
               address.first.coordinates.longitude!),
           onTap: () {
             customInfoWindowController.addInfoWindow!(
-              CustomWindow(carwash: carwash),
+              CustomWindow(
+                carwash: carwash,
+                isManager: _carWashController.authController.isManager,
+              ),
               LatLng(address.first.coordinates.latitude!,
                   address.first.coordinates.longitude!),
             );

@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CustomWindow extends StatelessWidget {
-  CustomWindow({super.key, required this.carwash});
+  final bool isManager;
+  CustomWindow({super.key, required this.carwash, required this.isManager});
 
   final CarWash carwash;
   final CarWashController _carWashController = CarWashController();
@@ -106,8 +107,10 @@ class CustomWindow extends StatelessWidget {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) =>
-                              CarWashScreen(carwash: carwash)),
+                          builder: (context) => CarWashScreen(
+                                carwash: carwash,
+                                isManager: isManager,
+                              )),
                     ),
                   },
                   child: const SizedBox(
