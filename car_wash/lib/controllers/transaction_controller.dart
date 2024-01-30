@@ -2,6 +2,7 @@ import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:car_wash/models/transaction.dart';
+import 'package:intl/intl.dart';
 
 class TransactionController {
   final User? user = AuthController().currentUser;
@@ -44,6 +45,12 @@ class TransactionController {
         transactions.add(transaction);
       }
     }
+
+    transactions.sort((a, b) {
+      DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
+      DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
+      return dateB.compareTo(dateA);
+    });
 
     displayInfo();
   }

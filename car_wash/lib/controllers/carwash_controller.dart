@@ -4,6 +4,7 @@ import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:intl/intl.dart';
 
 class CarWashController {
   List<CarWash> carWashes = [];
@@ -281,6 +282,12 @@ class CarWashController {
           Announcement(message: element['message'], date: element['date']);
       announcements.add(add);
     }
+
+    announcements.sort((a, b) {
+      DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
+      DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
+      return dateB.compareTo(dateA);
+    });
 
     return announcements;
   }
