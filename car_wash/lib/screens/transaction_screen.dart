@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:car_wash/controllers/transaction_controller.dart';
+import 'package:car_wash/screens/qr_screen.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -125,15 +126,31 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                           BorderRadius.circular(
                                                               15),
                                                       color: Colors.white),
-                                                  child: QrImageView(
-                                                    data: _transactionController
-                                                        .transactions[index]
-                                                        .dataQR,
-                                                    version: QrVersions.auto,
-                                                    size: MediaQuery.of(context)
-                                                            .size
-                                                            .width *
-                                                        0.25,
+                                                  child: GestureDetector(
+                                                    onTap: () {
+                                                      Navigator.push(
+                                                          context,
+                                                          MaterialPageRoute(
+                                                              builder:
+                                                                  (context) =>
+                                                                      QRScreen(
+                                                                        transaction:
+                                                                            _transactionController.transactions[index],
+                                                                      )));
+                                                    },
+                                                    child: QrImageView(
+                                                      data:
+                                                          _transactionController
+                                                              .transactions[
+                                                                  index]
+                                                              .dataQR,
+                                                      version: QrVersions.auto,
+                                                      size:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.25,
+                                                    ),
                                                   ),
                                                 ),
                                                 Text(
@@ -239,8 +256,9 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                     "- ${_transactionController.transactions[index].totalPrice} RON",
                                                     textAlign: TextAlign.end,
                                                     style: TextStyle(
-                                                      color: Color.fromARGB(
-                                                          255, 255, 2, 2),
+                                                      color:
+                                                          const Color.fromARGB(
+                                                              255, 255, 2, 2),
                                                       fontSize:
                                                           MediaQuery.of(context)
                                                                   .size

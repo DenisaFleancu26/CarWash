@@ -1,5 +1,6 @@
 import 'package:car_wash/controllers/transaction_controller.dart';
 import 'package:car_wash/models/car_wash.dart';
+import 'package:car_wash/models/transaction.dart';
 import 'package:car_wash/screens/transaction_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
@@ -9,13 +10,11 @@ import 'package:randomstring_dart/randomstring_dart.dart';
 
 class QRScreen extends StatefulWidget {
   final String? carwashId;
-  final int tokens;
-  final CarWash carWash;
+  final int? tokens;
+  final CarWash? carWash;
+  final TransactionModel? transaction;
   const QRScreen(
-      {Key? key,
-      required this.carwashId,
-      required this.tokens,
-      required this.carWash})
+      {Key? key, this.carwashId, this.tokens, this.carWash, this.transaction})
       : super(key: key);
 
   @override
@@ -31,20 +30,25 @@ class _QRScreenState extends State<QRScreen> {
 
   @override
   void initState() {
-    qr =
-        '${widget.carwashId} ${widget.carWash.offerType == 2 && widget.carWash.offerDate != '' && widget.tokens >= widget.carWash.offerValue ? widget.tokens + widget.tokens ~/ widget.carWash.offerValue : widget.tokens} ${RandomString().getRandomString()}';
-    _transactionController.saveTransaction(
-        dataQR: qr,
-        carwash: widget.carWash.name,
-        address: widget.carWash.address,
-        totalPrice:
-            (widget.carWash.offerType == 1 && widget.carWash.offerDate != '')
-                ? widget.carWash.price *
-                    widget.tokens *
-                    (100 - widget.carWash.offerValue) /
-                    100
-                : widget.carWash.price * widget.tokens,
-        date: "${currentDate.day}/${currentDate.month}/${currentDate.year}");
+    if (widget.carWash != null) {
+      qr =
+          '${widget.carwashId} ${widget.carWash!.offerType == 2 && widget.carWash!.offerDate != '' && widget.tokens! >= widget.carWash!.offerValue ? widget.tokens! + widget.tokens! ~/ widget.carWash!.offerValue : widget.tokens} ${RandomString().getRandomString()}';
+
+      _transactionController.saveTransaction(
+          dataQR: qr,
+          carwash: widget.carWash!.name,
+          address: widget.carWash!.address,
+          totalPrice: (widget.carWash!.offerType == 1 &&
+                  widget.carWash!.offerDate != '')
+              ? widget.carWash!.price *
+                  widget.tokens! *
+                  (100 - widget.carWash!.offerValue) /
+                  100
+              : widget.carWash!.price * widget.tokens!,
+          date: "${currentDate.day}/${currentDate.month}/${currentDate.year}");
+    } else {
+      qr = widget.transaction!.dataQR;
+    }
     super.initState();
   }
 
