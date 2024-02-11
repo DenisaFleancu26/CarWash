@@ -1,3 +1,4 @@
+import 'package:car_wash/controllers/notification_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ class StartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NotificationController notificationController = NotificationController();
     return Scaffold(
         body: Container(
       height: MediaQuery.of(context).size.height,
@@ -53,11 +55,12 @@ class StartScreen extends StatelessWidget {
                 ],
               ),
               CustomButton(
-                onTap: () => {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomeScreen()))
+                onTap: () async {
+                  await notificationController.saveToken().whenComplete(() =>
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen())));
                 },
                 withGradient: true,
                 text: "",

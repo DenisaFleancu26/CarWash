@@ -1,4 +1,5 @@
 import 'package:car_wash/controllers/auth_controller.dart';
+import 'package:car_wash/controllers/notification_controller.dart';
 import 'package:car_wash/models/announcement.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
@@ -14,6 +15,8 @@ class CarWashController {
   TextEditingController announcementController = TextEditingController();
   TextEditingController offerController = TextEditingController();
   final AuthController authController = AuthController();
+  final NotificationController notificationController =
+      NotificationController();
   String managerId = '';
   String carwashId = '';
   double rating = 0.0;
@@ -323,6 +326,10 @@ class CarWashController {
       'offerDate':
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
+    await notificationController.sendNotification(
+        offerType: offerType,
+        name: carwash.name,
+        offerValue: offerController.text);
   }
 
   Future<void> disableOffer() async {
