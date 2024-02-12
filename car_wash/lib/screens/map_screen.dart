@@ -88,8 +88,8 @@ class _MapScreenState extends State<MapScreen> {
                   ),
             CustomInfoWindow(
                 controller: _mapController.customInfoWindowController,
-                height: 150,
-                width: 300),
+                height: MediaQuery.of(context).size.height * 0.2,
+                width: MediaQuery.of(context).size.width * 0.85),
           ],
         ));
   }

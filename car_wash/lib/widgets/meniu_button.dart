@@ -38,7 +38,7 @@ class MeniuButton extends StatelessWidget {
           children: [
             Icon(
               icon,
-              size: MediaQuery.of(context).size.width / 20,
+              size: MediaQuery.of(context).size.width / 23,
               color: const Color.fromARGB(197, 216, 216, 216),
             ),
             if (label != null) const SizedBox(width: 5),
@@ -47,7 +47,7 @@ class MeniuButton extends StatelessWidget {
                 label!,
                 style: TextStyle(
                   color: const Color.fromARGB(197, 216, 216, 216),
-                  fontSize: MediaQuery.of(context).size.width / 23,
+                  fontSize: MediaQuery.of(context).size.width / 25,
                 ),
               ),
           ],

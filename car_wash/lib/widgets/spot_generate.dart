@@ -36,7 +36,7 @@ class SpotGenerate extends StatelessWidget {
             Icon(
               icon,
               color: const Color.fromARGB(255, 157, 157, 157),
-              size: MediaQuery.of(context).size.width / 11,
+              size: MediaQuery.of(context).size.width / 12,
             ),
             Text(
               nr.toString(),

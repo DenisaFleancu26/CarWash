@@ -139,7 +139,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                   rowText: false,
                   color: const Color.fromARGB(255, 0, 0, 0),
                   width: MediaQuery.of(context).size.width,
-                  height: 40,
+                  height: MediaQuery.of(context).size.height * 0.05,
                 ),
               ],
             ),

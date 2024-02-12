@@ -57,7 +57,7 @@ class _SeatButtonState extends State<SeatButton> {
                 color: isButtonPressed
                     ? Colors.grey
                     : const Color.fromARGB(255, 34, 34, 34),
-                size: MediaQuery.of(context).size.width / 11,
+                size: MediaQuery.of(context).size.width / 12,
               ),
               Text(
                 widget.nr.toString(),

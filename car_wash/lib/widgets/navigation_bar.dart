@@ -29,7 +29,7 @@ class _CustomNavigationBarState extends State<CustomNavigationBar> {
       backgroundColor: Colors.transparent,
       color: const Color.fromARGB(255, 255, 255, 255),
       animationDuration: const Duration(milliseconds: 300),
-      height: 45,
+      height: MediaQuery.of(context).size.height * 0.06,
       index: widget.index,
       items: items,
       onTap: (index) => setState(() {

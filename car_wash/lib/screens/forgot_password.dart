@@ -74,7 +74,9 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
             fit: BoxFit.cover,
           )),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 180),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.07,
+                vertical: MediaQuery.of(context).size.height * 0.25),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BackdropFilter(
@@ -83,22 +85,20 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                   sigmaY: 4,
                 ),
                 child: Container(
-                  padding: const EdgeInsets.only(),
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(30)),
                     color: Color.fromARGB(70, 122, 122, 122),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(height: 30),
                       Text(
                         "Forgot Your Password?",
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
-                          fontSize: MediaQuery.of(context).size.width / 12,
+                          fontSize: MediaQuery.of(context).size.width / 11,
                           shadows: [
                             Shadow(
                               offset: const Offset(3.0, 3.0),
@@ -108,44 +108,51 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 60),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: Text(
-                          "Enter your email below to recive your password reset instruction!",
-                          style: TextStyle(
-                            color: const Color.fromARGB(255, 157, 157, 157),
-                            fontSize: MediaQuery.of(context).size.width / 25,
-                            shadows: [
-                              Shadow(
-                                offset: const Offset(3.0, 3.0),
-                                blurRadius: 10.0,
-                                color: Colors.black.withOpacity(0.30),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: Text(
+                              "Enter your email below to recive your password reset instruction!",
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 157, 157, 157),
+                                fontSize:
+                                    MediaQuery.of(context).size.width / 25,
+                                shadows: [
+                                  Shadow(
+                                    offset: const Offset(3.0, 3.0),
+                                    blurRadius: 10.0,
+                                    color: Colors.black.withOpacity(0.30),
+                                  ),
+                                ],
                               ),
-                            ],
+                            ),
                           ),
-                        ),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.01),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () {},
+                                title: 'Email Address',
+                                iconData: Icons.email,
+                                controller: _authController.email,
+                                hasObscureText: false,
+                                obscureText: false,
+                                errorMessage: _authController.emailError),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 20),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () {},
-                            title: 'Email Address',
-                            iconData: Icons.email,
-                            controller: _authController.email,
-                            hasObscureText: false,
-                            obscureText: false,
-                            errorMessage: _authController.emailError),
-                      ),
-                      const SizedBox(height: 60),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.03,
                         ),
                         child: CustomButton(
                           onTap: () async {
@@ -174,7 +181,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                           rowText: false,
                           color: const Color.fromARGB(255, 0, 0, 0),
                           width: MediaQuery.of(context).size.width,
-                          height: 40,
+                          height: MediaQuery.of(context).size.height * 0.05,
                         ),
                       ),
                     ],

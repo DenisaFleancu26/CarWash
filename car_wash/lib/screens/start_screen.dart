@@ -1,3 +1,4 @@
+import 'package:car_wash/controllers/notification_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +8,7 @@ class StartScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    NotificationController notificationController = NotificationController();
     return Scaffold(
         body: Container(
       height: MediaQuery.of(context).size.height,
@@ -17,8 +19,9 @@ class StartScreen extends StatelessWidget {
         fit: BoxFit.cover,
       )),
       child: Padding(
-          padding:
-              const EdgeInsets.only(top: 180, left: 20, right: 20, bottom: 30),
+          padding: EdgeInsets.only(
+              top: MediaQuery.of(context).size.height * 0.2,
+              bottom: MediaQuery.of(context).size.height * 0.03),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -29,7 +32,7 @@ class StartScreen extends StatelessWidget {
                     "Car Wash",
                     textAlign: TextAlign.center,
                     style: TextStyle(
-                      height: 0.99,
+                      height: MediaQuery.of(context).size.height * 0.0015,
                       fontSize: MediaQuery.of(context).size.width / 5,
                       fontFamily: 'Nosifer',
                       foreground: Paint()
@@ -42,8 +45,7 @@ class StartScreen extends StatelessWidget {
                             const Rect.fromLTWH(0.0, 0.0, 400.0, 70.0)),
                       shadows: [
                         Shadow(
-                          offset: const Offset(
-                              3.0, 3.0), // Ajustează offset-ul pentru umbra
+                          offset: const Offset(3.0, 3.0),
                           blurRadius: 6.0,
                           color: Colors.black.withOpacity(0.5),
                         ),
@@ -53,28 +55,29 @@ class StartScreen extends StatelessWidget {
                 ],
               ),
               CustomButton(
-                onTap: () => {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const HomeScreen()))
+                onTap: () async {
+                  await notificationController.saveToken().whenComplete(() =>
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const HomeScreen())));
                 },
                 withGradient: true,
                 text: "",
                 rowText: true,
                 colorGradient1: const Color.fromARGB(108, 14, 14, 14),
                 colorGradient2: const Color.fromARGB(107, 255, 255, 255),
-                child: const Row(
+                child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
                     Text(
                       "Get Started!",
                       style: TextStyle(
-                        fontSize: 20,
-                        color: Color.fromARGB(255, 199, 199, 199),
+                        fontSize: MediaQuery.of(context).size.width / 20,
+                        color: const Color.fromARGB(255, 199, 199, 199),
                       ),
                     ),
-                    Icon(
+                    const Icon(
                       Icons.arrow_forward,
                       color: Color.fromARGB(255, 239, 239, 239),
                     ),

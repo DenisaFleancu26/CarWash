@@ -77,7 +77,9 @@ class _LoginScreenState extends State<LoginScreen> {
             fit: BoxFit.cover,
           )),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 170),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.07,
+                vertical: MediaQuery.of(context).size.height * 0.2),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BackdropFilter(
@@ -93,14 +95,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(height: 30),
                       Text(
                         "Log In",
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
-                          fontSize: 40,
+                          fontSize: MediaQuery.of(context).size.width / 10,
                           shadows: [
                             Shadow(
                               offset: const Offset(3.0, 3.0),
@@ -110,138 +111,157 @@ class _LoginScreenState extends State<LoginScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 30),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                          onTap: () {},
-                          title: 'Email Address',
-                          iconData: Icons.email,
-                          controller: _authController.email,
-                          hasObscureText: false,
-                          obscureText: false,
-                          errorMessage: _authController.emailError,
-                        ),
-                      ),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 30,
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                              onTap: () {},
+                              title: 'Email Address',
+                              iconData: Icons.email,
+                              controller: _authController.email,
+                              hasObscureText: false,
+                              obscureText: false,
+                              errorMessage: _authController.emailError,
+                            ),
                           ),
-                          child: CustomEntryField(
-                            onTap: () => {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              })
-                            },
-                            title: 'Password',
-                            iconData: Icons.lock,
-                            controller: _authController.password,
-                            hasObscureText: true,
-                            obscureText: _obscureText,
-                            errorMessage: _authController.passwordError,
-                          )),
-                      const SizedBox(height: 20),
-                      GestureDetector(
-                        onTap: () => {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      const ForgotPasswordScreen())),
-                        },
-                        child: const SizedBox(
-                          height: 30,
-                          width: 200,
-                          child: Center(
-                              child: Text(
-                            "Forgot your password?",
-                            style: TextStyle(
-                                fontSize: 15,
-                                decoration: TextDecoration.underline,
-                                color: Color.fromARGB(255, 255, 255, 255)),
-                          )),
-                        ),
-                      ),
-                      const SizedBox(height: 50),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                        ),
-                        child: CustomButton(
-                          onTap: () async {
-                            _conectivityController.isAlertSet = false;
-                            await _conectivityController
-                                .checkInternetConnection(
-                                    box: () => showDialogBox(),
-                                    onAlert: () => setState(() =>
-                                        _conectivityController.isAlertSet =
-                                            true));
-                            if (_conectivityController.isDeviceConnected) {
-                              await _authController.logIn(
-                                onEmailError: (error) => setState(
-                                    () => _authController.emailError = error),
-                                onPasswordError: (error) => setState(() =>
-                                    _authController.passwordError = error),
-                                onSuccess: () => {
-                                  Navigator.popUntil(
-                                      context, (route) => route.isFirst),
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomeScreen())),
-                                },
-                              );
-                            }
-                          },
-                          withGradient: false,
-                          text: "Log In",
-                          rowText: false,
-                          color: const Color.fromARGB(255, 0, 0, 0),
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Don't have an account yet?",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  decoration: TextDecoration.underline,
-                                  fontSize: 15,
-                                ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width * 0.08,
                               ),
-                              GestureDetector(
+                              child: CustomEntryField(
                                 onTap: () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const SignupScreen()))
+                                  setState(() {
+                                    _obscureText = !_obscureText;
+                                  })
                                 },
-                                child: const SizedBox(
-                                  height: 50,
-                                  width: 60,
-                                  child: Center(
-                                      child: Text(
-                                    "Sign Up",
+                                title: 'Password',
+                                iconData: Icons.lock,
+                                controller: _authController.password,
+                                hasObscureText: true,
+                                obscureText: _obscureText,
+                                errorMessage: _authController.passwordError,
+                              )),
+                          GestureDetector(
+                            onTap: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ForgotPasswordScreen())),
+                            },
+                            child: SizedBox(
+                              height: MediaQuery.of(context).size.height * 0.08,
+                              width: MediaQuery.of(context).size.width * 0.5,
+                              child: Center(
+                                  child: Text(
+                                "Forgot your password?",
+                                style: TextStyle(
+                                    fontSize:
+                                        MediaQuery.of(context).size.width / 25,
+                                    decoration: TextDecoration.underline,
+                                    color: const Color.fromARGB(
+                                        255, 255, 255, 255)),
+                              )),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.03,
+                            ),
+                            child: CustomButton(
+                              onTap: () async {
+                                _conectivityController.isAlertSet = false;
+                                await _conectivityController
+                                    .checkInternetConnection(
+                                        box: () => showDialogBox(),
+                                        onAlert: () => setState(() =>
+                                            _conectivityController.isAlertSet =
+                                                true));
+                                if (_conectivityController.isDeviceConnected) {
+                                  await _authController.logIn(
+                                    onEmailError: (error) => setState(() =>
+                                        _authController.emailError = error),
+                                    onPasswordError: (error) => setState(() =>
+                                        _authController.passwordError = error),
+                                    onSuccess: () => {
+                                      Navigator.popUntil(
+                                          context, (route) => route.isFirst),
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const HomeScreen())),
+                                    },
+                                  );
+                                }
+                              },
+                              withGradient: false,
+                              text: "Log In",
+                              rowText: false,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.05,
+                            ),
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.symmetric(),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Don't have an account yet?",
                                     style: TextStyle(
-                                        fontSize: 15,
-                                        decoration: TextDecoration.underline,
-                                        color: Color.fromARGB(255, 0, 0, 0)),
-                                  )),
-                                ),
-                              ),
-                            ],
-                          ))
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width /
+                                              25,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const SignupScreen()))
+                                    },
+                                    child: SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.05,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.15,
+                                      child: Center(
+                                          child: Text(
+                                        "Sign Up",
+                                        style: TextStyle(
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                25,
+                                            decoration:
+                                                TextDecoration.underline,
+                                            color: const Color.fromARGB(
+                                                255, 0, 0, 0)),
+                                      )),
+                                    ),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      ),
                     ],
                   ),
                 ),

@@ -257,7 +257,7 @@ class _OfferScreenState extends State<OfferScreen> {
                         rowText: false,
                         color: const Color.fromARGB(255, 34, 34, 34),
                         width: MediaQuery.of(context).size.width * 0.7,
-                        height: 40,
+                        height: MediaQuery.of(context).size.height * 0.05,
                       ),
                     ],
                   )
@@ -318,7 +318,7 @@ class _OfferScreenState extends State<OfferScreen> {
                         rowText: false,
                         color: const Color.fromARGB(255, 34, 34, 34),
                         width: MediaQuery.of(context).size.width,
-                        height: 40,
+                        height: MediaQuery.of(context).size.height * 0.05,
                       ),
                     ],
                   )),

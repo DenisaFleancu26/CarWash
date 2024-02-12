@@ -46,7 +46,7 @@ class CustomEntryField extends StatelessWidget {
         prefixIcon: Icon(
           iconData,
           color: const Color.fromARGB(255, 157, 157, 157),
-          size: 30,
+          size: MediaQuery.of(context).size.width / 15,
           shadows: [
             Shadow(
               offset: const Offset(2.0, 2.0),
