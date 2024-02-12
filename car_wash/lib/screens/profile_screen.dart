@@ -45,7 +45,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget _customProfileButton(
       String title, IconData icon, void Function() onTap) {
     return Padding(
-      padding: const EdgeInsets.only(left: 20, right: 20),
+      padding: EdgeInsets.only(
+          left: MediaQuery.of(context).size.width * 0.05,
+          right: MediaQuery.of(context).size.width * 0.05),
       child: Column(
         children: [
           Row(
@@ -64,11 +66,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ],
               ),
-              const SizedBox(width: 10),
+              SizedBox(width: MediaQuery.of(context).size.width * 0.03),
               GestureDetector(
                 onTap: onTap,
                 child: SizedBox(
-                  height: 30,
+                  height: MediaQuery.of(context).size.height * 0.03,
                   child: Center(
                       child: Text(
                     title,
@@ -87,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               ),
             ],
           ),
-          const HorizontalLine(distance: 5)
+          HorizontalLine(distance: MediaQuery.of(context).size.width * 0.01)
         ],
       ),
     );
@@ -131,12 +133,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   fit: BoxFit.cover,
                 )),
                 child: Padding(
-                    padding: const EdgeInsets.only(left: 50, right: 50),
+                    padding: EdgeInsets.only(
+                        left: MediaQuery.of(context).size.width * 0.1,
+                        right: MediaQuery.of(context).size.width * 0.1),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 100),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.13),
                         Text(
                           "Profile",
                           style: TextStyle(
@@ -151,13 +156,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.01),
                         Icon(
                           Icons.account_circle,
                           size: MediaQuery.of(context).size.width / 2.5,
                           color: const Color.fromARGB(255, 157, 157, 157),
                         ),
-                        const SizedBox(height: 10),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.02),
                         Text(
                           _userController.username,
                           style: TextStyle(
@@ -172,7 +179,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 5),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.01),
                         Text(
                           _userController.email,
                           style: TextStyle(
@@ -187,7 +195,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                             ],
                           ),
                         ),
-                        const SizedBox(height: 70),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.1),
                         _customProfileButton('Change Password', Icons.lock, () {
                           Navigator.push(
                               context,
@@ -200,13 +209,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         if (!_authController.isManager)
                           _customProfileButton(
                               'Transaction', Icons.account_balance_wallet, () {
-                            Navigator.pushReplacement(
+                            Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                     builder: (context) =>
                                         const TransactionScreen()));
                           }),
-                        const SizedBox(height: 20),
+                        SizedBox(
+                            height: MediaQuery.of(context).size.height * 0.025),
                         _customProfileButton('Logout', Icons.logout, () {
                           _authController.signOut();
                           Navigator.push(

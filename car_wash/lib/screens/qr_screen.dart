@@ -89,7 +89,7 @@ class _QRScreenState extends State<QRScreen> {
                   rowText: false,
                   color: const Color.fromARGB(255, 0, 0, 0),
                   width: MediaQuery.of(context).size.width * 0.7,
-                  height: 40,
+                  height: MediaQuery.of(context).size.height * 0.05,
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

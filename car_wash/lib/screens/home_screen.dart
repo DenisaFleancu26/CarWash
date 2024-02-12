@@ -71,19 +71,18 @@ class _HomeScreenState extends State<HomeScreen> {
                     : Column(children: [
                         Padding(
                           padding: EdgeInsets.only(
-                            top: 50,
+                            top: MediaQuery.of(context).size.width * 0.15,
                             left: MediaQuery.of(context).size.width * 0.25,
-                            right: 30,
+                            right: MediaQuery.of(context).size.width * 0.1,
                           ),
                           child: TextField(
                             controller: _carWashController.searchController,
-                            textAlign:
-                                TextAlign.right, // Aliniere text în dreapta
+                            textAlign: TextAlign.right,
                             decoration: InputDecoration(
                               hintText: 'Search a CarWash..',
                               prefixIcon: IconButton(
                                 icon: const Icon(Icons.arrow_back,
-                                    color: Colors.grey), // Icon de "back"
+                                    color: Colors.grey),
                                 onPressed: () {
                                   setState(() {
                                     _carWashController.carWashes =
@@ -93,8 +92,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 },
                               ),
                               suffixIcon: const Icon(Icons.search,
-                                  color: Color.fromARGB(
-                                      255, 164, 164, 164)), // Icon după text
+                                  color: Color.fromARGB(255, 164, 164, 164)),
                               focusedBorder: const UnderlineInputBorder(
                                 borderSide: BorderSide(color: Colors.white),
                               ),
@@ -137,8 +135,15 @@ class _HomeScreenState extends State<HomeScreen> {
                                       },
                                       child: Stack(children: [
                                         Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 30, vertical: 10),
+                                          padding: EdgeInsets.symmetric(
+                                              horizontal: MediaQuery.of(context)
+                                                      .size
+                                                      .width *
+                                                  0.07,
+                                              vertical: MediaQuery.of(context)
+                                                      .size
+                                                      .height *
+                                                  0.013),
                                           child: ClipRRect(
                                             borderRadius:
                                                 BorderRadius.circular(30),
@@ -198,7 +203,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         ),
                                                       ),
                                                     ),
-                                                    const SizedBox(width: 10),
+                                                    SizedBox(
+                                                        width: MediaQuery.of(
+                                                                    context)
+                                                                .size
+                                                                .width *
+                                                            0.03),
                                                     Column(
                                                       crossAxisAlignment:
                                                           CrossAxisAlignment
@@ -225,7 +235,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                         .carWashes[
                                                                             index]
                                                                         .totalRatings),
-                                                                itemSize: 20.0,
+                                                                itemSize: MediaQuery.of(
+                                                                            context)
+                                                                        .size
+                                                                        .width *
+                                                                    0.06,
                                                                 unratedColor:
                                                                     const Color
                                                                         .fromARGB(
@@ -408,11 +422,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                             bottom: MediaQuery.of(context)
                                                     .size
                                                     .height *
-                                                0.099,
+                                                0.1,
                                             left: MediaQuery.of(context)
                                                     .size
                                                     .width *
-                                                0.047,
+                                                0.041,
                                             child: Container(
                                               width: MediaQuery.of(context)
                                                       .size
@@ -420,8 +434,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                                   0.25,
                                               height: MediaQuery.of(context)
                                                       .size
-                                                      .width *
-                                                  0.25,
+                                                      .height *
+                                                  0.117,
                                               decoration: const BoxDecoration(
                                                 image: DecorationImage(
                                                   image: AssetImage(

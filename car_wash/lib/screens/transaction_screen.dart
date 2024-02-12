@@ -91,8 +91,13 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                   _transactionController.transactions.length,
                               itemBuilder: (context, index) {
                                 return Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 30, vertical: 10),
+                                  padding: EdgeInsets.symmetric(
+                                      horizontal:
+                                          MediaQuery.of(context).size.width *
+                                              0.07,
+                                      vertical:
+                                          MediaQuery.of(context).size.height *
+                                              0.01),
                                   child: ClipRRect(
                                     borderRadius: BorderRadius.circular(30),
                                     child: BackdropFilter(
@@ -103,7 +108,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                       child: Container(
                                         height:
                                             MediaQuery.of(context).size.height *
-                                                0.17,
+                                                0.15,
                                         decoration: const BoxDecoration(
                                           borderRadius: BorderRadius.all(
                                               Radius.circular(30)),
@@ -119,8 +124,27 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                             Column(
                                               children: [
                                                 Container(
-                                                  margin:
-                                                      const EdgeInsets.all(10),
+                                                  margin: EdgeInsets.only(
+                                                      top:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.015,
+                                                      left:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.03,
+                                                      bottom:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.005,
+                                                      right:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.02),
                                                   decoration: BoxDecoration(
                                                       borderRadius:
                                                           BorderRadius.circular(
@@ -149,7 +173,7 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                           MediaQuery.of(context)
                                                                   .size
                                                                   .width *
-                                                              0.25,
+                                                              0.22,
                                                     ),
                                                   ),
                                                 ),
@@ -167,7 +191,11 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                 ),
                                               ],
                                             ),
-                                            const SizedBox(width: 10),
+                                            SizedBox(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width *
+                                                    0.01),
                                             Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,

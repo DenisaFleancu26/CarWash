@@ -64,7 +64,10 @@ class _CarWashState extends State<CarWashScreen> {
         builder: (context) {
           return StatefulBuilder(builder: (context, setState) {
             return Container(
-              margin: const EdgeInsets.only(top: 20, left: 30),
+              margin: EdgeInsets.only(
+                  top: MediaQuery.of(context).size.height * 0.03,
+                  left: MediaQuery.of(context).size.width * 0.05,
+                  right: MediaQuery.of(context).size.width * 0.05),
               height: MediaQuery.of(context).size.height * 0.4,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -77,11 +80,11 @@ class _CarWashState extends State<CarWashScreen> {
                         fontSize: MediaQuery.of(context).size.width / 20,
                       ),
                     ),
-                    const SizedBox(
-                      height: 20,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.03,
                     ),
                     Wrap(
-                      spacing: 17.0,
+                      spacing: 15.0,
                       runSpacing: 15.0,
                       children: [
                         for (var i = 0;
@@ -116,8 +119,8 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.start,
@@ -142,8 +145,8 @@ class _CarWashState extends State<CarWashScreen> {
                         )
                       ],
                     ),
-                    const SizedBox(
-                      height: 20,
+                    SizedBox(
+                      height: MediaQuery.of(context).size.height * 0.02,
                     ),
                     CustomButton(
                       onTap: () {
@@ -161,8 +164,8 @@ class _CarWashState extends State<CarWashScreen> {
                       text: "Save",
                       rowText: false,
                       color: const Color.fromARGB(255, 34, 34, 34),
-                      width: MediaQuery.of(context).size.width * 0.8,
-                      height: 40,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height * 0.05,
                     ),
                   ]),
             );
@@ -198,8 +201,8 @@ class _CarWashState extends State<CarWashScreen> {
             return SizedBox(
               height: (widget.carwash.offerType == 0 ||
                       widget.carwash.offerDate == '')
-                  ? MediaQuery.of(context).size.width * 0.4
-                  : MediaQuery.of(context).size.width * 0.7,
+                  ? MediaQuery.of(context).size.height * 0.2
+                  : MediaQuery.of(context).size.height * 0.3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -268,7 +271,7 @@ class _CarWashState extends State<CarWashScreen> {
                           })
                     ],
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -355,7 +358,7 @@ class _CarWashState extends State<CarWashScreen> {
           child: Column(
         children: [
           Container(
-            height: MediaQuery.of(context).size.width * 0.64,
+            height: MediaQuery.of(context).size.height * 0.30,
             width: MediaQuery.of(context).size.width,
             decoration: BoxDecoration(
                 image: DecorationImage(
@@ -365,18 +368,20 @@ class _CarWashState extends State<CarWashScreen> {
             child: Stack(
               children: [
                 Align(
-                  alignment: const AlignmentDirectional(0, 1.1),
+                  alignment: const AlignmentDirectional(0, 1.05),
                   child: Container(
                     width: MediaQuery.of(context).size.width,
-                    height: 50,
+                    height: MediaQuery.of(context).size.height * 0.06,
                     decoration: const BoxDecoration(
                       color: Color.fromARGB(255, 34, 34, 34),
                       borderRadius:
                           BorderRadius.vertical(top: Radius.circular(50)),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: 25, top: 15, right: 10, bottom: 5),
+                      padding: EdgeInsets.only(
+                          left: MediaQuery.of(context).size.width * 0.06,
+                          top: MediaQuery.of(context).size.height * 0.02,
+                          bottom: MediaQuery.of(context).size.height * 0.01),
                       child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -385,7 +390,7 @@ class _CarWashState extends State<CarWashScreen> {
                               initialRating: _carWashController.averageRating(
                                   widget.carwash.nrRatings,
                                   widget.carwash.totalRatings),
-                              itemSize: 25.0,
+                              itemSize: MediaQuery.of(context).size.width / 15,
                               unratedColor:
                                   const Color.fromARGB(195, 255, 255, 255),
                               itemBuilder: (context, _) =>
@@ -408,17 +413,19 @@ class _CarWashState extends State<CarWashScreen> {
                 ),
                 if (widget.carwash.hours == 'non-stop')
                   Positioned(
-                    top: MediaQuery.of(context).size.width * 0.49,
+                    top: MediaQuery.of(context).size.height * 0.22,
                     right: MediaQuery.of(context).size.width * 0.1,
                     child: Container(
                         width: MediaQuery.of(context).size.width * 0.52,
-                        height: 35,
+                        height: MediaQuery.of(context).size.height * 0.045,
                         decoration: BoxDecoration(
                           color: const Color.fromARGB(255, 2, 196, 21),
                           borderRadius: BorderRadius.circular(20),
                         ),
                         child: Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 10),
+                          padding: EdgeInsets.only(
+                              top: MediaQuery.of(context).size.height * 0.013,
+                              left: MediaQuery.of(context).size.width * 0.03),
                           child: Text(
                             'CAR WASH SERVICE',
                             style: TextStyle(
@@ -438,7 +445,7 @@ class _CarWashState extends State<CarWashScreen> {
                   ),
                 if (widget.carwash.hours == 'non-stop')
                   Positioned(
-                    top: 180,
+                    top: MediaQuery.of(context).size.height * 0.21,
                     right: MediaQuery.of(context).size.width * 0.05,
                     child: Container(
                       width: MediaQuery.of(context).size.width * 0.15,
@@ -470,11 +477,13 @@ class _CarWashState extends State<CarWashScreen> {
               color: Color.fromARGB(255, 34, 34, 34),
             ),
             child: Padding(
-                padding: const EdgeInsets.only(top: 5, left: 25, right: 25),
+                padding: EdgeInsets.only(
+                    top: MediaQuery.of(context).size.height * 0.01,
+                    left: MediaQuery.of(context).size.width * 0.05,
+                    right: MediaQuery.of(context).size.width * 0.05),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 5),
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Text(
@@ -487,7 +496,7 @@ class _CarWashState extends State<CarWashScreen> {
                         softWrap: true,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                     SizedBox(
                       width: MediaQuery.of(context).size.width,
                       child: Text(
@@ -532,7 +541,9 @@ class _CarWashState extends State<CarWashScreen> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const SizedBox(height: 15),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.02),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -590,7 +601,9 @@ class _CarWashState extends State<CarWashScreen> {
                                 )
                             ],
                           ),
-                          const SizedBox(height: 5),
+                          SizedBox(
+                              height:
+                                  MediaQuery.of(context).size.height * 0.01),
                           Text(
                             add.message,
                             style: TextStyle(
@@ -633,9 +646,9 @@ class _CarWashState extends State<CarWashScreen> {
                           )
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                     Wrap(
-                      spacing: 17.0,
+                      spacing: 15.0,
                       runSpacing: 15.0,
                       children: [
                         for (var i = 0;
@@ -679,7 +692,7 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                       ],
                     ),
-                    const SizedBox(height: 10),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.02),
                     Text(
                       widget.carwash.facilities,
                       style: TextStyle(
@@ -704,7 +717,7 @@ class _CarWashState extends State<CarWashScreen> {
                         fontSize: MediaQuery.of(context).size.width / 25,
                       ),
                     ),
-                    const SizedBox(height: 5),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.01),
                     SizedBox(
                       height: widget.carwash.reviews.isEmpty ? 30 : 100,
                       child: ListView(
@@ -726,7 +739,8 @@ class _CarWashState extends State<CarWashScreen> {
                           else
                             for (var review in widget.carwash.reviews)
                               Container(
-                                  margin: const EdgeInsets.all(10),
+                                  margin: EdgeInsets.all(
+                                      MediaQuery.of(context).size.width * 0.03),
                                   height: 80,
                                   width:
                                       MediaQuery.of(context).size.width / 1.3,
@@ -745,8 +759,13 @@ class _CarWashState extends State<CarWashScreen> {
                                       ),
                                     ],
                                   ),
-                                  padding: const EdgeInsets.only(
-                                      top: 10, left: 20, right: 20),
+                                  padding: EdgeInsets.only(
+                                      top: MediaQuery.of(context).size.height *
+                                          0.01,
+                                      left: MediaQuery.of(context).size.width *
+                                          0.05,
+                                      right: MediaQuery.of(context).size.width *
+                                          0.05),
                                   child: Column(
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
@@ -778,7 +797,10 @@ class _CarWashState extends State<CarWashScreen> {
                                           RatingBar.builder(
                                             initialRating:
                                                 review.rating.toDouble(),
-                                            itemSize: 20.0,
+                                            itemSize: MediaQuery.of(context)
+                                                    .size
+                                                    .height *
+                                                0.025,
                                             itemBuilder: (context, _) =>
                                                 const Icon(Icons.star,
                                                     color: Colors.amber),
@@ -787,7 +809,11 @@ class _CarWashState extends State<CarWashScreen> {
                                           ),
                                         ],
                                       ),
-                                      const SizedBox(height: 10),
+                                      SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .height *
+                                              0.01),
                                       Text(
                                         review.feedback,
                                         style: TextStyle(
@@ -865,11 +891,9 @@ class _CarWashState extends State<CarWashScreen> {
                                     )),
                           );
                         },
-                        child: Container(
+                        child: SizedBox(
                           width: MediaQuery.of(context).size.width / 3,
-                          height: MediaQuery.of(context).size.width / 13,
-                          padding: const EdgeInsets.only(
-                              top: 5, bottom: 5, right: 10),
+                          height: MediaQuery.of(context).size.height / 25,
                           child: Text(
                             'Post Review >',
                             style: TextStyle(
@@ -950,7 +974,7 @@ class _CarWashState extends State<CarWashScreen> {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 75),
+                    SizedBox(height: MediaQuery.of(context).size.height * 0.1),
                   ],
                 )),
           ),

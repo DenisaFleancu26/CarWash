@@ -75,7 +75,9 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
             fit: BoxFit.cover,
           )),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 180),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.07,
+                vertical: MediaQuery.of(context).size.height * 0.23),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BackdropFilter(
@@ -84,16 +86,14 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                   sigmaY: 4,
                 ),
                 child: Container(
-                  padding: const EdgeInsets.only(),
                   decoration: const BoxDecoration(
                     borderRadius: BorderRadius.all(Radius.circular(30)),
                     color: Color.fromARGB(70, 122, 122, 122),
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(height: 30),
                       Text(
                         "Change Password",
                         textAlign: TextAlign.center,
@@ -109,64 +109,72 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 40),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () => {
-                                  setState(() {
-                                    _obscureCurrentPassword =
-                                        !_obscureCurrentPassword;
-                                  })
-                                },
-                            title: 'Current Password',
-                            iconData: Icons.lock,
-                            controller: _authController.currentPassword,
-                            hasObscureText: true,
-                            obscureText: _obscureCurrentPassword,
-                            errorMessage: _authController.currentPasswordError),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () => {
+                                      setState(() {
+                                        _obscureCurrentPassword =
+                                            !_obscureCurrentPassword;
+                                      })
+                                    },
+                                title: 'Current Password',
+                                iconData: Icons.lock,
+                                controller: _authController.currentPassword,
+                                hasObscureText: true,
+                                obscureText: _obscureCurrentPassword,
+                                errorMessage:
+                                    _authController.currentPasswordError),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () => {
+                                      setState(() {
+                                        _obscureNewPassword =
+                                            !_obscureNewPassword;
+                                      })
+                                    },
+                                title: 'New Password',
+                                iconData: Icons.lock,
+                                controller: _authController.newPassword,
+                                hasObscureText: true,
+                                obscureText: _obscureNewPassword,
+                                errorMessage: _authController.newPasswordError),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () => {
+                                      setState(() {
+                                        _obscureConfirmPassword =
+                                            !_obscureConfirmPassword;
+                                      })
+                                    },
+                                title: 'Confirm New Password',
+                                iconData: Icons.lock,
+                                controller: _authController.confirmPassword,
+                                hasObscureText: true,
+                                obscureText: _obscureConfirmPassword,
+                                errorMessage:
+                                    _authController.confirmPasswordError),
+                          ),
+                        ],
                       ),
                       Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () => {
-                                  setState(() {
-                                    _obscureNewPassword = !_obscureNewPassword;
-                                  })
-                                },
-                            title: 'New Password',
-                            iconData: Icons.lock,
-                            controller: _authController.newPassword,
-                            hasObscureText: true,
-                            obscureText: _obscureNewPassword,
-                            errorMessage: _authController.newPasswordError),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () => {
-                                  setState(() {
-                                    _obscureConfirmPassword =
-                                        !_obscureConfirmPassword;
-                                  })
-                                },
-                            title: 'Confirm New Password',
-                            iconData: Icons.lock,
-                            controller: _authController.confirmPassword,
-                            hasObscureText: true,
-                            obscureText: _obscureConfirmPassword,
-                            errorMessage: _authController.confirmPasswordError),
-                      ),
-                      const SizedBox(height: 60),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
+                        padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.04,
                         ),
                         child: CustomButton(
                           onTap: () async {
@@ -201,7 +209,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                           rowText: false,
                           color: const Color.fromARGB(255, 0, 0, 0),
                           width: MediaQuery.of(context).size.width,
-                          height: 40,
+                          height: MediaQuery.of(context).size.height * 0.05,
                         ),
                       ),
                     ],

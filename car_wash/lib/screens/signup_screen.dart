@@ -76,7 +76,9 @@ class _SignupScreenState extends State<SignupScreen> {
             fit: BoxFit.cover,
           )),
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 150),
+            padding: EdgeInsets.symmetric(
+                horizontal: MediaQuery.of(context).size.width * 0.07,
+                vertical: MediaQuery.of(context).size.height * 0.17),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BackdropFilter(
@@ -92,14 +94,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      const SizedBox(height: 30),
                       Text(
                         "Sign Up",
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
-                          fontSize: 40,
+                          fontSize: MediaQuery.of(context).size.width / 10,
                           shadows: [
                             Shadow(
                               offset: const Offset(3.0, 3.0),
@@ -109,152 +110,174 @@ class _SignupScreenState extends State<SignupScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 20),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () {},
-                            title: 'Username',
-                            iconData: Icons.person,
-                            controller: _authController.username,
-                            hasObscureText: false,
-                            obscureText: false,
-                            errorMessage: _authController.usernameError),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () {},
-                            title: 'Email Address',
-                            iconData: Icons.email,
-                            controller: _authController.email,
-                            hasObscureText: false,
-                            obscureText: false,
-                            errorMessage: _authController.emailError),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () => {
-                                  setState(() {
-                                    _obscureText = !_obscureText;
-                                  })
-                                },
-                            title: 'Password',
-                            iconData: Icons.lock,
-                            controller: _authController.password,
-                            hasObscureText: true,
-                            obscureText: _obscureText,
-                            errorMessage: _authController.passwordError),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 30,
-                        ),
-                        child: CustomEntryField(
-                            onTap: () => {
-                                  setState(() {
-                                    _obscureConfirm = !_obscureConfirm;
-                                  })
-                                },
-                            title: 'Confirm Password',
-                            iconData: Icons.lock,
-                            controller: _authController.confirmPassword,
-                            hasObscureText: true,
-                            obscureText: _obscureConfirm,
-                            errorMessage: _authController.confirmPasswordError),
-                      ),
-                      const SizedBox(height: 50),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 15,
-                        ),
-                        child: CustomButton(
-                          onTap: () async {
-                            _conectivityController.isAlertSet = false;
-                            await _conectivityController
-                                .checkInternetConnection(
-                                    box: () => showDialogBox(),
-                                    onAlert: () => setState(() =>
-                                        _conectivityController.isAlertSet =
-                                            true));
-                            if (_conectivityController.isDeviceConnected) {
-                              await _authController.signUp(
-                                onUsernameError: (error) => setState(() =>
-                                    _authController.usernameError = error),
-                                onEmailError: (error) => setState(
-                                    () => _authController.emailError = error),
-                                onPasswordError: (error) => setState(() =>
-                                    _authController.passwordError = error),
-                                onConfirmPasswordError: (error) => setState(
-                                    () => _authController.confirmPasswordError =
-                                        error),
-                                onSuccess: () => {
-                                  Navigator.popUntil(
-                                      context, (route) => route.isFirst),
-                                  Navigator.pushReplacement(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const HomeScreen())),
-                                },
-                              );
-                            }
-                          },
-                          withGradient: false,
-                          text: "Sign Up",
-                          rowText: false,
-                          color: const Color.fromARGB(255, 0, 0, 0),
-                          width: MediaQuery.of(context).size.width,
-                          height: 40,
-                        ),
-                      ),
-                      const SizedBox(height: 20),
-                      Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 15,
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () {},
+                                title: 'Username',
+                                iconData: Icons.person,
+                                controller: _authController.username,
+                                hasObscureText: false,
+                                obscureText: false,
+                                errorMessage: _authController.usernameError),
                           ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              const Text(
-                                "Already have an account?",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  decoration: TextDecoration.underline,
-                                  fontSize: 15,
-                                ),
-                              ),
-                              GestureDetector(
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () {},
+                                title: 'Email Address',
+                                iconData: Icons.email,
+                                controller: _authController.email,
+                                hasObscureText: false,
+                                obscureText: false,
+                                errorMessage: _authController.emailError),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
                                 onTap: () => {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              const LoginScreen()))
-                                },
-                                child: const SizedBox(
-                                  height: 50,
-                                  width: 50,
-                                  child: Center(
-                                      child: Text(
-                                    "Log In",
-                                    style: TextStyle(
-                                        decoration: TextDecoration.underline,
-                                        fontSize: 15,
-                                        color: Color.fromARGB(255, 0, 0, 0)),
-                                  )),
-                                ),
+                                      setState(() {
+                                        _obscureText = !_obscureText;
+                                      })
+                                    },
+                                title: 'Password',
+                                iconData: Icons.lock,
+                                controller: _authController.password,
+                                hasObscureText: true,
+                                obscureText: _obscureText,
+                                errorMessage: _authController.passwordError),
+                          ),
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.08,
+                            ),
+                            child: CustomEntryField(
+                                onTap: () => {
+                                      setState(() {
+                                        _obscureConfirm = !_obscureConfirm;
+                                      })
+                                    },
+                                title: 'Confirm Password',
+                                iconData: Icons.lock,
+                                controller: _authController.confirmPassword,
+                                hasObscureText: true,
+                                obscureText: _obscureConfirm,
+                                errorMessage:
+                                    _authController.confirmPasswordError),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: EdgeInsets.symmetric(
+                              horizontal:
+                                  MediaQuery.of(context).size.width * 0.03,
+                            ),
+                            child: CustomButton(
+                              onTap: () async {
+                                _conectivityController.isAlertSet = false;
+                                await _conectivityController
+                                    .checkInternetConnection(
+                                        box: () => showDialogBox(),
+                                        onAlert: () => setState(() =>
+                                            _conectivityController.isAlertSet =
+                                                true));
+                                if (_conectivityController.isDeviceConnected) {
+                                  await _authController.signUp(
+                                    onUsernameError: (error) => setState(() =>
+                                        _authController.usernameError = error),
+                                    onEmailError: (error) => setState(() =>
+                                        _authController.emailError = error),
+                                    onPasswordError: (error) => setState(() =>
+                                        _authController.passwordError = error),
+                                    onConfirmPasswordError: (error) => setState(
+                                        () => _authController
+                                            .confirmPasswordError = error),
+                                    onSuccess: () => {
+                                      Navigator.popUntil(
+                                          context, (route) => route.isFirst),
+                                      Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const HomeScreen())),
+                                    },
+                                  );
+                                }
+                              },
+                              withGradient: false,
+                              text: "Sign Up",
+                              rowText: false,
+                              color: const Color.fromARGB(255, 0, 0, 0),
+                              width: MediaQuery.of(context).size.width,
+                              height: MediaQuery.of(context).size.height * 0.05,
+                            ),
+                          ),
+                          Padding(
+                              padding: EdgeInsets.symmetric(
+                                horizontal:
+                                    MediaQuery.of(context).size.width * 0.05,
                               ),
-                            ],
-                          ))
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    "Already have an account?",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      decoration: TextDecoration.underline,
+                                      fontSize:
+                                          MediaQuery.of(context).size.width /
+                                              25,
+                                    ),
+                                  ),
+                                  GestureDetector(
+                                    onTap: () => {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  const LoginScreen()))
+                                    },
+                                    child: SizedBox(
+                                      height:
+                                          MediaQuery.of(context).size.height *
+                                              0.05,
+                                      width: MediaQuery.of(context).size.width *
+                                          0.13,
+                                      child: Center(
+                                          child: Text(
+                                        "Log In",
+                                        style: TextStyle(
+                                            decoration:
+                                                TextDecoration.underline,
+                                            fontSize: MediaQuery.of(context)
+                                                    .size
+                                                    .width /
+                                                25,
+                                            color: const Color.fromARGB(
+                                                255, 0, 0, 0)),
+                                      )),
+                                    ),
+                                  ),
+                                ],
+                              ))
+                        ],
+                      )
                     ],
                   ),
                 ),

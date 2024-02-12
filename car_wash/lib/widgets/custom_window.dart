@@ -24,8 +24,8 @@ class CustomWindow extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           Container(
-            width: 140,
-            height: 150,
+            width: MediaQuery.of(context).size.width * 0.35,
+            height: MediaQuery.of(context).size.height * 0.51,
             decoration: BoxDecoration(
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(30),
@@ -37,7 +37,7 @@ class CustomWindow extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: MediaQuery.of(context).size.width * 0.03),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -46,7 +46,7 @@ class CustomWindow extends StatelessWidget {
                 RatingBar.builder(
                   initialRating: _carWashController.averageRating(
                       carwash.nrRatings, carwash.totalRatings),
-                  itemSize: 20.0,
+                  itemSize: MediaQuery.of(context).size.width / 17,
                   unratedColor: const Color.fromARGB(195, 255, 255, 255),
                   itemBuilder: (context, _) =>
                       const Icon(Icons.star, color: Colors.amber),
@@ -63,13 +63,13 @@ class CustomWindow extends StatelessWidget {
                 ),
               ]),
               SizedBox(
-                width: 140,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
                   carwash.name,
                   style: TextStyle(
                     color: const Color.fromARGB(223, 255, 255, 255),
                     fontWeight: FontWeight.bold,
-                    fontSize: 15,
+                    fontSize: MediaQuery.of(context).size.width / 22,
                     shadows: [
                       Shadow(
                         offset: const Offset(3.0, 3.0),
@@ -82,12 +82,12 @@ class CustomWindow extends StatelessWidget {
                 ),
               ),
               SizedBox(
-                width: 140,
+                width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
                   carwash.address,
                   style: TextStyle(
                     color: const Color.fromARGB(198, 255, 255, 255),
-                    fontSize: 8,
+                    fontSize: MediaQuery.of(context).size.width / 40,
                     shadows: [
                       Shadow(
                         offset: const Offset(3.0, 3.0),
@@ -101,7 +101,8 @@ class CustomWindow extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 60),
+                padding: EdgeInsets.only(
+                    left: MediaQuery.of(context).size.width * 0.2),
                 child: GestureDetector(
                   onTap: () => {
                     Navigator.push(
@@ -113,10 +114,10 @@ class CustomWindow extends StatelessWidget {
                               )),
                     ),
                   },
-                  child: const SizedBox(
-                    height: 20,
-                    width: 70,
-                    child: Center(
+                  child: SizedBox(
+                    height: MediaQuery.of(context).size.height * 0.03,
+                    width: MediaQuery.of(context).size.width * 0.2,
+                    child: const Center(
                         child: Text(
                       "View more ➔",
                       style: TextStyle(
