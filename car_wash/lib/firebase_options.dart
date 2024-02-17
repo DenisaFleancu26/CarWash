@@ -57,6 +57,7 @@ class DefaultFirebaseOptions {
     appId: '1:757359403601:android:03b7160980ffb5999d8e70',
     messagingSenderId: '757359403601',
     projectId: 'carwash-f3d39',
+    databaseURL: 'https://carwash-f3d39-default-rtdb.europe-west1.firebasedatabase.app',
     storageBucket: 'carwash-f3d39.appspot.com',
   );
 }

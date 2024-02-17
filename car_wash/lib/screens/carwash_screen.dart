@@ -39,9 +39,12 @@ class _CarWashState extends State<CarWashScreen> {
   final CarWashController _carWashController = CarWashController();
   final PaymentController _paymentController = PaymentController();
   Set<int> activatedButtons = {};
+  List removeBrokenSpots = [];
+  List brokenSpots = [];
 
   @override
   void initState() {
+    brokenSpots = widget.carwash.brokenSpots;
     _userController.getUsername(
         displayUsername: (username) =>
             setState(() => _userController.username = username),
@@ -150,15 +153,20 @@ class _CarWashState extends State<CarWashScreen> {
                     ),
                     CustomButton(
                       onTap: () {
-                        _carWashController.updateBrokenSpots(
-                            brokenSpots: widget.carwash.brokenSpots);
-                        Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => CarWashScreen(
-                                      carwash: widget.carwash,
-                                      isManager: widget.isManager,
-                                    )));
+                        brokenSpots.removeWhere(
+                            (element) => removeBrokenSpots.contains(element));
+                        widget.carwash.brokenSpots = brokenSpots;
+                        _carWashController
+                            .updateBrokenSpots(
+                                brokenSpots: brokenSpots,
+                                removeBrokenSpots: removeBrokenSpots)
+                            .whenComplete(() => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CarWashScreen(
+                                          carwash: widget.carwash,
+                                          isManager: widget.isManager,
+                                        ))));
                       },
                       withGradient: false,
                       text: "Save",
@@ -177,10 +185,10 @@ class _CarWashState extends State<CarWashScreen> {
     setState(() {
       if (isPressed) {
         if (!widget.carwash.brokenSpots.contains(index)) {
-          widget.carwash.brokenSpots.add(index);
+          brokenSpots.add(index);
         }
       } else {
-        widget.carwash.brokenSpots.remove(index);
+        removeBrokenSpots.add(index);
       }
     });
   }
@@ -655,6 +663,7 @@ class _CarWashState extends State<CarWashScreen> {
                             i < widget.carwash.smallVehicleSeats;
                             i++)
                           SpotGenerate(
+                              carwash: widget.carwash,
                               contain:
                                   widget.carwash.brokenSpots.contains(i + 1),
                               icon: Icons.drive_eta,
@@ -665,6 +674,7 @@ class _CarWashState extends State<CarWashScreen> {
                                     widget.carwash.smallVehicleSeats;
                             i++)
                           SpotGenerate(
+                              carwash: widget.carwash,
                               contain:
                                   widget.carwash.brokenSpots.contains(i + 1),
                               icon: Icons.local_shipping,

@@ -6,6 +6,7 @@ import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
+import 'package:firebase_database/firebase_database.dart';
 
 class CarWashController {
   List<CarWash> carWashes = [];
@@ -240,13 +241,29 @@ class CarWashController {
     return nrRatings == 0 ? 0.0 : totalRatings / nrRatings;
   }
 
-  Future<void> updateBrokenSpots({required List brokenSpots}) async {
+  Future<void> updateBrokenSpots(
+      {required List brokenSpots, required List removeBrokenSpots}) async {
     await FirebaseFirestore.instance
         .collection('Managers')
         .doc(managerId)
         .collection('car-wash')
         .doc(carwashId)
         .update({'brokenSpots': brokenSpots});
+    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
+    for (var element in brokenSpots) {
+      await databaseReference
+          .child(carwashId)
+          .child(element.toString())
+          .child("broken")
+          .set(1);
+    }
+    for (var element in removeBrokenSpots) {
+      await databaseReference
+          .child(carwashId)
+          .child(element.toString())
+          .child("broken")
+          .set(0);
+    }
   }
 
   Future<void> postAnnouncement({required CarWash carwash}) async {
