@@ -14,7 +14,6 @@ class CarWash {
   int totalRatings;
   int nrRatings;
   List<Review> reviews;
-  List brokenSpots;
   List<Announcement> announcements;
   int offerType;
   double offerValue;
@@ -33,7 +32,6 @@ class CarWash {
       required this.totalRatings,
       required this.nrRatings,
       required this.reviews,
-      required this.brokenSpots,
       required this.announcements,
       required this.offerType,
       required this.offerValue,

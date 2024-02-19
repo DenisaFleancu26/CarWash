@@ -8,7 +8,6 @@ import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/offer_screen.dart';
 import 'package:car_wash/screens/qr_screen.dart';
-import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/meniu_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
@@ -16,6 +15,7 @@ import 'package:car_wash/widgets/spot_button.dart';
 import 'package:car_wash/widgets/spot_generate.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
@@ -23,8 +23,12 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 class CarWashScreen extends StatefulWidget {
   final CarWash carwash;
   final bool isManager;
+  final String? carwashID;
   const CarWashScreen(
-      {Key? key, required this.carwash, required this.isManager})
+      {Key? key,
+      required this.carwash,
+      this.carwashID,
+      required this.isManager})
       : super(key: key);
 
   @override
@@ -38,13 +42,9 @@ class _CarWashState extends State<CarWashScreen> {
   final UserController _userController = UserController();
   final CarWashController _carWashController = CarWashController();
   final PaymentController _paymentController = PaymentController();
-  Set<int> activatedButtons = {};
-  List removeBrokenSpots = [];
-  List brokenSpots = [];
 
   @override
   void initState() {
-    brokenSpots = widget.carwash.brokenSpots;
     _userController.getUsername(
         displayUsername: (username) =>
             setState(() => _userController.username = username),
@@ -71,17 +71,33 @@ class _CarWashState extends State<CarWashScreen> {
                   top: MediaQuery.of(context).size.height * 0.03,
                   left: MediaQuery.of(context).size.width * 0.05,
                   right: MediaQuery.of(context).size.width * 0.05),
-              height: MediaQuery.of(context).size.height * 0.4,
+              height: widget.carwash.bigVehicleSeats +
+                          widget.carwash.smallVehicleSeats >
+                      4
+                  ? MediaQuery.of(context).size.height * 0.33
+                  : MediaQuery.of(context).size.height * 0.22,
               child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      'Select the broken spot:',
-                      style: TextStyle(
-                        color: const Color.fromARGB(255, 34, 34, 34),
-                        fontSize: MediaQuery.of(context).size.width / 20,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          'Select the broken spot:',
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 34, 34, 34),
+                            fontSize: MediaQuery.of(context).size.width / 20,
+                          ),
+                        ),
+                        GestureDetector(
+                            child: Icon(Icons.highlight_off,
+                                color: const Color.fromARGB(255, 34, 34, 34),
+                                size: MediaQuery.of(context).size.width / 15),
+                            onTap: () {
+                              Navigator.of(context).pop();
+                            })
+                      ],
                     ),
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.03,
@@ -93,13 +109,10 @@ class _CarWashState extends State<CarWashScreen> {
                         for (var i = 0;
                             i < widget.carwash.smallVehicleSeats;
                             i++)
-                          SeatButton(
+                          SpotButton(
                             nr: i + 1,
                             icon: Icons.drive_eta,
-                            activated:
-                                widget.carwash.brokenSpots.contains(i + 1)
-                                    ? true
-                                    : false,
+                            id: _carWashController.carwashId,
                             onButtonPressed: (index, isPressed) {
                               updateActivatedIndices(index, isPressed);
                             },
@@ -109,13 +122,10 @@ class _CarWashState extends State<CarWashScreen> {
                                 widget.carwash.bigVehicleSeats +
                                     widget.carwash.smallVehicleSeats;
                             i++)
-                          SeatButton(
+                          SpotButton(
                             nr: i + 1,
                             icon: Icons.local_shipping,
-                            activated:
-                                widget.carwash.brokenSpots.contains(i + 1)
-                                    ? true
-                                    : false,
+                            id: _carWashController.carwashId,
                             onButtonPressed: (index, isPressed) {
                               updateActivatedIndices(index, isPressed);
                             },
@@ -148,33 +158,6 @@ class _CarWashState extends State<CarWashScreen> {
                         )
                       ],
                     ),
-                    SizedBox(
-                      height: MediaQuery.of(context).size.height * 0.02,
-                    ),
-                    CustomButton(
-                      onTap: () {
-                        brokenSpots.removeWhere(
-                            (element) => removeBrokenSpots.contains(element));
-                        widget.carwash.brokenSpots = brokenSpots;
-                        _carWashController
-                            .updateBrokenSpots(
-                                brokenSpots: brokenSpots,
-                                removeBrokenSpots: removeBrokenSpots)
-                            .whenComplete(() => Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => CarWashScreen(
-                                          carwash: widget.carwash,
-                                          isManager: widget.isManager,
-                                        ))));
-                      },
-                      withGradient: false,
-                      text: "Save",
-                      rowText: false,
-                      color: const Color.fromARGB(255, 34, 34, 34),
-                      width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height * 0.05,
-                    ),
                   ]),
             );
           });
@@ -183,13 +166,12 @@ class _CarWashState extends State<CarWashScreen> {
 
   void updateActivatedIndices(int index, bool isPressed) {
     setState(() {
-      if (isPressed) {
-        if (!widget.carwash.brokenSpots.contains(index)) {
-          brokenSpots.add(index);
-        }
-      } else {
-        removeBrokenSpots.add(index);
-      }
+      FirebaseDatabase.instance
+          .ref(_carWashController.carwashId)
+          .child('spots')
+          .child(index.toString())
+          .child('broken')
+          .set(isPressed == true ? 1 : 0);
     });
   }
 
@@ -663,9 +645,7 @@ class _CarWashState extends State<CarWashScreen> {
                             i < widget.carwash.smallVehicleSeats;
                             i++)
                           SpotGenerate(
-                              carwash: widget.carwash,
-                              contain:
-                                  widget.carwash.brokenSpots.contains(i + 1),
+                              id: widget.carwashID!,
                               icon: Icons.drive_eta,
                               nr: i + 1),
                         for (var i = widget.carwash.smallVehicleSeats;
@@ -674,9 +654,7 @@ class _CarWashState extends State<CarWashScreen> {
                                     widget.carwash.smallVehicleSeats;
                             i++)
                           SpotGenerate(
-                              carwash: widget.carwash,
-                              contain:
-                                  widget.carwash.brokenSpots.contains(i + 1),
+                              id: widget.carwashID!,
                               icon: Icons.local_shipping,
                               nr: i + 1),
                       ],

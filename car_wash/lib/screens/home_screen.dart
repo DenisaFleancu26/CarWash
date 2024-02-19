@@ -119,19 +119,29 @@ class _HomeScreenState extends State<HomeScreen> {
                                 itemBuilder: (context, index) {
                                   return GestureDetector(
                                       onTap: () {
-                                        Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: ((context) =>
-                                                    CarWashScreen(
-                                                      carwash:
-                                                          _carWashController
-                                                              .carWashes[index],
-                                                      isManager:
-                                                          _carWashController
-                                                              .authController
-                                                              .isManager,
-                                                    ))));
+                                        _carWashController
+                                            .findId(
+                                                name: _carWashController
+                                                    .carWashes[index].name,
+                                                address: _carWashController
+                                                    .carWashes[index].address)
+                                            .whenComplete(() => Navigator.push(
+                                                context,
+                                                MaterialPageRoute(
+                                                    builder: ((context) =>
+                                                        CarWashScreen(
+                                                          carwash:
+                                                              _carWashController
+                                                                      .carWashes[
+                                                                  index],
+                                                          isManager:
+                                                              _carWashController
+                                                                  .authController
+                                                                  .isManager,
+                                                          carwashID:
+                                                              _carWashController
+                                                                  .carwashId,
+                                                        )))));
                                       },
                                       child: Stack(children: [
                                         Padding(
