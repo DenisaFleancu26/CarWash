@@ -14,7 +14,7 @@ class SpotGenerate extends StatefulWidget {
 }
 
 class _SpotGenerate extends State<SpotGenerate> {
-  Color colors = const Color.fromARGB(255, 0, 255, 8);
+  Color colors = Color.fromARGB(0, 0, 255, 8);
   int? broken = 0;
 
   void reloadData() {

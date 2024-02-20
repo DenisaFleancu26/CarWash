@@ -124,7 +124,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     } else {
                       errorMessage = '';
                       await widget.controller
-                          .postAnnouncement(carwash: widget.carwash)
+                          .postAnnouncement(
+                              carwashID: widget.controller.carwashId)
                           .whenComplete(() => Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

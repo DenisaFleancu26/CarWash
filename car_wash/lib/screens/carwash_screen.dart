@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/carwash_controller.dart';
 import 'package:car_wash/controllers/payment_controller.dart';
 import 'package:car_wash/controllers/user_controller.dart';
+import 'package:car_wash/models/announcement.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/announcement_screen.dart';
 import 'package:car_wash/screens/login_screen.dart';
@@ -19,6 +22,7 @@ import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
+import 'package:intl/intl.dart';
 
 class CarWashScreen extends StatefulWidget {
   final CarWash carwash;
@@ -39,6 +43,7 @@ class _CarWashState extends State<CarWashScreen> {
   final CarWashController _carWashController = CarWashController();
   final PaymentController _paymentController = PaymentController();
   bool display = true;
+  List<Announcement> announcements = [];
 
   @override
   void initState() {
@@ -50,9 +55,34 @@ class _CarWashState extends State<CarWashScreen> {
         .findId(name: widget.carwash.name, address: widget.carwash.address)
         .whenComplete(() {
       setState(() {
-        display = false;
+        FirebaseDatabase.instance
+            .ref(_carWashController.carwashId)
+            .child('announcements')
+            .onValue
+            .listen((event) {
+          if (event.snapshot.value != null) {
+            Map<dynamic, dynamic>? data =
+                event.snapshot.value as Map<dynamic, dynamic>;
+            data.forEach((key, value) {
+              Announcement add = Announcement(
+                  message: value['message'] as String,
+                  date: value['data'] as String);
+              if (!add.isDuplicate(announcements)) {
+                announcements.add(add);
+              }
+            });
+            announcements.sort((a, b) {
+              DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
+              DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
+              return dateB.compareTo(dateA);
+            });
+            setState(() {});
+          }
+        });
       });
+      display = false;
     });
+
     super.initState();
   }
 
@@ -549,9 +579,9 @@ class _CarWashState extends State<CarWashScreen> {
                                   maxLines: 3,
                                 ),
                               ),
-                              if (widget.carwash.announcements.isNotEmpty)
+                              if (announcements.isNotEmpty)
                                 const HorizontalLine(distance: 15),
-                              if (widget.carwash.announcements.isNotEmpty)
+                              if (announcements.isNotEmpty)
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.start,
                                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -583,7 +613,7 @@ class _CarWashState extends State<CarWashScreen> {
                                     )
                                   ],
                                 ),
-                              for (var add in widget.carwash.announcements)
+                              for (var add in announcements)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -606,31 +636,12 @@ class _CarWashState extends State<CarWashScreen> {
                                         if (widget.isManager)
                                           GestureDetector(
                                             onTap: () => {
+                                              setState(() {
+                                                announcements.remove(add);
+                                              }),
                                               _carWashController
                                                   .deleteAnnouncement(
-                                                      announcement: add,
-                                                      carwash: widget.carwash)
-                                                  .whenComplete(() async {
-                                                widget.carwash.announcements =
-                                                    await _carWashController
-                                                        .getAnnouncements(
-                                                            manager:
-                                                                _carWashController
-                                                                    .managerId,
-                                                            carwash:
-                                                                _carWashController
-                                                                    .carwashId)
-                                                        .whenComplete(() => Navigator
-                                                            .pushReplacement(
-                                                                context,
-                                                                MaterialPageRoute(
-                                                                    builder:
-                                                                        (context) =>
-                                                                            CarWashScreen(
-                                                                              carwash: widget.carwash,
-                                                                              isManager: true,
-                                                                            ))));
-                                              }),
+                                                      announcement: add)
                                             },
                                             child: SizedBox(
                                               height: MediaQuery.of(context)
