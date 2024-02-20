@@ -6,7 +6,7 @@ import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class OfferScreen extends StatefulWidget {
-  final CarWash carwash;
+  final MapEntry<String, CarWash> carwash;
   final CarWashController controller;
   const OfferScreen({Key? key, required this.controller, required this.carwash})
       : super(key: key);
@@ -39,8 +39,8 @@ class _OfferScreenState extends State<OfferScreen> {
                 top: MediaQuery.of(context).size.height * 0.15,
                 left: MediaQuery.of(context).size.width * 0.1,
                 right: MediaQuery.of(context).size.width * 0.1),
-            child: (widget.carwash.offerType == 0 ||
-                    widget.carwash.offerDate == '')
+            child: (widget.carwash.value.offerType == 0 ||
+                    widget.carwash.value.offerDate == '')
                 ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -235,14 +235,15 @@ class _OfferScreenState extends State<OfferScreen> {
                                   : 'Please enter the number of tokens!';
                             });
                           } else {
-                            widget.carwash.offerType = offer;
-                            widget.carwash.offerValue = double.parse(
+                            widget.carwash.value.offerType = offer;
+                            widget.carwash.value.offerValue = double.parse(
                                 widget.controller.offerController.text);
-                            widget.carwash.offerDate =
+                            widget.carwash.value.offerDate =
                                 "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
                             widget.controller
                                 .makeOffer(
-                                    offerType: offer, carwash: widget.carwash)
+                                    offerType: offer,
+                                    carwash: widget.carwash.value)
                                 .whenComplete(() => Navigator.pushReplacement(
                                     context,
                                     MaterialPageRoute(
@@ -274,9 +275,9 @@ class _OfferScreenState extends State<OfferScreen> {
                       HorizontalLine(
                           distance: MediaQuery.of(context).size.height * 0.05),
                       Text(
-                        widget.carwash.offerType == 1
-                            ? "${widget.carwash.offerValue}% discount"
-                            : "Buy ${widget.carwash.offerValue.toInt()} tokens, get one free",
+                        widget.carwash.value.offerType == 1
+                            ? "${widget.carwash.value.offerValue}% discount"
+                            : "Buy ${widget.carwash.value.offerValue.toInt()} tokens, get one free",
                         style: TextStyle(
                             color: const Color.fromARGB(255, 0, 0, 0),
                             fontSize: MediaQuery.of(context).size.width / 15,
@@ -300,9 +301,9 @@ class _OfferScreenState extends State<OfferScreen> {
                       CustomButton(
                         onTap: () {
                           widget.controller.offerController.clear();
-                          widget.carwash.offerType = 0;
-                          widget.carwash.offerValue = 0;
-                          widget.carwash.offerDate = "";
+                          widget.carwash.value.offerType = 0;
+                          widget.carwash.value.offerValue = 0;
+                          widget.carwash.value.offerDate = "";
                           widget.controller
                               .disableOffer()
                               .whenComplete(() => Navigator.pushReplacement(

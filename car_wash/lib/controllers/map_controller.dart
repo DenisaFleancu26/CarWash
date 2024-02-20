@@ -98,9 +98,9 @@ class MapController {
 
     final Uint8List markerIcon =
         await getBytesFromAssets('assets/images/carwash_mark.png', 100);
-    for (var carwash in _carWashController.carWashes) {
+    for (var carwash in _carWashController.carWashes.entries) {
       var address =
-          await Geocoder.local.findAddressesFromQuery(carwash.address);
+          await Geocoder.local.findAddressesFromQuery(carwash.value.address);
       markers.add(Marker(
           markerId: MarkerId(i.toString()),
           icon: BitmapDescriptor.fromBytes(markerIcon),

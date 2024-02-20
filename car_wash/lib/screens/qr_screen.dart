@@ -11,7 +11,7 @@ import 'package:randomstring_dart/randomstring_dart.dart';
 class QRScreen extends StatefulWidget {
   final String? carwashId;
   final int? tokens;
-  final CarWash? carWash;
+  final MapEntry<String, CarWash>? carWash;
   final TransactionModel? transaction;
   const QRScreen(
       {Key? key, this.carwashId, this.tokens, this.carWash, this.transaction})
@@ -32,19 +32,19 @@ class _QRScreenState extends State<QRScreen> {
   void initState() {
     if (widget.carWash != null) {
       qr =
-          '${widget.carwashId} ${widget.carWash!.offerType == 2 && widget.carWash!.offerDate != '' && widget.tokens! >= widget.carWash!.offerValue ? widget.tokens! + widget.tokens! ~/ widget.carWash!.offerValue : widget.tokens} ${RandomString().getRandomString()}';
+          '${widget.carwashId} ${widget.carWash!.value.offerType == 2 && widget.carWash!.value.offerDate != '' && widget.tokens! >= widget.carWash!.value.offerValue ? widget.tokens! + widget.tokens! ~/ widget.carWash!.value.offerValue : widget.tokens} ${RandomString().getRandomString()}';
 
       _transactionController.saveTransaction(
           dataQR: qr,
-          carwash: widget.carWash!.name,
-          address: widget.carWash!.address,
-          totalPrice: (widget.carWash!.offerType == 1 &&
-                  widget.carWash!.offerDate != '')
-              ? widget.carWash!.price *
+          carwash: widget.carWash!.value.name,
+          address: widget.carWash!.value.address,
+          totalPrice: (widget.carWash!.value.offerType == 1 &&
+                  widget.carWash!.value.offerDate != '')
+              ? widget.carWash!.value.price *
                   widget.tokens! *
-                  (100 - widget.carWash!.offerValue) /
+                  (100 - widget.carWash!.value.offerValue) /
                   100
-              : widget.carWash!.price * widget.tokens!,
+              : widget.carWash!.value.price * widget.tokens!,
           date: "${currentDate.day}/${currentDate.month}/${currentDate.year}");
     } else {
       qr = widget.transaction!.dataQR;

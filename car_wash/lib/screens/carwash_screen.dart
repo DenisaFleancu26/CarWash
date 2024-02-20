@@ -25,7 +25,7 @@ import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:intl/intl.dart';
 
 class CarWashScreen extends StatefulWidget {
-  final CarWash carwash;
+  final MapEntry<String, CarWash> carwash;
   final bool isManager;
   const CarWashScreen(
       {Key? key, required this.carwash, required this.isManager})
@@ -51,37 +51,39 @@ class _CarWashState extends State<CarWashScreen> {
         displayUsername: (username) =>
             setState(() => _userController.username = username),
         collection: 'Users');
-    _carWashController
-        .findId(name: widget.carwash.name, address: widget.carwash.address)
-        .whenComplete(() {
-      setState(() {
-        FirebaseDatabase.instance
-            .ref(_carWashController.carwashId)
-            .child('announcements')
-            .onValue
-            .listen((event) {
-          if (event.snapshot.value != null) {
-            Map<dynamic, dynamic>? data =
-                event.snapshot.value as Map<dynamic, dynamic>;
-            data.forEach((key, value) {
-              Announcement add = Announcement(
-                  message: value['message'] as String,
-                  date: value['data'] as String);
-              if (!add.isDuplicate(announcements)) {
-                announcements.add(add);
-              }
-            });
-            announcements.sort((a, b) {
-              DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
-              DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
-              return dateB.compareTo(dateA);
-            });
+
+    _carWashController.findId(
+        name: widget.carwash.value.name, address: widget.carwash.value.address);
+
+    setState(() {
+      FirebaseDatabase.instance
+          .ref(widget.carwash.key)
+          .child('announcements')
+          .onValue
+          .listen((event) {
+        if (event.snapshot.value != null) {
+          Map<dynamic, dynamic>? data =
+              event.snapshot.value as Map<dynamic, dynamic>;
+          data.forEach((key, value) {
+            Announcement add = Announcement(
+                message: value['message'] as String,
+                date: value['data'] as String);
+            if (!add.isDuplicate(announcements)) {
+              announcements.add(add);
+            }
+          });
+          announcements.sort((a, b) {
+            DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
+            DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
+            return dateB.compareTo(dateA);
+          });
+          if (mounted) {
             setState(() {});
           }
-        });
+        }
       });
-      display = false;
     });
+    display = false;
 
     super.initState();
   }
@@ -103,8 +105,8 @@ class _CarWashState extends State<CarWashScreen> {
                   top: MediaQuery.of(context).size.height * 0.03,
                   left: MediaQuery.of(context).size.width * 0.05,
                   right: MediaQuery.of(context).size.width * 0.05),
-              height: widget.carwash.bigVehicleSeats +
-                          widget.carwash.smallVehicleSeats >
+              height: widget.carwash.value.bigVehicleSeats +
+                          widget.carwash.value.smallVehicleSeats >
                       4
                   ? MediaQuery.of(context).size.height * 0.33
                   : MediaQuery.of(context).size.height * 0.22,
@@ -139,25 +141,25 @@ class _CarWashState extends State<CarWashScreen> {
                       runSpacing: 15.0,
                       children: [
                         for (var i = 0;
-                            i < widget.carwash.smallVehicleSeats;
+                            i < widget.carwash.value.smallVehicleSeats;
                             i++)
                           SpotButton(
                             nr: i + 1,
                             icon: Icons.drive_eta,
-                            id: _carWashController.carwashId,
+                            id: widget.carwash.key,
                             onButtonPressed: (index, isPressed) {
                               updateActivatedIndices(index, isPressed);
                             },
                           ),
-                        for (var i = widget.carwash.smallVehicleSeats;
+                        for (var i = widget.carwash.value.smallVehicleSeats;
                             i <
-                                widget.carwash.bigVehicleSeats +
-                                    widget.carwash.smallVehicleSeats;
+                                widget.carwash.value.bigVehicleSeats +
+                                    widget.carwash.value.smallVehicleSeats;
                             i++)
                           SpotButton(
                             nr: i + 1,
                             icon: Icons.local_shipping,
-                            id: _carWashController.carwashId,
+                            id: widget.carwash.key,
                             onButtonPressed: (index, isPressed) {
                               updateActivatedIndices(index, isPressed);
                             },
@@ -199,7 +201,7 @@ class _CarWashState extends State<CarWashScreen> {
   void updateActivatedIndices(int index, bool isPressed) {
     setState(() {
       FirebaseDatabase.instance
-          .ref(_carWashController.carwashId)
+          .ref(widget.carwash.key)
           .child('spots')
           .child(index.toString())
           .child('broken')
@@ -221,15 +223,15 @@ class _CarWashState extends State<CarWashScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return SizedBox(
-              height: (widget.carwash.offerType == 0 ||
-                      widget.carwash.offerDate == '')
+              height: (widget.carwash.value.offerType == 0 ||
+                      widget.carwash.value.offerDate == '')
                   ? MediaQuery.of(context).size.height * 0.2
                   : MediaQuery.of(context).size.height * 0.3,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (widget.carwash.offerType != 0 &&
-                      widget.carwash.offerDate != '')
+                  if (widget.carwash.value.offerType != 0 &&
+                      widget.carwash.value.offerDate != '')
                     Text(
                       textAlign: TextAlign.center,
                       "Today's Offer:",
@@ -238,20 +240,20 @@ class _CarWashState extends State<CarWashScreen> {
                           fontSize: MediaQuery.of(context).size.width / 13,
                           fontWeight: FontWeight.bold),
                     ),
-                  if (widget.carwash.offerType != 0 &&
-                      widget.carwash.offerDate != '')
+                  if (widget.carwash.value.offerType != 0 &&
+                      widget.carwash.value.offerDate != '')
                     Text(
                       textAlign: TextAlign.center,
-                      widget.carwash.offerType == 1
-                          ? "${widget.carwash.offerValue}% discount to the final price!"
-                          : "Buy ${widget.carwash.offerValue.toInt()} tokens, get one free",
+                      widget.carwash.value.offerType == 1
+                          ? "${widget.carwash.value.offerValue}% discount to the final price!"
+                          : "Buy ${widget.carwash.value.offerValue.toInt()} tokens, get one free",
                       style: TextStyle(
                           color: const Color.fromARGB(255, 23, 156, 0),
                           fontSize: MediaQuery.of(context).size.width / 18,
                           fontWeight: FontWeight.bold),
                     ),
-                  if (widget.carwash.offerType != 0 &&
-                      widget.carwash.offerDate != '')
+                  if (widget.carwash.value.offerType != 0 &&
+                      widget.carwash.value.offerDate != '')
                     HorizontalLine(
                         distance: MediaQuery.of(context).size.height * 0.03),
                   Row(
@@ -309,10 +311,10 @@ class _CarWashState extends State<CarWashScreen> {
                           ),
                           const SizedBox(width: 10),
                           Text(
-                            widget.carwash.offerType == 1 &&
-                                    widget.carwash.offerDate != ''
-                                ? '${widget.carwash.price * tokens * (100 - widget.carwash.offerValue) / 100} RON'
-                                : '${widget.carwash.price * tokens} RON',
+                            widget.carwash.value.offerType == 1 &&
+                                    widget.carwash.value.offerDate != ''
+                                ? '${widget.carwash.value.price * tokens * (100 - widget.carwash.value.offerValue) / 100} RON'
+                                : '${widget.carwash.value.price * tokens} RON',
                             style: TextStyle(
                                 color: const Color.fromARGB(255, 34, 34, 34),
                                 fontSize:
@@ -328,12 +330,17 @@ class _CarWashState extends State<CarWashScreen> {
                           if (tokens > 0) {
                             if (user != null) {
                               await _paymentController
-                                  .makePayment((widget.carwash.offerType == 1 &&
-                                          widget.carwash.offerDate != '')
-                                      ? widget.carwash.price *
+                                  .makePayment((widget
+                                                  .carwash.value.offerType ==
+                                              1 &&
+                                          widget.carwash.value.offerDate != '')
+                                      ? widget.carwash.value.price *
                                           tokens *
-                                          (100 - widget.carwash.offerValue)
-                                      : widget.carwash.price * tokens * 100)
+                                          (100 -
+                                              widget.carwash.value.offerValue)
+                                      : widget.carwash.value.price *
+                                          tokens *
+                                          100)
                                   .then((value) => {
                                         if (_paymentController
                                                 .successfulPayment ==
@@ -401,7 +408,7 @@ class _CarWashState extends State<CarWashScreen> {
                       decoration: BoxDecoration(
                           image: DecorationImage(
                         image: FirebaseImageProvider(
-                            FirebaseUrl(widget.carwash.image)),
+                            FirebaseUrl(widget.carwash.value.image)),
                         fit: BoxFit.cover,
                       )),
                       child: Stack(
@@ -432,8 +439,9 @@ class _CarWashState extends State<CarWashScreen> {
                                       RatingBar.builder(
                                         initialRating:
                                             _carWashController.averageRating(
-                                                widget.carwash.nrRatings,
-                                                widget.carwash.totalRatings),
+                                                widget.carwash.value.nrRatings,
+                                                widget.carwash.value
+                                                    .totalRatings),
                                         itemSize:
                                             MediaQuery.of(context).size.width /
                                                 15,
@@ -447,7 +455,7 @@ class _CarWashState extends State<CarWashScreen> {
                                       ),
                                       const SizedBox(width: 2),
                                       Text(
-                                        '(${widget.carwash.nrRatings})',
+                                        '(${widget.carwash.value.nrRatings})',
                                         style: TextStyle(
                                           color: const Color.fromARGB(
                                               195, 190, 190, 190),
@@ -461,7 +469,7 @@ class _CarWashState extends State<CarWashScreen> {
                               ),
                             ),
                           ),
-                          if (widget.carwash.hours == 'non-stop')
+                          if (widget.carwash.value.hours == 'non-stop')
                             Positioned(
                               top: MediaQuery.of(context).size.height * 0.22,
                               right: MediaQuery.of(context).size.width * 0.1,
@@ -504,7 +512,7 @@ class _CarWashState extends State<CarWashScreen> {
                                     ),
                                   )),
                             ),
-                          if (widget.carwash.hours == 'non-stop')
+                          if (widget.carwash.value.hours == 'non-stop')
                             Positioned(
                               top: MediaQuery.of(context).size.height * 0.21,
                               right: MediaQuery.of(context).size.width * 0.05,
@@ -551,7 +559,7 @@ class _CarWashState extends State<CarWashScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: Text(
-                                  widget.carwash.name,
+                                  widget.carwash.value.name,
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         255, 255, 255, 255),
@@ -568,7 +576,7 @@ class _CarWashState extends State<CarWashScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: Text(
-                                  widget.carwash.address,
+                                  widget.carwash.value.address,
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         197, 216, 216, 216),
@@ -736,19 +744,23 @@ class _CarWashState extends State<CarWashScreen> {
                                 runSpacing: 15.0,
                                 children: [
                                   for (var i = 0;
-                                      i < widget.carwash.smallVehicleSeats;
+                                      i <
+                                          widget
+                                              .carwash.value.smallVehicleSeats;
                                       i++)
                                     SpotGenerate(
-                                        id: _carWashController.carwashId,
+                                        id: widget.carwash.key,
                                         icon: Icons.drive_eta,
                                         nr: i + 1),
-                                  for (var i = widget.carwash.smallVehicleSeats;
+                                  for (var i = widget
+                                          .carwash.value.smallVehicleSeats;
                                       i <
-                                          widget.carwash.bigVehicleSeats +
-                                              widget.carwash.smallVehicleSeats;
+                                          widget.carwash.value.bigVehicleSeats +
+                                              widget.carwash.value
+                                                  .smallVehicleSeats;
                                       i++)
                                     SpotGenerate(
-                                        id: _carWashController.carwashId,
+                                        id: widget.carwash.key,
                                         icon: Icons.local_shipping,
                                         nr: i + 1),
                                 ],
@@ -768,9 +780,9 @@ class _CarWashState extends State<CarWashScreen> {
                                               25,
                                     ),
                                   ),
-                                  if (widget.carwash.hours != 'non-stop')
+                                  if (widget.carwash.value.hours != 'non-stop')
                                     Text(
-                                      widget.carwash.hours,
+                                      widget.carwash.value.hours,
                                       style: TextStyle(
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255),
@@ -785,7 +797,7 @@ class _CarWashState extends State<CarWashScreen> {
                                   height: MediaQuery.of(context).size.height *
                                       0.02),
                               Text(
-                                widget.carwash.facilities,
+                                widget.carwash.value.facilities,
                                 style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 181, 181, 181),
@@ -795,7 +807,7 @@ class _CarWashState extends State<CarWashScreen> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                'Token: ${widget.carwash.price} RON',
+                                'Token: ${widget.carwash.value.price} RON',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color:
@@ -818,12 +830,13 @@ class _CarWashState extends State<CarWashScreen> {
                                   height: MediaQuery.of(context).size.height *
                                       0.01),
                               SizedBox(
-                                height:
-                                    widget.carwash.reviews.isEmpty ? 30 : 100,
+                                height: widget.carwash.value.reviews.isEmpty
+                                    ? 30
+                                    : 100,
                                 child: ListView(
                                   scrollDirection: Axis.horizontal,
                                   children: [
-                                    if (widget.carwash.reviews.isEmpty)
+                                    if (widget.carwash.value.reviews.isEmpty)
                                       Container(
                                         margin: const EdgeInsets.only(top: 10),
                                         child: Text(
@@ -839,7 +852,8 @@ class _CarWashState extends State<CarWashScreen> {
                                         ),
                                       )
                                     else
-                                      for (var review in widget.carwash.reviews)
+                                      for (var review
+                                          in widget.carwash.value.reviews)
                                         Container(
                                             margin: EdgeInsets.all(
                                                 MediaQuery.of(context).size.width *
@@ -1013,7 +1027,7 @@ class _CarWashState extends State<CarWashScreen> {
                                 GestureDetector(
                                   onTap: () {
                                     _carWashController.postReviewButton(
-                                        carwash: widget.carwash,
+                                        carwash: widget.carwash.value,
                                         username: _userController.username);
                                     Navigator.pushReplacement(
                                       context,
@@ -1058,7 +1072,8 @@ class _CarWashState extends State<CarWashScreen> {
                                       label: 'Call',
                                       onTap: () {
                                         FlutterPhoneDirectCaller.callNumber(
-                                            widget.carwash.phone.toString());
+                                            widget.carwash.value.phone
+                                                .toString());
                                       },
                                     ),
                                   if (widget.isManager)
@@ -1110,8 +1125,8 @@ class _CarWashState extends State<CarWashScreen> {
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MapScreen(
-                                                address:
-                                                    widget.carwash.address)),
+                                                address: widget
+                                                    .carwash.value.address)),
                                       );
                                     },
                                   ),

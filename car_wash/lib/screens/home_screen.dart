@@ -126,8 +126,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                     CarWashScreen(
                                                         carwash:
                                                             _carWashController
-                                                                    .carWashes[
-                                                                index],
+                                                                .carWashes
+                                                                .entries
+                                                                .elementAt(
+                                                                    index),
                                                         isManager:
                                                             _carWashController
                                                                 .authController
@@ -196,8 +198,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                           image: FirebaseImageProvider(
                                                               FirebaseUrl(
                                                                   _carWashController
-                                                                      .carWashes[
-                                                                          index]
+                                                                      .carWashes
+                                                                      .entries
+                                                                      .elementAt(
+                                                                          index)
+                                                                      .value
                                                                       .image)),
                                                           fit: BoxFit.cover,
                                                         ),
@@ -228,12 +233,18 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               RatingBar.builder(
                                                                 initialRating: _carWashController.averageRating(
                                                                     _carWashController
-                                                                        .carWashes[
-                                                                            index]
+                                                                        .carWashes
+                                                                        .entries
+                                                                        .elementAt(
+                                                                            index)
+                                                                        .value
                                                                         .nrRatings,
                                                                     _carWashController
-                                                                        .carWashes[
-                                                                            index]
+                                                                        .carWashes
+                                                                        .entries
+                                                                        .elementAt(
+                                                                            index)
+                                                                        .value
                                                                         .totalRatings),
                                                                 itemSize: MediaQuery.of(
                                                                             context)
@@ -262,7 +273,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               const SizedBox(
                                                                   width: 2),
                                                               Text(
-                                                                '(${_carWashController.carWashes[index].nrRatings})',
+                                                                '(${_carWashController.carWashes.entries.elementAt(index).value.nrRatings})',
                                                                 style:
                                                                     TextStyle(
                                                                   color: const Color
@@ -287,8 +298,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               0.48,
                                                           child: Text(
                                                             _carWashController
-                                                                .carWashes[
-                                                                    index]
+                                                                .carWashes
+                                                                .entries
+                                                                .elementAt(
+                                                                    index)
+                                                                .value
                                                                 .name,
                                                             style: TextStyle(
                                                               color: const Color
@@ -331,8 +345,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                                               0.47,
                                                           child: Text(
                                                             _carWashController
-                                                                .carWashes[
-                                                                    index]
+                                                                .carWashes
+                                                                .entries
+                                                                .elementAt(
+                                                                    index)
+                                                                .value
                                                                 .address,
                                                             style: TextStyle(
                                                               color: const Color
@@ -372,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .width *
                                                               0.47,
                                                           child: Text(
-                                                            "Token: ${_carWashController.carWashes[index].price} RON",
+                                                            "Token: ${_carWashController.carWashes.entries.elementAt(index).value.price} RON",
                                                             style: TextStyle(
                                                               color: const Color
                                                                   .fromARGB(
@@ -412,10 +429,14 @@ class _HomeScreenState extends State<HomeScreen> {
                                             ),
                                           ),
                                         ),
-                                        if (_carWashController.carWashes[index]
+                                        if (_carWashController.carWashes.entries
+                                                    .elementAt(index)
+                                                    .value
                                                     .offerType !=
                                                 0 &&
-                                            _carWashController.carWashes[index]
+                                            _carWashController.carWashes.entries
+                                                    .elementAt(index)
+                                                    .value
                                                     .offerDate !=
                                                 '')
                                           Positioned(

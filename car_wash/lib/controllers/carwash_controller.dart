@@ -8,8 +8,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class CarWashController {
-  List<CarWash> carWashes = [];
-  List<CarWash> saveCarWashes = [];
+  Map<String, CarWash> carWashes = {};
+  Map<String, CarWash> saveCarWashes = {};
   TextEditingController searchController = TextEditingController();
   final TextEditingController userReview = TextEditingController();
   TextEditingController announcementController = TextEditingController();
@@ -21,7 +21,7 @@ class CarWashController {
   String carwashId = '';
   double rating = 0.0;
 
-  Future<List<CarWash>> fetchCarWashesFromFirebase({
+  Future<Map<String, CarWash>> fetchCarWashesFromFirebase({
     required Function() displayInfo,
   }) async {
     if (AuthController().currentUser != null) {
@@ -60,7 +60,7 @@ class CarWashController {
                       "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
                   ? element['offerDate']
                   : '');
-          carWashes.add(carwash);
+          carWashes[element.id] = carwash;
         }
       }
     } else {
@@ -97,7 +97,7 @@ class CarWashController {
                         "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
                     ? element['offerDate']
                     : '');
-            carWashes.add(carwash);
+            carWashes[element.id] = carwash;
           }
         }
       }
@@ -110,15 +110,15 @@ class CarWashController {
 
   void searchCarWashes({
     required String query,
-    required Function(List<CarWash> searchResults) onSuccess,
+    required Function(Map<String, CarWash> searchResults) onSuccess,
   }) {
-    List<CarWash> searchResults = [];
+    Map<String, CarWash> searchResults = {};
 
-    for (var carwash in carWashes) {
-      if (carwash.name.toLowerCase().contains(query.toLowerCase())) {
-        searchResults.add(carwash);
+    carWashes.forEach((key, value) {
+      if (value.name.toLowerCase().contains(query.toLowerCase())) {
+        searchResults[key] = value;
       }
-    }
+    });
 
     onSuccess(searchResults);
   }
