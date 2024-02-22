@@ -1,14 +1,29 @@
+import 'package:car_wash/controllers/language_controller.dart';
 import 'package:car_wash/controllers/notification_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
 
-class StartScreen extends StatelessWidget {
-  const StartScreen({super.key});
+class StartScreen extends StatefulWidget {
+  const StartScreen({Key? key}) : super(key: key);
+
+  @override
+  State<StartScreen> createState() => _StartScreenState();
+}
+
+class _StartScreenState extends State<StartScreen> {
+  LanguageController _languageController = LanguageController();
+  NotificationController notificationController = NotificationController();
+
+  @override
+  void initState() {
+    _languageController.getLanguage(onSuccess: () => setState(() {}));
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
-    NotificationController notificationController = NotificationController();
     return Scaffold(
         body: Container(
       height: MediaQuery.of(context).size.height,
@@ -20,7 +35,6 @@ class StartScreen extends StatelessWidget {
       )),
       child: Padding(
           padding: EdgeInsets.only(
-              top: MediaQuery.of(context).size.height * 0.2,
               bottom: MediaQuery.of(context).size.height * 0.03),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -28,6 +42,102 @@ class StartScreen extends StatelessWidget {
             children: [
               Column(
                 children: [
+                  Padding(
+                      padding: EdgeInsets.only(
+                          top: MediaQuery.of(context).size.height * 0.05,
+                          bottom: MediaQuery.of(context).size.height * 0.1,
+                          left: MediaQuery.of(context).size.height * 0.32),
+                      child: Container(
+                          alignment: Alignment.topCenter,
+                          child: Container(
+                              height: MediaQuery.of(context).size.height * 0.04,
+                              padding: const EdgeInsets.all(2),
+                              width: MediaQuery.of(context).size.width * 0.25,
+                              decoration: const BoxDecoration(
+                                color: Color.fromARGB(255, 34, 34, 34),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(15)),
+                              ),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                      child: InkWell(
+                                          onTap: () async {
+                                            setState(() {
+                                              _languageController.language =
+                                                  'en';
+                                            });
+                                            _languageController.setLanguage();
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                color: _languageController
+                                                            .language ==
+                                                        'en'
+                                                    ? const Color.fromARGB(
+                                                        255, 255, 255, 255)
+                                                    : const Color.fromARGB(
+                                                        255, 34, 34, 34),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(15))),
+                                            child: Text("EN",
+                                                style: TextStyle(
+                                                  color: _languageController
+                                                              .language ==
+                                                          'en'
+                                                      ? const Color.fromARGB(
+                                                          255, 34, 34, 34)
+                                                      : const Color.fromARGB(
+                                                          255, 255, 255, 255),
+                                                  fontSize:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width /
+                                                          25,
+                                                )),
+                                          ))),
+                                  Expanded(
+                                      child: InkWell(
+                                          onTap: () {
+                                            setState(() {
+                                              _languageController.language =
+                                                  'ro';
+                                            });
+                                            _languageController.setLanguage();
+                                          },
+                                          child: Container(
+                                            alignment: Alignment.center,
+                                            decoration: BoxDecoration(
+                                                color: _languageController
+                                                            .language ==
+                                                        'ro'
+                                                    ? const Color.fromARGB(
+                                                        255, 255, 255, 255)
+                                                    : const Color.fromARGB(
+                                                        255, 34, 34, 34),
+                                                borderRadius:
+                                                    const BorderRadius.all(
+                                                        Radius.circular(15))),
+                                            child: Text("RO",
+                                                style: TextStyle(
+                                                  color: _languageController
+                                                              .language ==
+                                                          'ro'
+                                                      ? const Color.fromARGB(
+                                                          255, 34, 34, 34)
+                                                      : const Color.fromARGB(
+                                                          255, 255, 255, 255),
+                                                  fontSize:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width /
+                                                          25,
+                                                )),
+                                          ))),
+                                ],
+                              )))),
                   Text(
                     "Car Wash",
                     textAlign: TextAlign.center,
