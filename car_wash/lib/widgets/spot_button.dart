@@ -1,28 +1,47 @@
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
-class SeatButton extends StatefulWidget {
+class SpotButton extends StatefulWidget {
   final int nr;
   final IconData icon;
-  final bool activated;
+  final String id;
   final Function(int, bool) onButtonPressed;
-  const SeatButton(
+  const SpotButton(
       {super.key,
       required this.nr,
       required this.icon,
-      required this.activated,
+      required this.id,
       required this.onButtonPressed});
 
   @override
-  State<SeatButton> createState() => _SeatButtonState();
+  State<SpotButton> createState() => _SeatButtonState();
 }
 
-class _SeatButtonState extends State<SeatButton> {
-  late bool isButtonPressed;
+class _SeatButtonState extends State<SpotButton> {
+  bool isButtonPressed = false;
 
   @override
   void initState() {
-    isButtonPressed = widget.activated;
+    reloadData(widget.id);
     super.initState();
+  }
+
+  void reloadData(String id) {
+    FirebaseDatabase.instance
+        .ref(id)
+        .child('spots')
+        .child(widget.nr.toString())
+        .child('broken')
+        .onValue
+        .listen((event) {
+      if (event.snapshot.value != null) {
+        if (mounted) {
+          setState(() {
+            isButtonPressed = event.snapshot.value == 1 ? true : false;
+          });
+        }
+      }
+    });
   }
 
   @override

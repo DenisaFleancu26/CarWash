@@ -1,4 +1,3 @@
-import 'package:car_wash/models/announcement.dart';
 import 'package:car_wash/models/review.dart';
 
 class CarWash {
@@ -14,11 +13,6 @@ class CarWash {
   int totalRatings;
   int nrRatings;
   List<Review> reviews;
-  List brokenSpots;
-  List<Announcement> announcements;
-  int offerType;
-  double offerValue;
-  String offerDate;
 
   CarWash(
       {required this.name,
@@ -32,10 +26,5 @@ class CarWash {
       required this.price,
       required this.totalRatings,
       required this.nrRatings,
-      required this.reviews,
-      required this.brokenSpots,
-      required this.announcements,
-      required this.offerType,
-      required this.offerValue,
-      required this.offerDate});
+      required this.reviews});
 }

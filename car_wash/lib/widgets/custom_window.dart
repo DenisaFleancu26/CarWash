@@ -9,7 +9,7 @@ class CustomWindow extends StatelessWidget {
   final bool isManager;
   CustomWindow({super.key, required this.carwash, required this.isManager});
 
-  final CarWash carwash;
+  final MapEntry<String, CarWash> carwash;
   final CarWashController _carWashController = CarWashController();
 
   @override
@@ -32,7 +32,7 @@ class CustomWindow extends StatelessWidget {
                 bottomLeft: Radius.circular(30),
               ),
               image: DecorationImage(
-                image: FirebaseImageProvider(FirebaseUrl(carwash.image)),
+                image: FirebaseImageProvider(FirebaseUrl(carwash.value.image)),
                 fit: BoxFit.cover,
               ),
             ),
@@ -45,7 +45,7 @@ class CustomWindow extends StatelessWidget {
               Row(mainAxisAlignment: MainAxisAlignment.start, children: [
                 RatingBar.builder(
                   initialRating: _carWashController.averageRating(
-                      carwash.nrRatings, carwash.totalRatings),
+                      carwash.value.nrRatings, carwash.value.totalRatings),
                   itemSize: MediaQuery.of(context).size.width / 17,
                   unratedColor: const Color.fromARGB(195, 255, 255, 255),
                   itemBuilder: (context, _) =>
@@ -55,7 +55,7 @@ class CustomWindow extends StatelessWidget {
                 ),
                 const SizedBox(width: 2),
                 Text(
-                  '(${carwash.nrRatings})',
+                  '(${carwash.value.nrRatings})',
                   style: TextStyle(
                     color: const Color.fromARGB(195, 190, 190, 190),
                     fontSize: MediaQuery.of(context).size.width / 30,
@@ -65,7 +65,7 @@ class CustomWindow extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
-                  carwash.name,
+                  carwash.value.name,
                   style: TextStyle(
                     color: const Color.fromARGB(223, 255, 255, 255),
                     fontWeight: FontWeight.bold,
@@ -84,7 +84,7 @@ class CustomWindow extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
-                  carwash.address,
+                  carwash.value.address,
                   style: TextStyle(
                     color: const Color.fromARGB(198, 255, 255, 255),
                     fontSize: MediaQuery.of(context).size.width / 40,

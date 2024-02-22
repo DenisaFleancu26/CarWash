@@ -5,12 +5,11 @@ import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
 import 'package:firebase_database/firebase_database.dart';
 
 class CarWashController {
-  List<CarWash> carWashes = [];
-  List<CarWash> saveCarWashes = [];
+  Map<String, CarWash> carWashes = {};
+  Map<String, CarWash> saveCarWashes = {};
   TextEditingController searchController = TextEditingController();
   final TextEditingController userReview = TextEditingController();
   TextEditingController announcementController = TextEditingController();
@@ -22,7 +21,7 @@ class CarWashController {
   String carwashId = '';
   double rating = 0.0;
 
-  Future<List<CarWash>> fetchCarWashesFromFirebase({
+  Future<Map<String, CarWash>> fetchCarWashesFromFirebase({
     required Function() displayInfo,
   }) async {
     if (AuthController().currentUser != null) {
@@ -42,30 +41,21 @@ class CarWashController {
         for (var element in manager.docs) {
           List<Review> reviews = await getReviews(
               manager: AuthController().currentUser!.uid, carwash: element.id);
-          List<Announcement> announcements = await getAnnouncements(
-              manager: AuthController().currentUser!.uid, carwash: element.id);
           CarWash carwash = CarWash(
-              name: element['name'],
-              hours: element['hours'],
-              image: element['image'] ?? '',
-              address: element['address'],
-              facilities: element['facilities'],
-              phone: element['phone'],
-              smallVehicleSeats: element['small-vehicle'],
-              bigVehicleSeats: element['big-vehicle'],
-              price: (element['price']).toDouble(),
-              nrRatings: element['nrRatings'],
-              totalRatings: element['totalRatings'],
-              reviews: reviews,
-              brokenSpots: element['brokenSpots'],
-              announcements: announcements,
-              offerType: element['offerType'],
-              offerValue: element['offerValue'].toDouble(),
-              offerDate: element['offerDate'] ==
-                      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
-                  ? element['offerDate']
-                  : '');
-          carWashes.add(carwash);
+            name: element['name'],
+            hours: element['hours'],
+            image: element['image'] ?? '',
+            address: element['address'],
+            facilities: element['facilities'],
+            phone: element['phone'],
+            smallVehicleSeats: element['small-vehicle'],
+            bigVehicleSeats: element['big-vehicle'],
+            price: (element['price']).toDouble(),
+            nrRatings: element['nrRatings'],
+            totalRatings: element['totalRatings'],
+            reviews: reviews,
+          );
+          carWashes[element.id] = carwash;
         }
       }
     } else {
@@ -82,30 +72,22 @@ class CarWashController {
           for (var element in managerCarWashes.docs) {
             List<Review> reviews =
                 await getReviews(manager: manager.id, carwash: element.id);
-            List<Announcement> announcements = await getAnnouncements(
-                manager: manager.id, carwash: element.id);
+
             CarWash carwash = CarWash(
-                name: element['name'],
-                hours: element['hours'],
-                image: element['image'] ?? '',
-                address: element['address'],
-                facilities: element['facilities'],
-                phone: element['phone'],
-                smallVehicleSeats: element['small-vehicle'],
-                bigVehicleSeats: element['big-vehicle'],
-                price: (element['price']).toDouble(),
-                nrRatings: element['nrRatings'],
-                totalRatings: element['totalRatings'],
-                reviews: reviews,
-                brokenSpots: element['brokenSpots'],
-                announcements: announcements,
-                offerType: element['offerType'],
-                offerValue: element['offerValue'].toDouble(),
-                offerDate: element['offerDate'] ==
-                        "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
-                    ? element['offerDate']
-                    : '');
-            carWashes.add(carwash);
+              name: element['name'],
+              hours: element['hours'],
+              image: element['image'] ?? '',
+              address: element['address'],
+              facilities: element['facilities'],
+              phone: element['phone'],
+              smallVehicleSeats: element['small-vehicle'],
+              bigVehicleSeats: element['big-vehicle'],
+              price: (element['price']).toDouble(),
+              nrRatings: element['nrRatings'],
+              totalRatings: element['totalRatings'],
+              reviews: reviews,
+            );
+            carWashes[element.id] = carwash;
           }
         }
       }
@@ -118,15 +100,15 @@ class CarWashController {
 
   void searchCarWashes({
     required String query,
-    required Function(List<CarWash> searchResults) onSuccess,
+    required Function(Map<String, CarWash> searchResults) onSuccess,
   }) {
-    List<CarWash> searchResults = [];
+    Map<String, CarWash> searchResults = {};
 
-    for (var carwash in carWashes) {
-      if (carwash.name.toLowerCase().contains(query.toLowerCase())) {
-        searchResults.add(carwash);
+    carWashes.forEach((key, value) {
+      if (value.name.toLowerCase().contains(query.toLowerCase())) {
+        searchResults[key] = value;
       }
-    }
+    });
 
     onSuccess(searchResults);
   }
@@ -241,106 +223,39 @@ class CarWashController {
     return nrRatings == 0 ? 0.0 : totalRatings / nrRatings;
   }
 
-  Future<void> updateBrokenSpots(
-      {required List brokenSpots, required List removeBrokenSpots}) async {
-    await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(managerId)
-        .collection('car-wash')
-        .doc(carwashId)
-        .update({'brokenSpots': brokenSpots});
-    DatabaseReference databaseReference = FirebaseDatabase.instance.ref();
-    for (var element in brokenSpots) {
-      await databaseReference
-          .child(carwashId)
-          .child(element.toString())
-          .child("broken")
-          .set(1);
-    }
-    for (var element in removeBrokenSpots) {
-      await databaseReference
-          .child(carwashId)
-          .child(element.toString())
-          .child("broken")
-          .set(0);
-    }
-  }
-
-  Future<void> postAnnouncement({required CarWash carwash}) async {
-    await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(managerId)
-        .collection('car-wash')
-        .doc(carwashId)
-        .collection('announcement')
-        .add({
+  Future<void> postAnnouncement({required String carwashID}) async {
+    FirebaseDatabase.instance.ref(carwashID).child('announcements').push().set({
       'message': announcementController.text,
-      'date':
+      'data':
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
-
-    Announcement add = Announcement(
-        message: announcementController.text,
-        date:
-            "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}");
-    carwash.announcements.add(add);
   }
 
-  Future<List<Announcement>> getAnnouncements(
-      {required String manager, required String carwash}) async {
-    final collection = await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(manager)
-        .collection('car-wash')
-        .doc(carwash)
-        .collection('announcement')
-        .get();
-
-    List<Announcement> announcements = [];
-    for (var element in collection.docs) {
-      Announcement add =
-          Announcement(message: element['message'], date: element['date']);
-      announcements.add(add);
-    }
-
-    announcements.sort((a, b) {
-      DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
-      DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
-      return dateB.compareTo(dateA);
+  Future<void> deleteAnnouncement({required Announcement announcement}) async {
+    DatabaseReference parentRef =
+        FirebaseDatabase.instance.ref(carwashId).child('announcements');
+    parentRef.once().then((event) {
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic> children =
+            event.snapshot.value as Map<dynamic, dynamic>;
+        children.forEach((key, value) {
+          if (value['data'] == announcement.date &&
+              value['message'] == announcement.message) {
+            parentRef.child(key).remove();
+          }
+        });
+      }
     });
-
-    return announcements;
-  }
-
-  Future<void> deleteAnnouncement(
-      {required Announcement announcement, required CarWash carwash}) async {
-    QuerySnapshot querySnapshot = await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(managerId)
-        .collection('car-wash')
-        .doc(carwashId)
-        .collection('announcement')
-        .where('message', isEqualTo: announcement.message)
-        .where('date', isEqualTo: announcement.date)
-        .get();
-
-    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-      await doc.reference.delete();
-    }
-    carwash.announcements.remove(announcement);
   }
 
   Future<void> makeOffer(
-      {required int offerType, required CarWash carwash}) async {
-    await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(managerId)
-        .collection('car-wash')
-        .doc(carwashId)
-        .update({
-      'offerType': offerType,
-      'offerValue': double.parse(offerController.text),
-      'offerDate':
+      {required int offerType,
+      required CarWash carwash,
+      required String id}) async {
+    await FirebaseDatabase.instance.ref(id).child('offer').update({
+      'type': offerType,
+      'value': double.parse(offerController.text),
+      'data':
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
     await notificationController.sendNotification(
@@ -349,12 +264,10 @@ class CarWashController {
         offerValue: offerController.text);
   }
 
-  Future<void> disableOffer() async {
-    await FirebaseFirestore.instance
-        .collection('Managers')
-        .doc(managerId)
-        .collection('car-wash')
-        .doc(carwashId)
-        .update({'offerType': 0, 'offerValue': 0, 'offerDate': ''});
+  Future<void> disableOffer({required String id}) async {
+    await FirebaseDatabase.instance
+        .ref(id)
+        .child('offer')
+        .update({'type': 0, 'value': 0, 'data': ''});
   }
 }

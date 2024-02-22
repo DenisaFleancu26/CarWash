@@ -6,7 +6,7 @@ import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
 
 class AnnouncementScreen extends StatefulWidget {
-  final CarWash carwash;
+  final MapEntry<String, CarWash> carwash;
   final CarWashController controller;
   const AnnouncementScreen(
       {Key? key, required this.carwash, required this.controller})
@@ -124,7 +124,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     } else {
                       errorMessage = '';
                       await widget.controller
-                          .postAnnouncement(carwash: widget.carwash)
+                          .postAnnouncement(carwashID: widget.carwash.key)
                           .whenComplete(() => Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(

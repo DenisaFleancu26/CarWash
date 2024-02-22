@@ -1,42 +1,43 @@
-import 'package:car_wash/controllers/carwash_controller.dart';
-import 'package:car_wash/models/car_wash.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class SpotGenerate extends StatefulWidget {
-  final bool contain;
   final IconData icon;
   final int nr;
-  final CarWash carwash;
+  final String id;
 
   const SpotGenerate(
-      {super.key,
-      required this.carwash,
-      required this.contain,
-      required this.icon,
-      required this.nr});
+      {super.key, required this.id, required this.icon, required this.nr});
 
   @override
   State<SpotGenerate> createState() => _SpotGenerate();
 }
 
 class _SpotGenerate extends State<SpotGenerate> {
-  Color colors = const Color.fromARGB(255, 0, 255, 8);
-  final CarWashController _carWashController = CarWashController();
+  Color colors = Color.fromARGB(0, 0, 255, 8);
+  int? broken = 0;
 
-  void reloadData(String id) {
+  void reloadData() {
     FirebaseDatabase.instance
-        .ref(id)
+        .ref(widget.id)
+        .child('spots')
         .child(widget.nr.toString())
-        .child('available')
         .onValue
         .listen((event) {
       if (event.snapshot.value != null) {
+        Map<String, int> spot = {};
+        Map<dynamic, dynamic>? data =
+            event.snapshot.value as Map<dynamic, dynamic>;
+        data.forEach((key, value) {
+          spot[key] = value as int;
+        });
         if (mounted) {
           setState(() {
-            colors = event.snapshot.value == 1
-                ? const Color.fromARGB(255, 255, 17, 0)
-                : const Color.fromARGB(255, 0, 255, 8);
+            colors = spot['broken'] == 1
+                ? const Color.fromARGB(255, 6, 6, 6)
+                : spot['available'] == 1
+                    ? const Color.fromARGB(255, 255, 17, 0)
+                    : const Color.fromARGB(255, 0, 255, 8);
           });
         }
       }
@@ -45,11 +46,8 @@ class _SpotGenerate extends State<SpotGenerate> {
 
   @override
   void initState() {
-    _carWashController
-        .findId(name: widget.carwash.name, address: widget.carwash.address)
-        .whenComplete(() {
-      reloadData(_carWashController.carwashId);
-    });
+    reloadData();
+
     super.initState();
   }
 
@@ -75,7 +73,7 @@ class _SpotGenerate extends State<SpotGenerate> {
         ],
         borderRadius: BorderRadius.circular(20.0),
         border: Border.all(
-          color: widget.contain ? const Color.fromARGB(255, 6, 6, 6) : colors,
+          color: colors,
           width: 2.0,
         ),
       ),
