@@ -28,6 +28,7 @@ class CustomEntryField extends StatelessWidget {
       decoration: InputDecoration(
         hintText: title,
         errorText: errorMessage,
+        errorStyle: TextStyle(fontSize: MediaQuery.of(context).size.width / 35),
         hintStyle: TextStyle(
           color: const Color.fromARGB(255, 157, 157, 157),
           shadows: [

@@ -13,9 +13,6 @@ class CarWash {
   int totalRatings;
   int nrRatings;
   List<Review> reviews;
-  int offerType;
-  double offerValue;
-  String offerDate;
 
   CarWash(
       {required this.name,
@@ -29,8 +26,5 @@ class CarWash {
       required this.price,
       required this.totalRatings,
       required this.nrRatings,
-      required this.reviews,
-      required this.offerType,
-      required this.offerValue,
-      required this.offerDate});
+      required this.reviews});
 }

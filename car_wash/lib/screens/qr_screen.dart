@@ -9,12 +9,20 @@ import 'package:qr_flutter/qr_flutter.dart';
 import 'package:randomstring_dart/randomstring_dart.dart';
 
 class QRScreen extends StatefulWidget {
-  final String? carwashId;
   final int? tokens;
   final MapEntry<String, CarWash>? carWash;
   final TransactionModel? transaction;
+  final int? offerType;
+  final String? offerDate;
+  final double? offerValue;
   const QRScreen(
-      {Key? key, this.carwashId, this.tokens, this.carWash, this.transaction})
+      {Key? key,
+      this.tokens,
+      this.carWash,
+      this.transaction,
+      this.offerDate,
+      this.offerType,
+      this.offerValue})
       : super(key: key);
 
   @override
@@ -26,26 +34,26 @@ class _QRScreenState extends State<QRScreen> {
 
   final TransactionController _transactionController = TransactionController();
   String qr = '';
-  DateTime currentDate = DateTime.now();
+  String date =
+      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
 
   @override
   void initState() {
     if (widget.carWash != null) {
       qr =
-          '${widget.carwashId} ${widget.carWash!.value.offerType == 2 && widget.carWash!.value.offerDate != '' && widget.tokens! >= widget.carWash!.value.offerValue ? widget.tokens! + widget.tokens! ~/ widget.carWash!.value.offerValue : widget.tokens} ${RandomString().getRandomString()}';
+          '${widget.carWash!.key} ${widget.offerType == 2 && widget.offerDate == date && widget.tokens! >= widget.offerValue!.toInt() ? widget.tokens! + widget.tokens! ~/ widget.offerValue! : widget.tokens} ${RandomString().getRandomString()}';
 
       _transactionController.saveTransaction(
           dataQR: qr,
           carwash: widget.carWash!.value.name,
           address: widget.carWash!.value.address,
-          totalPrice: (widget.carWash!.value.offerType == 1 &&
-                  widget.carWash!.value.offerDate != '')
+          totalPrice: (widget.offerType == 1 && widget.offerDate == date)
               ? widget.carWash!.value.price *
                   widget.tokens! *
-                  (100 - widget.carWash!.value.offerValue) /
+                  (100 - widget.offerValue!) /
                   100
               : widget.carWash!.value.price * widget.tokens!,
-          date: "${currentDate.day}/${currentDate.month}/${currentDate.year}");
+          date: date);
     } else {
       qr = widget.transaction!.dataQR;
     }

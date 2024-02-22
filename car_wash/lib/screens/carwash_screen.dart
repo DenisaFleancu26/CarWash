@@ -44,6 +44,8 @@ class _CarWashState extends State<CarWashScreen> {
   final PaymentController _paymentController = PaymentController();
   bool display = true;
   List<Announcement> announcements = [];
+  String date =
+      "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
 
   @override
   void initState() {
@@ -55,33 +57,31 @@ class _CarWashState extends State<CarWashScreen> {
     _carWashController.findId(
         name: widget.carwash.value.name, address: widget.carwash.value.address);
 
-    setState(() {
-      FirebaseDatabase.instance
-          .ref(widget.carwash.key)
-          .child('announcements')
-          .onValue
-          .listen((event) {
-        if (event.snapshot.value != null) {
-          Map<dynamic, dynamic>? data =
-              event.snapshot.value as Map<dynamic, dynamic>;
-          data.forEach((key, value) {
-            Announcement add = Announcement(
-                message: value['message'] as String,
-                date: value['data'] as String);
-            if (!add.isDuplicate(announcements)) {
-              announcements.add(add);
-            }
-          });
-          announcements.sort((a, b) {
-            DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
-            DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
-            return dateB.compareTo(dateA);
-          });
-          if (mounted) {
-            setState(() {});
+    FirebaseDatabase.instance
+        .ref(widget.carwash.key)
+        .child('announcements')
+        .onValue
+        .listen((event) {
+      if (event.snapshot.value != null) {
+        Map<dynamic, dynamic>? data =
+            event.snapshot.value as Map<dynamic, dynamic>;
+        data.forEach((key, value) {
+          Announcement add = Announcement(
+              message: value['message'] as String,
+              date: value['data'] as String);
+          if (!add.isDuplicate(announcements)) {
+            announcements.add(add);
           }
+        });
+        announcements.sort((a, b) {
+          DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
+          DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
+          return dateB.compareTo(dateA);
+        });
+        if (mounted) {
+          setState(() {});
         }
-      });
+      }
     });
     display = false;
 
@@ -199,183 +199,214 @@ class _CarWashState extends State<CarWashScreen> {
   }
 
   void updateActivatedIndices(int index, bool isPressed) {
-    setState(() {
-      FirebaseDatabase.instance
-          .ref(widget.carwash.key)
-          .child('spots')
-          .child(index.toString())
-          .child('broken')
-          .set(isPressed == true ? 1 : 0);
-    });
+    FirebaseDatabase.instance
+        .ref(widget.carwash.key)
+        .child('spots')
+        .child(index.toString())
+        .child('broken')
+        .set(isPressed == true ? 1 : 0);
   }
 
   Future showBottomSheet() {
     return showModalBottomSheet(
-      context: context,
-      backgroundColor: const Color.fromARGB(255, 216, 216, 216),
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topRight: Radius.circular(50),
-          topLeft: Radius.circular(50),
+        context: context,
+        backgroundColor: const Color.fromARGB(255, 216, 216, 216),
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.only(
+            topRight: Radius.circular(50),
+            topLeft: Radius.circular(50),
+          ),
         ),
-      ),
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setState) {
-            return SizedBox(
-              height: (widget.carwash.value.offerType == 0 ||
-                      widget.carwash.value.offerDate == '')
-                  ? MediaQuery.of(context).size.height * 0.2
-                  : MediaQuery.of(context).size.height * 0.3,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (widget.carwash.value.offerType != 0 &&
-                      widget.carwash.value.offerDate != '')
-                    Text(
-                      textAlign: TextAlign.center,
-                      "Today's Offer:",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 23, 156, 0),
-                          fontSize: MediaQuery.of(context).size.width / 13,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  if (widget.carwash.value.offerType != 0 &&
-                      widget.carwash.value.offerDate != '')
-                    Text(
-                      textAlign: TextAlign.center,
-                      widget.carwash.value.offerType == 1
-                          ? "${widget.carwash.value.offerValue}% discount to the final price!"
-                          : "Buy ${widget.carwash.value.offerValue.toInt()} tokens, get one free",
-                      style: TextStyle(
-                          color: const Color.fromARGB(255, 23, 156, 0),
-                          fontSize: MediaQuery.of(context).size.width / 18,
-                          fontWeight: FontWeight.bold),
-                    ),
-                  if (widget.carwash.value.offerType != 0 &&
-                      widget.carwash.value.offerDate != '')
-                    HorizontalLine(
-                        distance: MediaQuery.of(context).size.height * 0.03),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      MeniuButton(
-                          icon: Icons.remove,
-                          onTap: () {
-                            setState(() {
-                              if (tokens > 0) tokens--;
-                            });
-                          }),
-                      Row(
-                        children: [
-                          Text(
-                            'Tokens:',
-                            style: TextStyle(
-                              color: const Color.fromARGB(255, 34, 34, 34),
-                              fontSize: MediaQuery.of(context).size.width / 20,
-                            ),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            '$tokens',
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                fontSize:
-                                    MediaQuery.of(context).size.width / 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      MeniuButton(
-                          icon: Icons.add,
-                          onTap: () {
-                            setState(() {
-                              tokens++;
-                            });
-                          })
-                    ],
-                  ),
-                  SizedBox(height: MediaQuery.of(context).size.height * 0.03),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Row(
-                        children: [
-                          Text(
-                            'Total:',
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                fontSize:
-                                    MediaQuery.of(context).size.width / 20,
-                                fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(width: 10),
-                          Text(
-                            widget.carwash.value.offerType == 1 &&
-                                    widget.carwash.value.offerDate != ''
-                                ? '${widget.carwash.value.price * tokens * (100 - widget.carwash.value.offerValue) / 100} RON'
-                                : '${widget.carwash.value.price * tokens} RON',
-                            style: TextStyle(
-                                color: const Color.fromARGB(255, 34, 34, 34),
-                                fontSize:
-                                    MediaQuery.of(context).size.width / 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                      MeniuButton(
-                        icon: Icons.credit_card,
-                        label: 'Make Payment',
-                        onTap: () async {
-                          if (tokens > 0) {
-                            if (user != null) {
-                              await _paymentController
-                                  .makePayment((widget
-                                                  .carwash.value.offerType ==
-                                              1 &&
-                                          widget.carwash.value.offerDate != '')
-                                      ? widget.carwash.value.price *
-                                          tokens *
-                                          (100 -
-                                              widget.carwash.value.offerValue)
-                                      : widget.carwash.value.price *
-                                          tokens *
-                                          100)
-                                  .then((value) => {
-                                        if (_paymentController
-                                                .successfulPayment ==
-                                            true)
-                                          Navigator.push(
-                                              context,
-                                              MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      QRScreen(
-                                                        carwashId:
-                                                            _carWashController
-                                                                .carwashId,
-                                                        tokens: tokens,
-                                                        carWash: widget.carwash,
-                                                      )))
+        builder: (context) {
+          return StatefulBuilder(
+            builder: (context, setState) {
+              return StreamBuilder(
+                  stream: FirebaseDatabase.instance
+                      .ref(widget.carwash.key)
+                      .child('offer')
+                      .onValue,
+                  builder: (context, snapshot) {
+                    if (snapshot.hasData && snapshot.data != null) {
+                      Map<dynamic, dynamic> data = snapshot.data!.snapshot.value
+                          as Map<dynamic, dynamic>;
+                      String offerDate = data['data'] as String;
+                      int offerType = data['type'] as int;
+                      double offerValue = data['value'].toDouble();
+
+                      return SizedBox(
+                        height: (offerType == 0 || offerDate != date)
+                            ? MediaQuery.of(context).size.height * 0.2
+                            : MediaQuery.of(context).size.height * 0.3,
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (offerType != 0 && offerDate == date)
+                              Text(
+                                textAlign: TextAlign.center,
+                                "Today's Offer:",
+                                style: TextStyle(
+                                    color:
+                                        const Color.fromARGB(255, 23, 156, 0),
+                                    fontSize:
+                                        MediaQuery.of(context).size.width / 13,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            if (offerType != 0 && offerDate == date)
+                              Text(
+                                textAlign: TextAlign.center,
+                                offerType == 1
+                                    ? "${offerValue}% discount to the final price!"
+                                    : "Buy ${offerValue.toInt()} tokens, get one free",
+                                style: TextStyle(
+                                    color:
+                                        const Color.fromARGB(255, 23, 156, 0),
+                                    fontSize:
+                                        MediaQuery.of(context).size.width / 18,
+                                    fontWeight: FontWeight.bold),
+                              ),
+                            if (offerType != 0 && offerDate == date)
+                              HorizontalLine(
+                                  distance: MediaQuery.of(context).size.height *
+                                      0.03),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                MeniuButton(
+                                    icon: Icons.remove,
+                                    onTap: () {
+                                      setState(() {
+                                        if (tokens > 0) tokens--;
                                       });
-                            } else {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          const LoginScreen()));
-                            }
-                          }
-                        },
-                      )
-                    ],
-                  )
-                ],
-              ),
-            );
-          },
-        );
-      },
-    );
+                                    }),
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Tokens:',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 34, 34, 34),
+                                        fontSize:
+                                            MediaQuery.of(context).size.width /
+                                                20,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      '$tokens',
+                                      style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 34, 34, 34),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                MeniuButton(
+                                    icon: Icons.add,
+                                    onTap: () {
+                                      setState(() {
+                                        tokens++;
+                                      });
+                                    })
+                              ],
+                            ),
+                            SizedBox(
+                                height:
+                                    MediaQuery.of(context).size.height * 0.03),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Row(
+                                  children: [
+                                    Text(
+                                      'Total:',
+                                      style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 34, 34, 34),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              20,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      offerType == 1 && offerDate == date
+                                          ? '${widget.carwash.value.price * tokens * (100 - offerValue) / 100} RON'
+                                          : '${widget.carwash.value.price * tokens} RON',
+                                      style: TextStyle(
+                                          color: const Color.fromARGB(
+                                              255, 34, 34, 34),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              18,
+                                          fontWeight: FontWeight.bold),
+                                    ),
+                                  ],
+                                ),
+                                MeniuButton(
+                                  icon: Icons.credit_card,
+                                  label: 'Make Payment',
+                                  onTap: () async {
+                                    if (tokens > 0) {
+                                      if (user != null) {
+                                        await _paymentController
+                                            .makePayment((offerType == 1 &&
+                                                    offerDate == date)
+                                                ? widget.carwash.value.price *
+                                                    tokens *
+                                                    (100 - offerValue)
+                                                : widget.carwash.value.price *
+                                                    tokens *
+                                                    100)
+                                            .then((value) => {
+                                                  if (_paymentController
+                                                          .successfulPayment ==
+                                                      true)
+                                                    Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                            builder:
+                                                                (context) =>
+                                                                    QRScreen(
+                                                                      tokens:
+                                                                          tokens,
+                                                                      carWash:
+                                                                          widget
+                                                                              .carwash,
+                                                                      offerDate:
+                                                                          offerDate,
+                                                                      offerType:
+                                                                          offerType,
+                                                                      offerValue:
+                                                                          offerValue,
+                                                                    )))
+                                                });
+                                      } else {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    const LoginScreen()));
+                                      }
+                                    }
+                                  },
+                                )
+                              ],
+                            )
+                          ],
+                        ),
+                      );
+                    } else
+                      return Container();
+                  });
+            },
+          );
+        });
   }
 
   @override
