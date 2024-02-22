@@ -62,6 +62,7 @@ class _CarWashState extends State<CarWashScreen> {
         .child('announcements')
         .onValue
         .listen((event) {
+      List<Announcement> adds = [];
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic>? data =
             event.snapshot.value as Map<dynamic, dynamic>;
@@ -69,15 +70,21 @@ class _CarWashState extends State<CarWashScreen> {
           Announcement add = Announcement(
               message: value['message'] as String,
               date: value['data'] as String);
-          if (!add.isDuplicate(announcements)) {
-            announcements.add(add);
+          if (!add.isDuplicate(adds)) {
+            adds.add(add);
           }
         });
-        announcements.sort((a, b) {
+        adds.sort((a, b) {
           DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
           DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
           return dateB.compareTo(dateA);
         });
+        announcements = adds;
+        if (mounted) {
+          setState(() {});
+        }
+      } else {
+        announcements = adds;
         if (mounted) {
           setState(() {});
         }
