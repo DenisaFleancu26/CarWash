@@ -43,9 +43,13 @@ class NotificationController {
 
     Set<String> tokens = {};
 
+    var userToken = await FirebaseMessaging.instance.getToken();
+
     for (var element in collection.docs) {
       if (!tokens.contains(element['token'])) {
-        tokens.add(element['token']);
+        if (element['token'] != userToken) {
+          tokens.add(element['token']);
+        }
       }
     }
 
