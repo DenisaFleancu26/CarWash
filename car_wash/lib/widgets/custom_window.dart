@@ -122,9 +122,14 @@ class CustomWindow extends StatelessWidget {
                         child: LocaleText(
                       'map_button',
                       style: TextStyle(
-                          fontSize: MediaQuery.of(context).size.width / 35,
-                          decoration: TextDecoration.underline,
-                          color: Color.fromARGB(255, 222, 222, 222)),
+                        fontSize: MediaQuery.of(context).size.width / 35,
+                        shadows: const [
+                          Shadow(color: Colors.white, offset: Offset(0, -2))
+                        ],
+                        color: Colors.transparent,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
+                      ),
                     )),
                   ),
                 ),

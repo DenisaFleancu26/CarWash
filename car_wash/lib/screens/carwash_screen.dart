@@ -713,9 +713,17 @@ class _CarWashState extends State<CarWashScreen> {
                                                                   .size
                                                                   .width /
                                                               30,
+                                                      shadows: const [
+                                                        Shadow(
+                                                            color: Colors.grey,
+                                                            offset:
+                                                                Offset(0, -2))
+                                                      ],
+                                                      color: Colors.transparent,
                                                       decoration: TextDecoration
                                                           .underline,
-                                                      color: Colors.grey,
+                                                      decorationColor:
+                                                          Colors.grey,
                                                     )),
                                               ),
                                             ),
@@ -771,9 +779,15 @@ class _CarWashState extends State<CarWashScreen> {
                                                         .size
                                                         .width /
                                                     30,
+                                                shadows: const [
+                                                  Shadow(
+                                                      color: Colors.grey,
+                                                      offset: Offset(0, -2))
+                                                ],
+                                                color: Colors.transparent,
                                                 decoration:
                                                     TextDecoration.underline,
-                                                color: Colors.grey,
+                                                decorationColor: Colors.grey,
                                               )),
                                         ),
                                       ),
@@ -1098,7 +1112,7 @@ class _CarWashState extends State<CarWashScreen> {
                                         shadows: const [
                                           Shadow(
                                               color: Colors.grey,
-                                              offset: Offset(0, -5))
+                                              offset: Offset(0, -2))
                                         ],
                                         color: Colors.transparent,
                                         decoration: TextDecoration.underline,

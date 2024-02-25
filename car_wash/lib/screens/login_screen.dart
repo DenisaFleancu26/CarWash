@@ -162,11 +162,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                   child: LocaleText(
                                 'forgot_your_password',
                                 style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 25,
-                                    decoration: TextDecoration.underline,
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255)),
+                                  fontSize:
+                                      MediaQuery.of(context).size.width / 25,
+                                  shadows: const [
+                                    Shadow(
+                                        color: Colors.white,
+                                        offset: Offset(0, -2))
+                                  ],
+                                  color: Colors.transparent,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: Colors.white,
+                                ),
                               )),
                             ),
                           ),
@@ -224,8 +230,14 @@ class _LoginScreenState extends State<LoginScreen> {
                                   LocaleText(
                                     "dont_have_an_account",
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      shadows: const [
+                                        Shadow(
+                                            color: Colors.white,
+                                            offset: Offset(0, -2))
+                                      ],
+                                      color: Colors.transparent,
                                       decoration: TextDecoration.underline,
+                                      decorationColor: Colors.white,
                                       fontSize:
                                           MediaQuery.of(context).size.width /
                                               25,
@@ -254,14 +266,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                           child: LocaleText(
                                         "create_account",
                                         style: TextStyle(
-                                            fontSize: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                25,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: const Color.fromARGB(
-                                                255, 0, 0, 0)),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              25,
+                                          shadows: const [
+                                            Shadow(
+                                                color: const Color.fromARGB(
+                                                    255, 0, 0, 0),
+                                                offset: Offset(0, -2))
+                                          ],
+                                          color: Colors.transparent,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: const Color.fromARGB(
+                                              255, 0, 0, 0),
+                                        ),
                                       )),
                                     ),
                                   ),

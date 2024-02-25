@@ -170,11 +170,16 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                   .size
                                                                   .width *
                                                               0.07,
+                                                      top:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .height *
+                                                              0.01,
                                                       bottom:
                                                           MediaQuery.of(context)
                                                                   .size
                                                                   .height *
-                                                              0.026),
+                                                              0.016),
                                                   child: ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.circular(
@@ -452,7 +457,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                                         MediaQuery.of(context)
                                                                 .size
                                                                 .height *
-                                                            0.1,
+                                                            0.1035,
                                                     left: MediaQuery.of(context)
                                                             .size
                                                             .width *
