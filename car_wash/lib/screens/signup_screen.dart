@@ -9,6 +9,7 @@ import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class SignupScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _SignupScreenState extends State<SignupScreen> {
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Internet Connection'),
+          title: const LocaleText('internet_connection'),
           content: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -39,7 +40,7 @@ class _SignupScreenState extends State<SignupScreen> {
                 color: Color.fromARGB(255, 157, 157, 157),
                 size: 50,
               ),
-              Text('Please check your internet connection and try again!'),
+              LocaleText('internet_connection_message'),
             ],
           ),
           actions: <Widget>[
@@ -55,7 +56,7 @@ class _SignupScreenState extends State<SignupScreen> {
                   setState(() => _conectivityController.isAlertSet = true);
                 }
               },
-              child: const Text('Retry!'),
+              child: const LocaleText('internet_connection_button'),
             ),
           ],
         ),
@@ -96,8 +97,8 @@ class _SignupScreenState extends State<SignupScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        "Sign Up",
+                      LocaleText(
+                        "sign_up",
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
                           fontSize: MediaQuery.of(context).size.width / 10,
@@ -119,7 +120,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             child: CustomEntryField(
                                 onTap: () {},
-                                title: 'Username',
+                                title: Locales.string(context, 'username'),
                                 iconData: Icons.person,
                                 controller: _authController.username,
                                 hasObscureText: false,
@@ -133,7 +134,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             ),
                             child: CustomEntryField(
                                 onTap: () {},
-                                title: 'Email Address',
+                                title: Locales.string(context, 'email_address'),
                                 iconData: Icons.email,
                                 controller: _authController.email,
                                 hasObscureText: false,
@@ -151,7 +152,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                         _obscureText = !_obscureText;
                                       })
                                     },
-                                title: 'Password',
+                                title: Locales.string(context, 'password'),
                                 iconData: Icons.lock,
                                 controller: _authController.password,
                                 hasObscureText: true,
@@ -169,7 +170,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                         _obscureConfirm = !_obscureConfirm;
                                       })
                                     },
-                                title: 'Confirm Password',
+                                title:
+                                    Locales.string(context, 'confirm_password'),
                                 iconData: Icons.lock,
                                 controller: _authController.confirmPassword,
                                 hasObscureText: true,
@@ -197,6 +199,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                                 true));
                                 if (_conectivityController.isDeviceConnected) {
                                   await _authController.signUp(
+                                    context: context,
                                     onUsernameError: (error) => setState(() =>
                                         _authController.usernameError = error),
                                     onEmailError: (error) => setState(() =>
@@ -219,7 +222,7 @@ class _SignupScreenState extends State<SignupScreen> {
                                 }
                               },
                               withGradient: false,
-                              text: "Sign Up",
+                              text: Locales.string(context, 'sign_up'),
                               rowText: false,
                               color: const Color.fromARGB(255, 0, 0, 0),
                               width: MediaQuery.of(context).size.width,
@@ -235,8 +238,8 @@ class _SignupScreenState extends State<SignupScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    "Already have an account?",
+                                  LocaleText(
+                                    'already_have_an_account',
                                     style: TextStyle(
                                       color: Colors.white,
                                       decoration: TextDecoration.underline,
@@ -257,11 +260,16 @@ class _SignupScreenState extends State<SignupScreen> {
                                       height:
                                           MediaQuery.of(context).size.height *
                                               0.05,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.13,
+                                      width: Locales.currentLocale(context)
+                                                  ?.languageCode ==
+                                              'ro'
+                                          ? MediaQuery.of(context).size.width *
+                                              0.25
+                                          : MediaQuery.of(context).size.width *
+                                              0.15,
                                       child: Center(
-                                          child: Text(
-                                        "Log In",
+                                          child: LocaleText(
+                                        "log_in_button",
                                         style: TextStyle(
                                             decoration:
                                                 TextDecoration.underline,

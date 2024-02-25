@@ -4,6 +4,7 @@ import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 
 class AnnouncementScreen extends StatefulWidget {
   final MapEntry<String, CarWash> carwash;
@@ -41,8 +42,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  'Make an Announcement',
+                LocaleText(
+                  'make_announcement',
                   style: TextStyle(
                       color: const Color.fromARGB(255, 0, 0, 0),
                       fontSize: MediaQuery.of(context).size.width / 15,
@@ -64,7 +65,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.65,
                       child: Text(
-                        'Do you have something important to tell your customers? We will help you!',
+                        Locales.string(context, 'announcement_message'),
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: MediaQuery.of(context).size.width / 35,
@@ -96,7 +97,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     child: TextField(
                       controller: widget.controller.announcementController,
                       decoration: InputDecoration(
-                        hintText: "Write an announcement...",
+                        hintText: Locales.string(context, 'write_announcement'),
                         hintStyle: const TextStyle(color: Colors.grey),
                         border: InputBorder.none,
                         errorText: errorMessage,
@@ -119,7 +120,8 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                   onTap: () async {
                     if (widget.controller.announcementController.text.isEmpty) {
                       setState(() {
-                        errorMessage = 'Please enter your announcement!';
+                        errorMessage =
+                            Locales.string(context, 'announcement_error');
                       });
                     } else {
                       errorMessage = '';
@@ -135,7 +137,7 @@ class _AnnouncementScreenState extends State<AnnouncementScreen> {
                     }
                   },
                   withGradient: false,
-                  text: "Post",
+                  text: Locales.string(context, 'announcement_button'),
                   rowText: false,
                   color: const Color.fromARGB(255, 0, 0, 0),
                   width: MediaQuery.of(context).size.width,

@@ -7,6 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 
@@ -75,14 +76,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         Padding(
                           padding: EdgeInsets.only(
                             top: MediaQuery.of(context).size.width * 0.15,
-                            left: MediaQuery.of(context).size.width * 0.25,
+                            left: MediaQuery.of(context).size.width * 0.20,
                             right: MediaQuery.of(context).size.width * 0.1,
                           ),
                           child: TextField(
                             controller: _carWashController.searchController,
                             textAlign: TextAlign.right,
                             decoration: InputDecoration(
-                              hintText: 'Search a CarWash..',
+                              hintText: Locales.string(context, 'search'),
                               prefixIcon: IconButton(
                                 icon: const Icon(Icons.arrow_back,
                                     color: Colors.grey),
@@ -158,17 +159,22 @@ class _HomeScreenState extends State<HomeScreen> {
                                               },
                                               child: Stack(children: [
                                                 Padding(
-                                                  padding: EdgeInsets.symmetric(
-                                                      horizontal:
+                                                  padding: EdgeInsets.only(
+                                                      left:
                                                           MediaQuery.of(context)
                                                                   .size
                                                                   .width *
                                                               0.07,
-                                                      vertical:
+                                                      right:
+                                                          MediaQuery.of(context)
+                                                                  .size
+                                                                  .width *
+                                                              0.07,
+                                                      bottom:
                                                           MediaQuery.of(context)
                                                                   .size
                                                                   .height *
-                                                              0.013),
+                                                              0.026),
                                                   child: ClipRRect(
                                                     borderRadius:
                                                         BorderRadius.circular(

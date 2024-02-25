@@ -9,6 +9,7 @@ import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -27,7 +28,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Internet Connection'),
+          title: const LocaleText('internet_connection'),
           content: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -37,7 +38,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                 color: Color.fromARGB(255, 157, 157, 157),
                 size: 50,
               ),
-              Text('Please check your internet connection and try again!'),
+              LocaleText('internet_connection_message'),
             ],
           ),
           actions: <Widget>[
@@ -53,7 +54,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                   setState(() => _conectivityController.isAlertSet = true);
                 }
               },
-              child: const Text('Retry!'),
+              child: const LocaleText('internet_connection_button'),
             ),
           ],
         ),
@@ -93,8 +94,8 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        "Forgot Your Password?",
+                      LocaleText(
+                        'forgot_your_password',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
@@ -115,8 +116,8 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                               horizontal:
                                   MediaQuery.of(context).size.width * 0.08,
                             ),
-                            child: Text(
-                              "Enter your email below to recive your password reset instruction!",
+                            child: LocaleText(
+                              'forgot_password_message',
                               style: TextStyle(
                                 color: const Color.fromARGB(255, 157, 157, 157),
                                 fontSize:
@@ -141,7 +142,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                             ),
                             child: CustomEntryField(
                                 onTap: () {},
-                                title: 'Email Address',
+                                title: Locales.string(context, 'email_address'),
                                 iconData: Icons.email,
                                 controller: _authController.email,
                                 hasObscureText: false,
@@ -165,6 +166,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                                             true));
                             if (_conectivityController.isDeviceConnected) {
                               _authController.forgotPassword(
+                                  context: context,
                                   onEmailError: (error) => setState(
                                       () => _authController.emailError = error),
                                   onSuccess: () => {
@@ -177,7 +179,8 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                             }
                           },
                           withGradient: false,
-                          text: "Recover Password",
+                          text:
+                              Locales.string(context, 'forgot_password_button'),
                           rowText: false,
                           color: const Color.fromARGB(255, 0, 0, 0),
                           width: MediaQuery.of(context).size.width,

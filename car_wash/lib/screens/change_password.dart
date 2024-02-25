@@ -8,6 +8,7 @@ import 'package:car_wash/widgets/custom_entry_field.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -28,7 +29,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Internet Connection'),
+          title: const LocaleText('internet_connection'),
           content: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -38,7 +39,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                 color: Color.fromARGB(255, 157, 157, 157),
                 size: 50,
               ),
-              Text('Please check your internet connection and try again!'),
+              LocaleText('internet_connection_message'),
             ],
           ),
           actions: <Widget>[
@@ -54,7 +55,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                   setState(() => _conectivityController.isAlertSet = true);
                 }
               },
-              child: const Text('Retry!'),
+              child: const LocaleText('internet_connection_button'),
             ),
           ],
         ),
@@ -94,8 +95,8 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        "Change Password",
+                      LocaleText(
+                        'change_password',
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
@@ -123,7 +124,8 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                             !_obscureCurrentPassword;
                                       })
                                     },
-                                title: 'Current Password',
+                                title:
+                                    Locales.string(context, 'current_password'),
                                 iconData: Icons.lock,
                                 controller: _authController.currentPassword,
                                 hasObscureText: true,
@@ -143,7 +145,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                             !_obscureNewPassword;
                                       })
                                     },
-                                title: 'New Password',
+                                title: Locales.string(context, 'new_password'),
                                 iconData: Icons.lock,
                                 controller: _authController.newPassword,
                                 hasObscureText: true,
@@ -162,7 +164,8 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                             !_obscureConfirmPassword;
                                       })
                                     },
-                                title: 'Confirm New Password',
+                                title: Locales.string(
+                                    context, 'confirm_new_password'),
                                 iconData: Icons.lock,
                                 controller: _authController.confirmPassword,
                                 hasObscureText: true,
@@ -187,6 +190,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                                             true));
                             if (_conectivityController.isDeviceConnected) {
                               _authController.changePassword(
+                                  context: context,
                                   onCurrentPasswordError: (error) => setState(
                                       () => _authController
                                           .currentPasswordError = error),
@@ -205,7 +209,7 @@ class _ChangePasswordScreen extends State<ChangePasswordScreen> {
                             }
                           },
                           withGradient: false,
-                          text: "Update Password",
+                          text: Locales.string(context, 'update_password'),
                           rowText: false,
                           color: const Color.fromARGB(255, 0, 0, 0),
                           width: MediaQuery.of(context).size.width,

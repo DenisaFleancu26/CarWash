@@ -3,6 +3,7 @@ import 'package:car_wash/controllers/notification_controller.dart';
 import 'package:car_wash/screens/home_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 
 class StartScreen extends StatefulWidget {
   const StartScreen({Key? key}) : super(key: key);
@@ -66,8 +67,9 @@ class _StartScreenState extends State<StartScreen> {
                                             setState(() {
                                               _languageController.language =
                                                   'en';
+                                              _languageController.setLanguage();
+                                              Locales.change(context, 'en');
                                             });
-                                            _languageController.setLanguage();
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
@@ -104,8 +106,9 @@ class _StartScreenState extends State<StartScreen> {
                                             setState(() {
                                               _languageController.language =
                                                   'ro';
+                                              _languageController.setLanguage();
+                                              Locales.change(context, 'ro');
                                             });
-                                            _languageController.setLanguage();
                                           },
                                           child: Container(
                                             alignment: Alignment.center,
@@ -180,8 +183,8 @@ class _StartScreenState extends State<StartScreen> {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Text(
-                      "Get Started!",
+                    LocaleText(
+                      'get_started',
                       style: TextStyle(
                         fontSize: MediaQuery.of(context).size.width / 20,
                         color: const Color.fromARGB(255, 199, 199, 199),

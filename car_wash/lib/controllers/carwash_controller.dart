@@ -251,7 +251,10 @@ class CarWashController {
   Future<void> makeOffer(
       {required int offerType,
       required CarWash carwash,
-      required String id}) async {
+      required String id,
+      required String title,
+      required String offer1,
+      required String offer2}) async {
     await FirebaseDatabase.instance.ref(id).child('offer').update({
       'type': offerType,
       'value': double.parse(offerController.text),
@@ -259,6 +262,9 @@ class CarWashController {
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
     await notificationController.sendNotification(
+        title: title,
+        offer1: offer1,
+        offer2: offer2,
         offerType: offerType,
         name: carwash.name,
         offerValue: offerController.text);

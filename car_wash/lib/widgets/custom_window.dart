@@ -3,6 +3,7 @@ import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CustomWindow extends StatelessWidget {
@@ -116,12 +117,12 @@ class CustomWindow extends StatelessWidget {
                   },
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.03,
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    child: const Center(
-                        child: Text(
-                      "View more ➔",
+                    width: MediaQuery.of(context).size.width * 0.22,
+                    child: Center(
+                        child: LocaleText(
+                      'map_button',
                       style: TextStyle(
-                          fontSize: 10,
+                          fontSize: MediaQuery.of(context).size.width / 35,
                           decoration: TextDecoration.underline,
                           color: Color.fromARGB(255, 222, 222, 222)),
                     )),

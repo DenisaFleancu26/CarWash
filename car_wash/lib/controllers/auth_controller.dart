@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 
 class AuthController {
   User? get currentUser => _firebaseAuth.currentUser;
@@ -21,35 +22,35 @@ class AuthController {
 
   bool isManager = false;
 
-  Future<void> signUp({
-    required Function(String?) onUsernameError,
-    required Function(String?) onEmailError,
-    required Function(String?) onPasswordError,
-    required Function(String?) onConfirmPasswordError,
-    required Function() onSuccess,
-  }) async {
+  Future<void> signUp(
+      {required Function(String?) onUsernameError,
+      required Function(String?) onEmailError,
+      required Function(String?) onPasswordError,
+      required Function(String?) onConfirmPasswordError,
+      required Function() onSuccess,
+      required BuildContext context}) async {
     emailError = null;
     confirmPasswordError = null;
     passwordError = null;
     usernameError = null;
     if (username.text.isEmpty) {
-      onUsernameError("Please enter your Username!");
+      onUsernameError(Locales.string(context, 'signup_error1'));
       return;
     }
     if (email.text.isEmpty) {
-      onEmailError("Please enter your Email Address!");
+      onEmailError(Locales.string(context, 'signup_error2'));
       return;
     }
     if (password.text.isEmpty) {
-      onPasswordError("Please enter your Password!");
+      onPasswordError(Locales.string(context, 'signup_error3'));
       return;
     }
     if (confirmPassword.text.isEmpty) {
-      onConfirmPasswordError("Please enter your Password again!");
+      onConfirmPasswordError(Locales.string(context, 'signup_error4'));
       return;
     }
     if (password.text != confirmPassword.text) {
-      onConfirmPasswordError("The passwords you entered do not match!");
+      onConfirmPasswordError(Locales.string(context, 'signup_error5'));
       return;
     }
     try {
@@ -69,33 +70,33 @@ class AuthController {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'weak-password':
-          onPasswordError('Password should be at least 6 characters');
+          onPasswordError(Locales.string(context, 'signup_error6'));
           break;
         case 'email-is-already-in-use':
-          onEmailError('The Email has already been registered!');
+          onEmailError(Locales.string(context, 'signup_error7'));
           break;
         case 'invalid-email':
-          onEmailError('Your Email Address is invalid!');
+          onEmailError(Locales.string(context, 'signup_error8'));
           break;
       }
     }
   }
 
-  Future<void> logIn({
-    required Function(String?) onEmailError,
-    required Function(String?) onPasswordError,
-    required Function() onSuccess,
-  }) async {
+  Future<void> logIn(
+      {required Function(String?) onEmailError,
+      required Function(String?) onPasswordError,
+      required Function() onSuccess,
+      required BuildContext context}) async {
     emailError = null;
     passwordError = null;
 
     if (email.text.isEmpty) {
-      onEmailError("Please enter your Email Address!");
+      onEmailError(Locales.string(context, 'signup_error2'));
 
       return;
     }
     if (password.text.isEmpty) {
-      onPasswordError("Please enter your Password!");
+      onPasswordError(Locales.string(context, 'signup_error3'));
 
       return;
     }
@@ -106,31 +107,30 @@ class AuthController {
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'invalid-email':
-          onEmailError('Your Email Address is invalid!');
+          onEmailError(Locales.string(context, 'signup_error8'));
           break;
         case 'wrong-password':
-          onPasswordError('Your password is invalid, please try again!');
+          onPasswordError(Locales.string(context, 'login_error4'));
           break;
         case 'user-not-found':
-          onEmailError('No user corresponding to the given email!');
+          onEmailError(Locales.string(context, 'login_error5'));
           break;
         case 'user-disabled':
-          onEmailError(
-              'The user corresponding to the given email has been disabled!');
+          onEmailError(Locales.string(context, 'login_error6'));
           break;
         default:
-          onPasswordError('The mail or password you entered is wrong!');
+          onPasswordError(Locales.string(context, 'login_error7'));
           break;
       }
     }
   }
 
-  Future<void> changePassword({
-    required Function(String?) onCurrentPasswordError,
-    required Function(String?) onConfirmPasswordError,
-    required Function(String?) onNewPasswordError,
-    required Function() onSuccess,
-  }) async {
+  Future<void> changePassword(
+      {required Function(String?) onCurrentPasswordError,
+      required Function(String?) onConfirmPasswordError,
+      required Function(String?) onNewPasswordError,
+      required Function() onSuccess,
+      required BuildContext context}) async {
     confirmPasswordError = null;
     currentPasswordError = null;
     newPasswordError = null;
@@ -138,27 +138,27 @@ class AuthController {
     User user = FirebaseAuth.instance.currentUser!;
 
     if (currentPassword.text.isEmpty) {
-      onCurrentPasswordError("Please enter your current password!");
+      onCurrentPasswordError(Locales.string(context, 'change_password_error1'));
       return;
     }
     if (newPassword.text.isEmpty) {
-      onNewPasswordError("Please enter your new password!");
+      onNewPasswordError(Locales.string(context, 'change_password_error2'));
       return;
     }
     if (newPassword.text == currentPassword.text) {
-      onNewPasswordError("You are already use this password!");
+      onNewPasswordError(Locales.string(context, 'change_password_error3'));
       return;
     }
     if (confirmPassword.text.isEmpty) {
-      onConfirmPasswordError("Please enter your new password again!");
+      onConfirmPasswordError(Locales.string(context, 'change_password_error4'));
       return;
     }
     if (newPassword.text.length < 6) {
-      onNewPasswordError("Password must be at least 6 characters!");
+      onNewPasswordError(Locales.string(context, 'signup_error6'));
       return;
     }
     if (newPassword.text != confirmPassword.text) {
-      onConfirmPasswordError("The passwords you entered do not match!");
+      onConfirmPasswordError(Locales.string(context, 'signup_error5'));
       return;
     }
 
@@ -173,16 +173,16 @@ class AuthController {
         });
       });
     } on FirebaseAuthException {
-      onCurrentPasswordError('Your password is invalid, please try again!');
+      onCurrentPasswordError(Locales.string(context, 'login_error4'));
     }
   }
 
-  Future<void> forgotPassword({
-    required Function(String?) onEmailError,
-    required Function() onSuccess,
-  }) async {
+  Future<void> forgotPassword(
+      {required Function(String?) onEmailError,
+      required Function() onSuccess,
+      required BuildContext context}) async {
     if (email.text.isEmpty) {
-      onEmailError("Please enter your Email Address!");
+      onEmailError(Locales.string(context, 'signup_error2'));
       return;
     }
     try {
