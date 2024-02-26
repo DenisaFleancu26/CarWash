@@ -32,6 +32,7 @@
     "offer2": "Buy {tokens} tokens, get one free!",
     "tokens": "Tokens:",
     "make_payment": "Make Payment",
+    "carwash_service": "CAR WASH SERVICE",
     "new_announcements": "New Announcement!",
     "announcement_date": "Posted on {date}",
     "delete": "Delete ➔",
@@ -84,5 +85,6 @@
     "change_password_error3": "You are already use this password!",
     "change_password_error4": "Please enter your new password again!",
     "notification_offer1": "{value}% discount at {name}",
-    "notification_offer2": "Buy {value} tokens, get one free at {name}"
+    "notification_offer2": "Buy {value} tokens, get one free at {name}",
+    "translate": "Translate ➔"
 }

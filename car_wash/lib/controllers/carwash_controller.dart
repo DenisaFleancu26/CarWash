@@ -1,6 +1,5 @@
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/notification_controller.dart';
-import 'package:car_wash/models/announcement.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -231,16 +230,16 @@ class CarWashController {
     });
   }
 
-  Future<void> deleteAnnouncement({required Announcement announcement}) async {
+  Future<void> deleteAnnouncement(
+      {required String announcement, required String id}) async {
     DatabaseReference parentRef =
-        FirebaseDatabase.instance.ref(carwashId).child('announcements');
+        FirebaseDatabase.instance.ref(id).child('announcements');
     parentRef.once().then((event) {
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> children =
             event.snapshot.value as Map<dynamic, dynamic>;
         children.forEach((key, value) {
-          if (value['data'] == announcement.date &&
-              value['message'] == announcement.message) {
+          if (key == announcement) {
             parentRef.child(key).remove();
           }
         });

@@ -23,7 +23,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_locales/flutter_locales.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:intl/intl.dart';
+import 'package:translator/translator.dart';
+import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 
 class CarWashScreen extends StatefulWidget {
   final MapEntry<String, CarWash> carwash;
@@ -44,9 +45,11 @@ class _CarWashState extends State<CarWashScreen> {
   final CarWashController _carWashController = CarWashController();
   final PaymentController _paymentController = PaymentController();
   bool display = true;
-  List<Announcement> announcements = [];
+  Map<String, Announcement> announcements = {};
   String date =
       "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
+
+  final transaltor = GoogleTranslator();
 
   @override
   void initState() {
@@ -63,33 +66,42 @@ class _CarWashState extends State<CarWashScreen> {
         .child('announcements')
         .onValue
         .listen((event) {
-      List<Announcement> adds = [];
+      Map<String, Announcement> adds = {};
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic>? data =
             event.snapshot.value as Map<dynamic, dynamic>;
         data.forEach((key, value) {
-          Announcement add = Announcement(
-              message: value['message'] as String,
-              date: value['data'] as String);
-          if (!add.isDuplicate(adds)) {
-            adds.add(add);
+          var originalLanguage;
+          var newLanguage;
+          if (mounted) {
+            originalLanguage = langdetect.detect(value['message']);
+            newLanguage = Locales.currentLocale(context)!.languageCode;
+          }
+          if (originalLanguage != newLanguage) {
+            transaltor
+                .translate(value['message'],
+                    to: newLanguage, from: originalLanguage)
+                .then((result) {
+              Announcement add =
+                  Announcement(message: result.toString(), date: value['data']);
+              if (!adds.containsKey(key)) {
+                setState(() {
+                  adds[key] = add;
+                });
+              }
+            });
+          } else {
+            Announcement add =
+                Announcement(message: value['message'], date: value['data']);
+            if (!adds.entries.contains(add)) {
+              setState(() {
+                adds[key] = add;
+              });
+            }
           }
         });
-        adds.sort((a, b) {
-          DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
-          DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
-          return dateB.compareTo(dateA);
-        });
-        announcements = adds;
-        if (mounted) {
-          setState(() {});
-        }
-      } else {
-        announcements = adds;
-        if (mounted) {
-          setState(() {});
-        }
       }
+      announcements = adds;
     });
     display = false;
 
@@ -667,7 +679,7 @@ class _CarWashState extends State<CarWashScreen> {
                                     )
                                   ],
                                 ),
-                              for (var add in announcements)
+                              for (var add in announcements.entries)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -682,7 +694,8 @@ class _CarWashState extends State<CarWashScreen> {
                                         Text(
                                             Locales.string(context,
                                                     'announcement_date')
-                                                .replaceAll('{date}', add.date),
+                                                .replaceAll(
+                                                    '{date}', add.value.date),
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .size
@@ -698,7 +711,8 @@ class _CarWashState extends State<CarWashScreen> {
                                               }),
                                               _carWashController
                                                   .deleteAnnouncement(
-                                                      announcement: add)
+                                                      announcement: add.key,
+                                                      id: widget.carwash.key)
                                             },
                                             child: SizedBox(
                                               height: MediaQuery.of(context)
@@ -735,7 +749,7 @@ class _CarWashState extends State<CarWashScreen> {
                                             MediaQuery.of(context).size.height *
                                                 0.01),
                                     Text(
-                                      add.message,
+                                      add.value.message,
                                       style: TextStyle(
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255),
@@ -954,6 +968,9 @@ class _CarWashState extends State<CarWashScreen> {
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Row(
                                                   children: [
@@ -1006,12 +1023,6 @@ class _CarWashState extends State<CarWashScreen> {
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.01),
                                                 Text(
                                                   review.feedback,
                                                   style: TextStyle(
@@ -1028,6 +1039,12 @@ class _CarWashState extends State<CarWashScreen> {
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
+                                                SizedBox(
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.01)
                                               ],
                                             )),
                                   ],

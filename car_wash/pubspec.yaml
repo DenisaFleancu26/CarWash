@@ -58,6 +58,8 @@ dependencies:
   firebase_database: ^10.4.0
   shared_preferences: ^2.2.2
   flutter_locales: ^3.0.1
+  translator: ^1.0.0
+  flutter_langdetect: ^0.0.1
   
 
 dev_dependencies:
