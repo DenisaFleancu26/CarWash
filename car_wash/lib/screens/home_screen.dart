@@ -324,13 +324,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           .width *
                                                                       0.48,
                                                                   child: Text(
-                                                                    _carWashController
-                                                                        .carWashes
-                                                                        .entries
-                                                                        .elementAt(
-                                                                            index)
-                                                                        .value
-                                                                        .name,
+                                                                    Locales.currentLocale(context)?.languageCode ==
+                                                                            'ro'
+                                                                        ? _carWashController
+                                                                            .carWashes
+                                                                            .entries
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .value
+                                                                            .name_ro
+                                                                        : _carWashController
+                                                                            .carWashes
+                                                                            .entries
+                                                                            .elementAt(index)
+                                                                            .value
+                                                                            .name_en,
                                                                     style:
                                                                         TextStyle(
                                                                       color: const Color
@@ -369,13 +377,21 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           .width *
                                                                       0.47,
                                                                   child: Text(
-                                                                    _carWashController
-                                                                        .carWashes
-                                                                        .entries
-                                                                        .elementAt(
-                                                                            index)
-                                                                        .value
-                                                                        .address,
+                                                                    Locales.currentLocale(context)?.languageCode ==
+                                                                            'ro'
+                                                                        ? _carWashController
+                                                                            .carWashes
+                                                                            .entries
+                                                                            .elementAt(
+                                                                                index)
+                                                                            .value
+                                                                            .address_ro
+                                                                        : _carWashController
+                                                                            .carWashes
+                                                                            .entries
+                                                                            .elementAt(index)
+                                                                            .value
+                                                                            .address_en,
                                                                     style:
                                                                         TextStyle(
                                                                       color: const Color
@@ -412,7 +428,10 @@ class _HomeScreenState extends State<HomeScreen> {
                                                                           .width *
                                                                       0.47,
                                                                   child: Text(
-                                                                    "Token: ${_carWashController.carWashes.entries.elementAt(index).value.price} RON",
+                                                                    Locales.string(
+                                                                            context,
+                                                                            'token') +
+                                                                        " ${_carWashController.carWashes.entries.elementAt(index).value.price} RON",
                                                                     style:
                                                                         TextStyle(
                                                                       color: const Color

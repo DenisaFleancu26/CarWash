@@ -41,11 +41,14 @@ class CarWashController {
           List<Review> reviews = await getReviews(
               manager: AuthController().currentUser!.uid, carwash: element.id);
           CarWash carwash = CarWash(
-            name: element['name'],
+            name_ro: element['name_ro'],
+            name_en: element['name_en'],
             hours: element['hours'],
             image: element['image'] ?? '',
-            address: element['address'],
-            facilities: element['facilities'],
+            address_ro: element['address_ro'],
+            address_en: element['address_en'],
+            facilities_ro: element['facilities_ro'],
+            facilities_en: element['facilities_en'],
             phone: element['phone'],
             smallVehicleSeats: element['small-vehicle'],
             bigVehicleSeats: element['big-vehicle'],
@@ -73,11 +76,14 @@ class CarWashController {
                 await getReviews(manager: manager.id, carwash: element.id);
 
             CarWash carwash = CarWash(
-              name: element['name'],
+              name_ro: element['name_ro'],
+              name_en: element['name_en'],
               hours: element['hours'],
               image: element['image'] ?? '',
-              address: element['address'],
-              facilities: element['facilities'],
+              address_ro: element['address_ro'],
+              address_en: element['address_en'],
+              facilities_ro: element['facilities_ro'],
+              facilities_en: element['facilities_en'],
               phone: element['phone'],
               smallVehicleSeats: element['small-vehicle'],
               bigVehicleSeats: element['big-vehicle'],
@@ -104,7 +110,8 @@ class CarWashController {
     Map<String, CarWash> searchResults = {};
 
     carWashes.forEach((key, value) {
-      if (value.name.toLowerCase().contains(query.toLowerCase())) {
+      if (value.name_ro.toLowerCase().contains(query.toLowerCase()) ||
+          value.name_ro.toLowerCase().contains(query.toLowerCase())) {
         searchResults[key] = value;
       }
     });
@@ -253,7 +260,8 @@ class CarWashController {
       required String id,
       required String title,
       required String offer1,
-      required String offer2}) async {
+      required String offer2,
+      required String language}) async {
     await FirebaseDatabase.instance.ref(id).child('offer').update({
       'type': offerType,
       'value': double.parse(offerController.text),
@@ -265,7 +273,7 @@ class CarWashController {
         offer1: offer1,
         offer2: offer2,
         offerType: offerType,
-        name: carwash.name,
+        name: language == 'ro' ? carwash.name_ro : carwash.name_en,
         offerValue: offerController.text);
   }
 

@@ -59,7 +59,8 @@ class _CarWashState extends State<CarWashScreen> {
         collection: 'Users');
 
     _carWashController.findId(
-        name: widget.carwash.value.name, address: widget.carwash.value.address);
+        name: widget.carwash.value.name_en,
+        address: widget.carwash.value.address_en);
 
     FirebaseDatabase.instance
         .ref(widget.carwash.key)
@@ -618,7 +619,11 @@ class _CarWashState extends State<CarWashScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: Text(
-                                  widget.carwash.value.name,
+                                  Locales.currentLocale(context)
+                                              ?.languageCode ==
+                                          'ro'
+                                      ? widget.carwash.value.name_ro
+                                      : widget.carwash.value.name_en,
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         255, 255, 255, 255),
@@ -635,7 +640,11 @@ class _CarWashState extends State<CarWashScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: Text(
-                                  widget.carwash.value.address,
+                                  Locales.currentLocale(context)
+                                              ?.languageCode ==
+                                          'ro'
+                                      ? widget.carwash.value.address_ro
+                                      : widget.carwash.value.address_en,
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         197, 216, 216, 216),
@@ -869,7 +878,10 @@ class _CarWashState extends State<CarWashScreen> {
                                   height: MediaQuery.of(context).size.height *
                                       0.02),
                               Text(
-                                widget.carwash.value.facilities,
+                                Locales.currentLocale(context)?.languageCode ==
+                                        'ro'
+                                    ? widget.carwash.value.facilities_ro
+                                    : widget.carwash.value.facilities_en,
                                 style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 181, 181, 181),
@@ -1205,7 +1217,7 @@ class _CarWashState extends State<CarWashScreen> {
                                         MaterialPageRoute(
                                             builder: (context) => MapScreen(
                                                 address: widget
-                                                    .carwash.value.address)),
+                                                    .carwash.value.address_ro)),
                                       );
                                     },
                                   ),

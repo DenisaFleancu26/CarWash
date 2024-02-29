@@ -66,7 +66,9 @@ class CustomWindow extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
-                  carwash.value.name,
+                  Locales.currentLocale(context)?.languageCode == 'ro'
+                      ? carwash.value.name_ro
+                      : carwash.value.name_en,
                   style: TextStyle(
                     color: const Color.fromARGB(223, 255, 255, 255),
                     fontWeight: FontWeight.bold,
@@ -85,7 +87,9 @@ class CustomWindow extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
-                  carwash.value.address,
+                  Locales.currentLocale(context)?.languageCode == 'ro'
+                      ? carwash.value.address_ro
+                      : carwash.value.address_en,
                   style: TextStyle(
                     color: const Color.fromARGB(198, 255, 255, 255),
                     fontSize: MediaQuery.of(context).size.width / 40,

@@ -10,8 +10,10 @@ class TransactionController {
 
   Future<void> saveTransaction(
       {required String dataQR,
-      required String carwash,
-      required String address,
+      required String carwash_ro,
+      required String carwash_en,
+      required String address_ro,
+      required String address_en,
       required double totalPrice,
       required String date}) async {
     await FirebaseFirestore.instance
@@ -20,8 +22,10 @@ class TransactionController {
         .collection('transaction')
         .add({
       "dataQR": dataQR,
-      "carWash": carwash,
-      "address": address,
+      "carWash_ro": carwash_ro,
+      "carwash_en": carwash_en,
+      "address_ro": address_ro,
+      "address_en": address_en,
       "totalPrice": totalPrice,
       'date': date
     });
@@ -38,8 +42,10 @@ class TransactionController {
       for (var element in collection.docs) {
         TransactionModel transaction = TransactionModel(
             dataQR: element['dataQR'],
-            carwash: element['carWash'],
-            address: element['address'],
+            carwash_ro: element['carWash_ro'],
+            carwash_en: element['carWash_en'],
+            address_ro: element['address_ro'],
+            address_en: element['address_en'],
             totalPrice: element['totalPrice'],
             date: element['date']);
         transactions.add(transaction);

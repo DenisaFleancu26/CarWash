@@ -347,6 +347,9 @@ class _OfferScreenState extends State<OfferScreen> {
                                           offerDate =
                                               "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
                                           widget.controller.makeOffer(
+                                              language:
+                                                  Locales.currentLocale(context)!
+                                                      .languageCode,
                                               offer1: Locales.string(context,
                                                   'notification_offer1'),
                                               offer2: Locales.string(context,

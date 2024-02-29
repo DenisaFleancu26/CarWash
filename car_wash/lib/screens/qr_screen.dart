@@ -46,8 +46,10 @@ class _QRScreenState extends State<QRScreen> {
 
       _transactionController.saveTransaction(
           dataQR: qr,
-          carwash: widget.carWash!.value.name,
-          address: widget.carWash!.value.address,
+          carwash_ro: widget.carWash!.value.name_ro,
+          carwash_en: widget.carWash!.value.name_en,
+          address_ro: widget.carWash!.value.address_ro,
+          address_en: widget.carWash!.value.address_en,
           totalPrice: (widget.offerType == 1 && widget.offerDate == date)
               ? widget.carWash!.value.price *
                   widget.tokens! *

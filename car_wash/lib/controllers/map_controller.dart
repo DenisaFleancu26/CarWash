@@ -100,7 +100,7 @@ class MapController {
         await getBytesFromAssets('assets/images/carwash_mark.png', 100);
     for (var carwash in _carWashController.carWashes.entries) {
       var address =
-          await Geocoder.local.findAddressesFromQuery(carwash.value.address);
+          await Geocoder.local.findAddressesFromQuery(carwash.value.address_ro);
       markers.add(Marker(
           markerId: MarkerId(i.toString()),
           icon: BitmapDescriptor.fromBytes(markerIcon),

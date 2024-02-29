@@ -209,9 +209,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                           .width *
                                                       0.48,
                                                   child: Text(
-                                                    _transactionController
-                                                        .transactions[index]
-                                                        .carwash,
+                                                    Locales.currentLocale(
+                                                                    context)
+                                                                ?.languageCode ==
+                                                            'ro'
+                                                        ? _transactionController
+                                                            .transactions[index]
+                                                            .carwash_ro
+                                                        : _transactionController
+                                                            .transactions[index]
+                                                            .carwash_en,
                                                     style: TextStyle(
                                                       color:
                                                           const Color.fromARGB(
@@ -246,9 +253,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                           .width *
                                                       0.47,
                                                   child: Text(
-                                                    _transactionController
-                                                        .transactions[index]
-                                                        .address,
+                                                    Locales.currentLocale(
+                                                                    context)
+                                                                ?.languageCode ==
+                                                            'ro'
+                                                        ? _transactionController
+                                                            .transactions[index]
+                                                            .address_ro
+                                                        : _transactionController
+                                                            .transactions[index]
+                                                            .address_en,
                                                     style: TextStyle(
                                                       color:
                                                           const Color.fromARGB(
