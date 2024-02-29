@@ -11,6 +11,7 @@ import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -30,7 +31,7 @@ class _LoginScreenState extends State<LoginScreen> {
   showDialogBox() => showCupertinoDialog<String>(
         context: context,
         builder: (BuildContext context) => CupertinoAlertDialog(
-          title: const Text('No Internet Connection'),
+          title: const LocaleText('internet_connection'),
           content: const Column(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -40,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 color: Color.fromARGB(255, 157, 157, 157),
                 size: 50,
               ),
-              Text('Please check your internet connection and try again!'),
+              LocaleText('internet_connection_message'),
             ],
           ),
           actions: <Widget>[
@@ -56,7 +57,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   setState(() => _conectivityController.isAlertSet = true);
                 }
               },
-              child: const Text('Retry!'),
+              child: const LocaleText('internet_connection_button'),
             ),
           ],
         ),
@@ -79,7 +80,7 @@ class _LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: EdgeInsets.symmetric(
                 horizontal: MediaQuery.of(context).size.width * 0.07,
-                vertical: MediaQuery.of(context).size.height * 0.2),
+                vertical: MediaQuery.of(context).size.height * 0.22),
             child: ClipRRect(
               borderRadius: BorderRadius.circular(30),
               child: BackdropFilter(
@@ -97,8 +98,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      Text(
-                        "Log In",
+                      LocaleText(
+                        "log_in",
                         style: TextStyle(
                           color: const Color.fromARGB(223, 255, 255, 255),
                           fontSize: MediaQuery.of(context).size.width / 10,
@@ -120,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                             child: CustomEntryField(
                               onTap: () {},
-                              title: 'Email Address',
+                              title: Locales.string(context, 'email_address'),
                               iconData: Icons.email,
                               controller: _authController.email,
                               hasObscureText: false,
@@ -139,7 +140,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     _obscureText = !_obscureText;
                                   })
                                 },
-                                title: 'Password',
+                                title: Locales.string(context, 'password'),
                                 iconData: Icons.lock,
                                 controller: _authController.password,
                                 hasObscureText: true,
@@ -158,14 +159,20 @@ class _LoginScreenState extends State<LoginScreen> {
                               height: MediaQuery.of(context).size.height * 0.08,
                               width: MediaQuery.of(context).size.width * 0.5,
                               child: Center(
-                                  child: Text(
-                                "Forgot your password?",
+                                  child: LocaleText(
+                                'forgot_your_password',
                                 style: TextStyle(
-                                    fontSize:
-                                        MediaQuery.of(context).size.width / 25,
-                                    decoration: TextDecoration.underline,
-                                    color: const Color.fromARGB(
-                                        255, 255, 255, 255)),
+                                  fontSize:
+                                      MediaQuery.of(context).size.width / 25,
+                                  shadows: const [
+                                    Shadow(
+                                        color: Colors.white,
+                                        offset: Offset(0, -2))
+                                  ],
+                                  color: Colors.transparent,
+                                  decoration: TextDecoration.underline,
+                                  decorationColor: Colors.white,
+                                ),
                               )),
                             ),
                           ),
@@ -189,6 +196,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                 true));
                                 if (_conectivityController.isDeviceConnected) {
                                   await _authController.logIn(
+                                    context: context,
                                     onEmailError: (error) => setState(() =>
                                         _authController.emailError = error),
                                     onPasswordError: (error) => setState(() =>
@@ -206,7 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 }
                               },
                               withGradient: false,
-                              text: "Log In",
+                              text: Locales.string(context, 'log_in'),
                               rowText: false,
                               color: const Color.fromARGB(255, 0, 0, 0),
                               width: MediaQuery.of(context).size.width,
@@ -219,11 +227,17 @@ class _LoginScreenState extends State<LoginScreen> {
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
-                                  Text(
-                                    "Don't have an account yet?",
+                                  LocaleText(
+                                    "dont_have_an_account",
                                     style: TextStyle(
-                                      color: Colors.white,
+                                      shadows: const [
+                                        Shadow(
+                                            color: Colors.white,
+                                            offset: Offset(0, -2))
+                                      ],
+                                      color: Colors.transparent,
                                       decoration: TextDecoration.underline,
+                                      decorationColor: Colors.white,
                                       fontSize:
                                           MediaQuery.of(context).size.width /
                                               25,
@@ -241,20 +255,32 @@ class _LoginScreenState extends State<LoginScreen> {
                                       height:
                                           MediaQuery.of(context).size.height *
                                               0.05,
-                                      width: MediaQuery.of(context).size.width *
-                                          0.15,
+                                      width: Locales.currentLocale(context)
+                                                  ?.languageCode ==
+                                              'ro'
+                                          ? MediaQuery.of(context).size.width *
+                                              0.27
+                                          : MediaQuery.of(context).size.width *
+                                              0.16,
                                       child: Center(
-                                          child: Text(
-                                        "Sign Up",
+                                          child: LocaleText(
+                                        "create_account",
                                         style: TextStyle(
-                                            fontSize: MediaQuery.of(context)
-                                                    .size
-                                                    .width /
-                                                25,
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: const Color.fromARGB(
-                                                255, 0, 0, 0)),
+                                          fontSize: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              25,
+                                          shadows: const [
+                                            Shadow(
+                                                color: const Color.fromARGB(
+                                                    255, 0, 0, 0),
+                                                offset: Offset(0, -2))
+                                          ],
+                                          color: Colors.transparent,
+                                          decoration: TextDecoration.underline,
+                                          decorationColor: const Color.fromARGB(
+                                              255, 0, 0, 0),
+                                        ),
                                       )),
                                     ),
                                   ),

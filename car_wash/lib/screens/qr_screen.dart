@@ -5,6 +5,7 @@ import 'package:car_wash/screens/transaction_screen.dart';
 import 'package:car_wash/widgets/custom_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:randomstring_dart/randomstring_dart.dart';
 
@@ -45,8 +46,10 @@ class _QRScreenState extends State<QRScreen> {
 
       _transactionController.saveTransaction(
           dataQR: qr,
-          carwash: widget.carWash!.value.name,
-          address: widget.carWash!.value.address,
+          carwash_ro: widget.carWash!.value.name_ro,
+          carwash_en: widget.carWash!.value.name_en,
+          address_ro: widget.carWash!.value.address_ro,
+          address_en: widget.carWash!.value.address_en,
           totalPrice: (widget.offerType == 1 && widget.offerDate == date)
               ? widget.carWash!.value.price *
                   widget.tokens! *
@@ -93,7 +96,7 @@ class _QRScreenState extends State<QRScreen> {
                             builder: (context) => const TransactionScreen()));
                   },
                   withGradient: false,
-                  text: "Done",
+                  text: Locales.string(context, 'qr_button'),
                   rowText: false,
                   color: const Color.fromARGB(255, 0, 0, 0),
                   width: MediaQuery.of(context).size.width * 0.7,
@@ -112,7 +115,7 @@ class _QRScreenState extends State<QRScreen> {
                     SizedBox(
                       width: MediaQuery.of(context).size.width * 0.65,
                       child: Text(
-                        'Scan the QR code at the Car Wash to pick up the tokens!',
+                        Locales.string(context, 'qr_message'),
                         style: TextStyle(
                           color: Colors.grey,
                           fontSize: MediaQuery.of(context).size.width / 35,

@@ -1,6 +1,5 @@
 import 'package:car_wash/controllers/auth_controller.dart';
 import 'package:car_wash/controllers/notification_controller.dart';
-import 'package:car_wash/models/announcement.dart';
 import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/models/review.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -42,11 +41,14 @@ class CarWashController {
           List<Review> reviews = await getReviews(
               manager: AuthController().currentUser!.uid, carwash: element.id);
           CarWash carwash = CarWash(
-            name: element['name'],
+            name_ro: element['name_ro'],
+            name_en: element['name_en'],
             hours: element['hours'],
             image: element['image'] ?? '',
-            address: element['address'],
-            facilities: element['facilities'],
+            address_ro: element['address_ro'],
+            address_en: element['address_en'],
+            facilities_ro: element['facilities_ro'],
+            facilities_en: element['facilities_en'],
             phone: element['phone'],
             smallVehicleSeats: element['small-vehicle'],
             bigVehicleSeats: element['big-vehicle'],
@@ -74,11 +76,14 @@ class CarWashController {
                 await getReviews(manager: manager.id, carwash: element.id);
 
             CarWash carwash = CarWash(
-              name: element['name'],
+              name_ro: element['name_ro'],
+              name_en: element['name_en'],
               hours: element['hours'],
               image: element['image'] ?? '',
-              address: element['address'],
-              facilities: element['facilities'],
+              address_ro: element['address_ro'],
+              address_en: element['address_en'],
+              facilities_ro: element['facilities_ro'],
+              facilities_en: element['facilities_en'],
               phone: element['phone'],
               smallVehicleSeats: element['small-vehicle'],
               bigVehicleSeats: element['big-vehicle'],
@@ -105,7 +110,8 @@ class CarWashController {
     Map<String, CarWash> searchResults = {};
 
     carWashes.forEach((key, value) {
-      if (value.name.toLowerCase().contains(query.toLowerCase())) {
+      if (value.name_ro.toLowerCase().contains(query.toLowerCase()) ||
+          value.name_ro.toLowerCase().contains(query.toLowerCase())) {
         searchResults[key] = value;
       }
     });
@@ -231,16 +237,16 @@ class CarWashController {
     });
   }
 
-  Future<void> deleteAnnouncement({required Announcement announcement}) async {
+  Future<void> deleteAnnouncement(
+      {required String announcement, required String id}) async {
     DatabaseReference parentRef =
-        FirebaseDatabase.instance.ref(carwashId).child('announcements');
+        FirebaseDatabase.instance.ref(id).child('announcements');
     parentRef.once().then((event) {
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic> children =
             event.snapshot.value as Map<dynamic, dynamic>;
         children.forEach((key, value) {
-          if (value['data'] == announcement.date &&
-              value['message'] == announcement.message) {
+          if (key == announcement) {
             parentRef.child(key).remove();
           }
         });
@@ -251,7 +257,11 @@ class CarWashController {
   Future<void> makeOffer(
       {required int offerType,
       required CarWash carwash,
-      required String id}) async {
+      required String id,
+      required String title,
+      required String offer1,
+      required String offer2,
+      required String language}) async {
     await FirebaseDatabase.instance.ref(id).child('offer').update({
       'type': offerType,
       'value': double.parse(offerController.text),
@@ -259,8 +269,11 @@ class CarWashController {
           "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}"
     });
     await notificationController.sendNotification(
+        title: title,
+        offer1: offer1,
+        offer2: offer2,
         offerType: offerType,
-        name: carwash.name,
+        name: language == 'ro' ? carwash.name_ro : carwash.name_en,
         offerValue: offerController.text);
   }
 

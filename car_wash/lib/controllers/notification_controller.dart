@@ -34,15 +34,22 @@ class NotificationController {
   Future<void> sendNotification(
       {required int offerType,
       required String name,
-      required String offerValue}) async {
+      required String offerValue,
+      required title,
+      required offer1,
+      required offer2}) async {
     final collection =
         await FirebaseFirestore.instance.collection('UserTokens').get();
 
     Set<String> tokens = {};
 
+    var userToken = await FirebaseMessaging.instance.getToken();
+
     for (var element in collection.docs) {
       if (!tokens.contains(element['token'])) {
-        tokens.add(element['token']);
+        if (element['token'] != userToken) {
+          tokens.add(element['token']);
+        }
       }
     }
 
@@ -59,23 +66,39 @@ class NotificationController {
                 'click_action': 'FLUTTER_NOTIFICATION_CLICK',
                 'status': 'done',
                 'body': offerType == 1
-                    ? '${double.parse(offerValue)}% discount at $name'
-                    : 'Buy $offerValue tokens, get one free at $name',
-                'title': "Today's Offer",
+                    ? offer1
+                            .replaceAll(
+                                '{value}', double.parse(offerValue).toString())
+                            .replaceAll('{name}', name) +
+                        ' 💦🚘'
+                    : offer2
+                            .replaceAll('{value}', offerValue)
+                            .toString()
+                            .replaceAll('{name}', name) +
+                        ' 💦🚘',
+                'title': title + '  📢',
                 'visibility': 'public',
               },
               'notification': <String, dynamic>{
-                'title': "Today's Offer",
+                'title': title + '  📢',
                 'body': offerType == 1
-                    ? '${double.parse(offerValue)}% discount at $name'
-                    : 'Buy $offerValue tokens, get one free at $name',
+                    ? offer1
+                            .replaceAll(
+                                '{value}', double.parse(offerValue).toString())
+                            .replaceAll('{name}', name) +
+                        ' 💦🚘'
+                    : offer2
+                            .replaceAll('{value}', offerValue)
+                            .toString()
+                            .replaceAll('{name}', name) +
+                        ' 💦🚘',
                 'android_channel_id': 'dbfood'
               },
               'to': element
             }));
       } catch (e) {
         if (kDebugMode) {
-          print('error push notification');
+          print('error push notification' + e.toString());
         }
       }
     }

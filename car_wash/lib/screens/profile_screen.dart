@@ -7,6 +7,7 @@ import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({Key? key}) : super(key: key);
@@ -142,8 +143,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       children: [
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.13),
-                        Text(
-                          "Profile",
+                        LocaleText(
+                          'profile',
                           style: TextStyle(
                             color: const Color.fromARGB(223, 255, 255, 255),
                             fontSize: MediaQuery.of(context).size.width / 10,
@@ -197,7 +198,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.1),
-                        _customProfileButton('Change Password', Icons.lock, () {
+                        _customProfileButton(
+                            Locales.string(context, 'change_password'),
+                            Icons.lock, () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
@@ -208,7 +211,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           const SizedBox(height: 20),
                         if (!_authController.isManager)
                           _customProfileButton(
-                              'Transaction', Icons.account_balance_wallet, () {
+                              Locales.string(context, 'transactions'),
+                              Icons.account_balance_wallet, () {
                             Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -217,9 +221,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           }),
                         SizedBox(
                             height: MediaQuery.of(context).size.height * 0.025),
-                        _customProfileButton('Logout', Icons.logout, () {
+                        _customProfileButton(
+                            Locales.string(context, 'logout'), Icons.logout,
+                            () {
                           _authController.signOut();
-                          Navigator.push(
+                          Navigator.popUntil(context, (route) => route.isFirst);
+                          Navigator.pushReplacement(
                               context,
                               MaterialPageRoute(
                                   builder: (context) => const LoginScreen()));

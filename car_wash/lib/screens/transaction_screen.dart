@@ -4,6 +4,7 @@ import 'package:car_wash/controllers/transaction_controller.dart';
 import 'package:car_wash/screens/qr_screen.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
 class TransactionScreen extends StatefulWidget {
@@ -70,8 +71,8 @@ class _TransactionScreenState extends State<TransactionScreen> {
                           top: MediaQuery.of(context).size.height * 0.1,
                           left: MediaQuery.of(context).size.width * 0.07,
                         ),
-                        child: Text(
-                          "Transaction",
+                        child: LocaleText(
+                          'transactions',
                           style: TextStyle(
                             color: const Color.fromARGB(223, 255, 255, 255),
                             fontSize: MediaQuery.of(context).size.width / 10,
@@ -208,9 +209,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                           .width *
                                                       0.48,
                                                   child: Text(
-                                                    _transactionController
-                                                        .transactions[index]
-                                                        .carwash,
+                                                    Locales.currentLocale(
+                                                                    context)
+                                                                ?.languageCode ==
+                                                            'ro'
+                                                        ? _transactionController
+                                                            .transactions[index]
+                                                            .carwash_ro
+                                                        : _transactionController
+                                                            .transactions[index]
+                                                            .carwash_en,
                                                     style: TextStyle(
                                                       color:
                                                           const Color.fromARGB(
@@ -245,9 +253,16 @@ class _TransactionScreenState extends State<TransactionScreen> {
                                                           .width *
                                                       0.47,
                                                   child: Text(
-                                                    _transactionController
-                                                        .transactions[index]
-                                                        .address,
+                                                    Locales.currentLocale(
+                                                                    context)
+                                                                ?.languageCode ==
+                                                            'ro'
+                                                        ? _transactionController
+                                                            .transactions[index]
+                                                            .address_ro
+                                                        : _transactionController
+                                                            .transactions[index]
+                                                            .address_en,
                                                     style: TextStyle(
                                                       color:
                                                           const Color.fromARGB(

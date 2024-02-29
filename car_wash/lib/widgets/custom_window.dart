@@ -3,6 +3,7 @@ import 'package:car_wash/models/car_wash.dart';
 import 'package:car_wash/screens/carwash_screen.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 
 class CustomWindow extends StatelessWidget {
@@ -65,7 +66,9 @@ class CustomWindow extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
-                  carwash.value.name,
+                  Locales.currentLocale(context)?.languageCode == 'ro'
+                      ? carwash.value.name_ro
+                      : carwash.value.name_en,
                   style: TextStyle(
                     color: const Color.fromARGB(223, 255, 255, 255),
                     fontWeight: FontWeight.bold,
@@ -84,7 +87,9 @@ class CustomWindow extends StatelessWidget {
               SizedBox(
                 width: MediaQuery.of(context).size.width * 0.4,
                 child: Text(
-                  carwash.value.address,
+                  Locales.currentLocale(context)?.languageCode == 'ro'
+                      ? carwash.value.address_ro
+                      : carwash.value.address_en,
                   style: TextStyle(
                     color: const Color.fromARGB(198, 255, 255, 255),
                     fontSize: MediaQuery.of(context).size.width / 40,
@@ -116,14 +121,19 @@ class CustomWindow extends StatelessWidget {
                   },
                   child: SizedBox(
                     height: MediaQuery.of(context).size.height * 0.03,
-                    width: MediaQuery.of(context).size.width * 0.2,
-                    child: const Center(
-                        child: Text(
-                      "View more ➔",
+                    width: MediaQuery.of(context).size.width * 0.22,
+                    child: Center(
+                        child: LocaleText(
+                      'map_button',
                       style: TextStyle(
-                          fontSize: 10,
-                          decoration: TextDecoration.underline,
-                          color: Color.fromARGB(255, 222, 222, 222)),
+                        fontSize: MediaQuery.of(context).size.width / 35,
+                        shadows: const [
+                          Shadow(color: Colors.white, offset: Offset(0, -2))
+                        ],
+                        color: Colors.transparent,
+                        decoration: TextDecoration.underline,
+                        decorationColor: Colors.white,
+                      ),
                     )),
                   ),
                 ),

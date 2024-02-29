@@ -5,6 +5,7 @@ import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 
 class OfferScreen extends StatefulWidget {
   final MapEntry<String, CarWash> carwash;
@@ -59,8 +60,8 @@ class _OfferScreenState extends State<OfferScreen> {
                               ? Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    Text(
-                                      'What type of offer are you looking for today?',
+                                    LocaleText(
+                                      'offer_title',
                                       style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 0, 0, 0),
@@ -129,8 +130,8 @@ class _OfferScreenState extends State<OfferScreen> {
                                                                           .all(
                                                                           Radius.circular(
                                                                               15))),
-                                                              child: Text(
-                                                                  "X% discount",
+                                                              child: LocaleText(
+                                                                  'offer_1',
                                                                   style:
                                                                       TextStyle(
                                                                     color: offer ==
@@ -188,8 +189,8 @@ class _OfferScreenState extends State<OfferScreen> {
                                                                           .all(
                                                                           Radius.circular(
                                                                               15))),
-                                                              child: Text(
-                                                                  "Buy X tokens, get one free",
+                                                              child: LocaleText(
+                                                                  'offer_2',
                                                                   style:
                                                                       TextStyle(
                                                                     color: offer ==
@@ -220,10 +221,10 @@ class _OfferScreenState extends State<OfferScreen> {
                                             MediaQuery.of(context).size.height *
                                                 0.06,
                                       ),
-                                      child: Text(
+                                      child: LocaleText(
                                           offer == 1
-                                              ? "What percentage do you want for the discount?"
-                                              : "How many tokens need to be purchased to receive one for free?",
+                                              ? 'offer1_text'
+                                              : 'offer2_text',
                                           style: TextStyle(
                                             color: const Color.fromARGB(
                                                 255, 34, 34, 34),
@@ -294,7 +295,7 @@ class _OfferScreenState extends State<OfferScreen> {
                                           CrossAxisAlignment.start,
                                       children: [
                                         Icon(
-                                          offer == 1 ? Icons.info : null,
+                                          Icons.info,
                                           size: MediaQuery.of(context)
                                                   .size
                                                   .width /
@@ -309,9 +310,8 @@ class _OfferScreenState extends State<OfferScreen> {
                                                   .width *
                                               0.65,
                                           child: Text(
-                                            offer == 1
-                                                ? 'It will be applied to the final price.'
-                                                : '',
+                                            Locales.string(
+                                                context, 'offer_message'),
                                             style: TextStyle(
                                               color: Colors.grey,
                                               fontSize: MediaQuery.of(context)
@@ -335,8 +335,10 @@ class _OfferScreenState extends State<OfferScreen> {
                                             .text.isEmpty) {
                                           setState(() {
                                             errorMessage = offer == 1
-                                                ? 'Please enter the percentage!'
-                                                : 'Please enter the number of tokens!';
+                                                ? Locales.string(
+                                                    context, 'offer_error1')
+                                                : Locales.string(
+                                                    context, 'offer_error2');
                                           });
                                         } else {
                                           offerType = offer;
@@ -345,6 +347,15 @@ class _OfferScreenState extends State<OfferScreen> {
                                           offerDate =
                                               "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
                                           widget.controller.makeOffer(
+                                              language:
+                                                  Locales.currentLocale(context)!
+                                                      .languageCode,
+                                              offer1: Locales.string(context,
+                                                  'notification_offer1'),
+                                              offer2: Locales.string(context,
+                                                  'notification_offer2'),
+                                              title: Locales.string(
+                                                  context, 'todays_offer'),
                                               offerType: offer,
                                               carwash: widget.carwash.value,
                                               id: widget.carwash.key);
@@ -360,7 +371,8 @@ class _OfferScreenState extends State<OfferScreen> {
                                         }
                                       },
                                       withGradient: false,
-                                      text: "Make Offer",
+                                      text: Locales.string(
+                                          context, 'offer_button'),
                                       rowText: false,
                                       color:
                                           const Color.fromARGB(255, 34, 34, 34),
@@ -375,8 +387,8 @@ class _OfferScreenState extends State<OfferScreen> {
                               : Column(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      "Today's Offer",
+                                    LocaleText(
+                                      'todays_offer',
                                       style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 0, 0, 0),
@@ -392,8 +404,15 @@ class _OfferScreenState extends State<OfferScreen> {
                                                 0.05),
                                     Text(
                                       offerType == 1
-                                          ? "${offerValue}% discount"
-                                          : "Buy ${offerValue.toInt()} tokens, get one free",
+                                          ? Locales.string(context, 'offer1')
+                                              .replaceAll('{discount}',
+                                                  offerValue.toString())
+                                          : Locales.string(context, 'offer2')
+                                              .replaceAll(
+                                                  '{tokens}',
+                                                  offerValue
+                                                      .toInt()
+                                                      .toString()),
                                       style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 0, 0, 0),
@@ -413,8 +432,8 @@ class _OfferScreenState extends State<OfferScreen> {
                                           MediaQuery.of(context).size.height *
                                               0.05,
                                     ),
-                                    Text(
-                                      "Do you want to disable the offer?",
+                                    LocaleText(
+                                      'offer_disable',
                                       style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 0, 0, 0),
@@ -448,7 +467,8 @@ class _OfferScreenState extends State<OfferScreen> {
                                                             ))));
                                       },
                                       withGradient: false,
-                                      text: "Disable",
+                                      text: Locales.string(
+                                          context, 'disable_button'),
                                       rowText: false,
                                       color:
                                           const Color.fromARGB(255, 34, 34, 34),

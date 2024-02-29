@@ -20,9 +20,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_cached_image/firebase_cached_image.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_locales/flutter_locales.dart';
 import 'package:flutter_phone_direct_caller/flutter_phone_direct_caller.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:intl/intl.dart';
+import 'package:translator/translator.dart';
+import 'package:flutter_langdetect/flutter_langdetect.dart' as langdetect;
 
 class CarWashScreen extends StatefulWidget {
   final MapEntry<String, CarWash> carwash;
@@ -43,9 +45,11 @@ class _CarWashState extends State<CarWashScreen> {
   final CarWashController _carWashController = CarWashController();
   final PaymentController _paymentController = PaymentController();
   bool display = true;
-  List<Announcement> announcements = [];
+  Map<String, Announcement> announcements = {};
   String date =
       "${DateTime.now().day}/${DateTime.now().month}/${DateTime.now().year}";
+
+  final transaltor = GoogleTranslator();
 
   @override
   void initState() {
@@ -55,40 +59,50 @@ class _CarWashState extends State<CarWashScreen> {
         collection: 'Users');
 
     _carWashController.findId(
-        name: widget.carwash.value.name, address: widget.carwash.value.address);
+        name: widget.carwash.value.name_en,
+        address: widget.carwash.value.address_en);
 
     FirebaseDatabase.instance
         .ref(widget.carwash.key)
         .child('announcements')
         .onValue
         .listen((event) {
-      List<Announcement> adds = [];
+      Map<String, Announcement> adds = {};
       if (event.snapshot.value != null) {
         Map<dynamic, dynamic>? data =
             event.snapshot.value as Map<dynamic, dynamic>;
         data.forEach((key, value) {
-          Announcement add = Announcement(
-              message: value['message'] as String,
-              date: value['data'] as String);
-          if (!add.isDuplicate(adds)) {
-            adds.add(add);
+          var originalLanguage;
+          var newLanguage;
+          if (mounted) {
+            originalLanguage = langdetect.detect(value['message']);
+            newLanguage = Locales.currentLocale(context)!.languageCode;
+          }
+          if (originalLanguage != newLanguage) {
+            transaltor
+                .translate(value['message'],
+                    to: newLanguage, from: originalLanguage)
+                .then((result) {
+              Announcement add =
+                  Announcement(message: result.toString(), date: value['data']);
+              if (!adds.containsKey(key)) {
+                setState(() {
+                  adds[key] = add;
+                });
+              }
+            });
+          } else {
+            Announcement add =
+                Announcement(message: value['message'], date: value['data']);
+            if (!adds.entries.contains(add)) {
+              setState(() {
+                adds[key] = add;
+              });
+            }
           }
         });
-        adds.sort((a, b) {
-          DateTime dateA = DateFormat('dd/MM/yyyy').parse(a.date);
-          DateTime dateB = DateFormat('dd/MM/yyyy').parse(b.date);
-          return dateB.compareTo(dateA);
-        });
-        announcements = adds;
-        if (mounted) {
-          setState(() {});
-        }
-      } else {
-        announcements = adds;
-        if (mounted) {
-          setState(() {});
-        }
       }
+      announcements = adds;
     });
     display = false;
 
@@ -124,8 +138,8 @@ class _CarWashState extends State<CarWashScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text(
-                          'Select the broken spot:',
+                        LocaleText(
+                          'broken_spot',
                           style: TextStyle(
                             color: const Color.fromARGB(255, 34, 34, 34),
                             fontSize: MediaQuery.of(context).size.width / 20,
@@ -188,13 +202,12 @@ class _CarWashState extends State<CarWashScreen> {
                         const SizedBox(width: 5),
                         SizedBox(
                           width: MediaQuery.of(context).size.width * 0.65,
-                          child: Text(
-                            'You can select one or more spots!',
+                          child: LocaleText(
+                            'broken_spot_message',
                             style: TextStyle(
                               color: Colors.grey,
                               fontSize: MediaQuery.of(context).size.width / 30,
                             ),
-                            softWrap: true,
                           ),
                         )
                       ],
@@ -248,9 +261,9 @@ class _CarWashState extends State<CarWashScreen> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             if (offerType != 0 && offerDate == date)
-                              Text(
+                              LocaleText(
                                 textAlign: TextAlign.center,
-                                "Today's Offer:",
+                                'todays_offer',
                                 style: TextStyle(
                                     color:
                                         const Color.fromARGB(255, 23, 156, 0),
@@ -262,8 +275,12 @@ class _CarWashState extends State<CarWashScreen> {
                               Text(
                                 textAlign: TextAlign.center,
                                 offerType == 1
-                                    ? "${offerValue}% discount to the final price!"
-                                    : "Buy ${offerValue.toInt()} tokens, get one free",
+                                    ? Locales.string(context, 'offer1')
+                                        .replaceAll(
+                                            '{discount}', offerValue.toString())
+                                    : Locales.string(context, 'offer2')
+                                        .replaceAll('{tokens}',
+                                            offerValue.toInt().toString()),
                                 style: TextStyle(
                                     color:
                                         const Color.fromARGB(255, 23, 156, 0),
@@ -274,7 +291,7 @@ class _CarWashState extends State<CarWashScreen> {
                             if (offerType != 0 && offerDate == date)
                               HorizontalLine(
                                   distance: MediaQuery.of(context).size.height *
-                                      0.03),
+                                      0.02),
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               children: [
@@ -287,8 +304,8 @@ class _CarWashState extends State<CarWashScreen> {
                                     }),
                                 Row(
                                   children: [
-                                    Text(
-                                      'Tokens:',
+                                    LocaleText(
+                                      'tokens',
                                       style: TextStyle(
                                         color: const Color.fromARGB(
                                             255, 34, 34, 34),
@@ -357,7 +374,8 @@ class _CarWashState extends State<CarWashScreen> {
                                 ),
                                 MeniuButton(
                                   icon: Icons.credit_card,
-                                  label: 'Make Payment',
+                                  label:
+                                      Locales.string(context, 'make_payment'),
                                   onTap: () async {
                                     if (tokens > 0) {
                                       if (user != null) {
@@ -512,8 +530,12 @@ class _CarWashState extends State<CarWashScreen> {
                               top: MediaQuery.of(context).size.height * 0.22,
                               right: MediaQuery.of(context).size.width * 0.1,
                               child: Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.52,
+                                  width: Locales.currentLocale(context)
+                                              ?.languageCode ==
+                                          'ro'
+                                      ? MediaQuery.of(context).size.width * 0.56
+                                      : MediaQuery.of(context).size.width *
+                                          0.52,
                                   height: MediaQuery.of(context).size.height *
                                       0.045,
                                   decoration: BoxDecoration(
@@ -529,8 +551,8 @@ class _CarWashState extends State<CarWashScreen> {
                                         left:
                                             MediaQuery.of(context).size.width *
                                                 0.03),
-                                    child: Text(
-                                      'CAR WASH SERVICE',
+                                    child: LocaleText(
+                                      'carwash_service',
                                       style: TextStyle(
                                         color: const Color.fromARGB(
                                             223, 255, 255, 255),
@@ -597,7 +619,11 @@ class _CarWashState extends State<CarWashScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: Text(
-                                  widget.carwash.value.name,
+                                  Locales.currentLocale(context)
+                                              ?.languageCode ==
+                                          'ro'
+                                      ? widget.carwash.value.name_ro
+                                      : widget.carwash.value.name_en,
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         255, 255, 255, 255),
@@ -614,7 +640,11 @@ class _CarWashState extends State<CarWashScreen> {
                               SizedBox(
                                 width: MediaQuery.of(context).size.width,
                                 child: Text(
-                                  widget.carwash.value.address,
+                                  Locales.currentLocale(context)
+                                              ?.languageCode ==
+                                          'ro'
+                                      ? widget.carwash.value.address_ro
+                                      : widget.carwash.value.address_en,
                                   style: TextStyle(
                                     color: const Color.fromARGB(
                                         197, 216, 216, 216),
@@ -643,8 +673,8 @@ class _CarWashState extends State<CarWashScreen> {
                                     SizedBox(
                                       width: MediaQuery.of(context).size.width *
                                           0.65,
-                                      child: Text(
-                                        'New Announcement!',
+                                      child: LocaleText(
+                                        'new_announcements',
                                         style: TextStyle(
                                           color: const Color.fromARGB(
                                               255, 240, 0, 0),
@@ -654,12 +684,11 @@ class _CarWashState extends State<CarWashScreen> {
                                               20,
                                           fontWeight: FontWeight.bold,
                                         ),
-                                        softWrap: true,
                                       ),
                                     )
                                   ],
                                 ),
-                              for (var add in announcements)
+                              for (var add in announcements.entries)
                                 Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
@@ -671,7 +700,11 @@ class _CarWashState extends State<CarWashScreen> {
                                       mainAxisAlignment:
                                           MainAxisAlignment.spaceBetween,
                                       children: [
-                                        Text('Posted on ${add.date}',
+                                        Text(
+                                            Locales.string(context,
+                                                    'announcement_date')
+                                                .replaceAll(
+                                                    '{date}', add.value.date),
                                             style: TextStyle(
                                               fontSize: MediaQuery.of(context)
                                                       .size
@@ -687,28 +720,33 @@ class _CarWashState extends State<CarWashScreen> {
                                               }),
                                               _carWashController
                                                   .deleteAnnouncement(
-                                                      announcement: add)
+                                                      announcement: add.key,
+                                                      id: widget.carwash.key)
                                             },
                                             child: SizedBox(
                                               height: MediaQuery.of(context)
                                                       .size
                                                       .width /
                                                   25,
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width /
-                                                  7,
                                               child: Center(
-                                                child: Text("Delete ➔",
+                                                child: LocaleText('delete',
                                                     style: TextStyle(
                                                       fontSize:
                                                           MediaQuery.of(context)
                                                                   .size
                                                                   .width /
                                                               30,
+                                                      shadows: const [
+                                                        Shadow(
+                                                            color: Colors.grey,
+                                                            offset:
+                                                                Offset(0, -2))
+                                                      ],
+                                                      color: Colors.transparent,
                                                       decoration: TextDecoration
                                                           .underline,
-                                                      color: Colors.grey,
+                                                      decorationColor:
+                                                          Colors.grey,
                                                     )),
                                               ),
                                             ),
@@ -720,7 +758,7 @@ class _CarWashState extends State<CarWashScreen> {
                                             MediaQuery.of(context).size.height *
                                                 0.01),
                                     Text(
-                                      add.message,
+                                      add.value.message,
                                       style: TextStyle(
                                         color: const Color.fromARGB(
                                             255, 255, 255, 255),
@@ -736,8 +774,8 @@ class _CarWashState extends State<CarWashScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Availability',
+                                  LocaleText(
+                                    'availability',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255),
@@ -755,19 +793,24 @@ class _CarWashState extends State<CarWashScreen> {
                                         height:
                                             MediaQuery.of(context).size.width /
                                                 25,
-                                        width:
-                                            MediaQuery.of(context).size.width /
-                                                3,
                                         child: Center(
-                                          child: Text("Mark a broken spot ➔",
+                                          child: LocaleText(
+                                              'broken_spot_button',
+                                              textAlign: TextAlign.end,
                                               style: TextStyle(
                                                 fontSize: MediaQuery.of(context)
                                                         .size
                                                         .width /
                                                     30,
+                                                shadows: const [
+                                                  Shadow(
+                                                      color: Colors.grey,
+                                                      offset: Offset(0, -2))
+                                                ],
+                                                color: Colors.transparent,
                                                 decoration:
                                                     TextDecoration.underline,
-                                                color: Colors.grey,
+                                                decorationColor: Colors.grey,
                                               )),
                                         ),
                                       ),
@@ -808,8 +851,8 @@ class _CarWashState extends State<CarWashScreen> {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceBetween,
                                 children: [
-                                  Text(
-                                    'Facilities',
+                                  LocaleText(
+                                    'facilities',
                                     style: TextStyle(
                                       color: const Color.fromARGB(
                                           255, 255, 255, 255),
@@ -835,7 +878,10 @@ class _CarWashState extends State<CarWashScreen> {
                                   height: MediaQuery.of(context).size.height *
                                       0.02),
                               Text(
-                                widget.carwash.value.facilities,
+                                Locales.currentLocale(context)?.languageCode ==
+                                        'ro'
+                                    ? widget.carwash.value.facilities_ro
+                                    : widget.carwash.value.facilities_en,
                                 style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 181, 181, 181),
@@ -845,7 +891,8 @@ class _CarWashState extends State<CarWashScreen> {
                               ),
                               const SizedBox(height: 10),
                               Text(
-                                'Token: ${widget.carwash.value.price} RON',
+                                Locales.string(context, 'token') +
+                                    ' ${widget.carwash.value.price} RON',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   color:
@@ -855,8 +902,8 @@ class _CarWashState extends State<CarWashScreen> {
                                 ),
                               ),
                               const HorizontalLine(distance: 15),
-                              Text(
-                                'Clients Review',
+                              LocaleText(
+                                'clients_review',
                                 style: TextStyle(
                                   color:
                                       const Color.fromARGB(255, 255, 255, 255),
@@ -877,8 +924,8 @@ class _CarWashState extends State<CarWashScreen> {
                                     if (widget.carwash.value.reviews.isEmpty)
                                       Container(
                                         margin: const EdgeInsets.only(top: 10),
-                                        child: Text(
-                                          "No reviews..",
+                                        child: LocaleText(
+                                          'no_reviews',
                                           style: TextStyle(
                                             color: const Color.fromARGB(
                                                 197, 216, 216, 216),
@@ -933,6 +980,9 @@ class _CarWashState extends State<CarWashScreen> {
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 Row(
                                                   children: [
@@ -985,12 +1035,6 @@ class _CarWashState extends State<CarWashScreen> {
                                                     ),
                                                   ],
                                                 ),
-                                                SizedBox(
-                                                    height:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .height *
-                                                            0.01),
                                                 Text(
                                                   review.feedback,
                                                   style: TextStyle(
@@ -1007,6 +1051,12 @@ class _CarWashState extends State<CarWashScreen> {
                                                   overflow:
                                                       TextOverflow.ellipsis,
                                                 ),
+                                                SizedBox(
+                                                    height:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .height *
+                                                            0.01)
                                               ],
                                             )),
                                   ],
@@ -1052,8 +1102,9 @@ class _CarWashState extends State<CarWashScreen> {
                               if (_userController.username != '')
                                 TextField(
                                   controller: _carWashController.userReview,
-                                  decoration: const InputDecoration(
-                                    hintText: "Write a review..",
+                                  decoration: InputDecoration(
+                                    hintText:
+                                        Locales.string(context, 'write_review'),
                                     hintStyle: TextStyle(color: Colors.grey),
                                     border: InputBorder.none,
                                     counterStyle: TextStyle(color: Colors.grey),
@@ -1078,11 +1129,11 @@ class _CarWashState extends State<CarWashScreen> {
                                   },
                                   child: SizedBox(
                                     width:
-                                        MediaQuery.of(context).size.width / 3,
+                                        MediaQuery.of(context).size.width / 2,
                                     height:
                                         MediaQuery.of(context).size.height / 25,
-                                    child: Text(
-                                      'Post Review >',
+                                    child: LocaleText(
+                                      'post_review',
                                       style: TextStyle(
                                         fontSize:
                                             MediaQuery.of(context).size.width /
@@ -1090,7 +1141,7 @@ class _CarWashState extends State<CarWashScreen> {
                                         shadows: const [
                                           Shadow(
                                               color: Colors.grey,
-                                              offset: Offset(0, -5))
+                                              offset: Offset(0, -2))
                                         ],
                                         color: Colors.transparent,
                                         decoration: TextDecoration.underline,
@@ -1102,12 +1153,12 @@ class _CarWashState extends State<CarWashScreen> {
                               const HorizontalLine(distance: 15),
                               Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                    MainAxisAlignment.spaceAround,
                                 children: [
                                   if (!widget.isManager)
                                     MeniuButton(
                                       icon: Icons.phone,
-                                      label: 'Call',
+                                      label: Locales.string(context, 'call'),
                                       onTap: () {
                                         FlutterPhoneDirectCaller.callNumber(
                                             widget.carwash.value.phone
@@ -1117,7 +1168,8 @@ class _CarWashState extends State<CarWashScreen> {
                                   if (widget.isManager)
                                     MeniuButton(
                                       icon: Icons.campaign,
-                                      label: 'Announcement',
+                                      label: Locales.string(
+                                          context, 'announcement'),
                                       onTap: () {
                                         Navigator.push(
                                           context,
@@ -1134,7 +1186,8 @@ class _CarWashState extends State<CarWashScreen> {
                                   if (!widget.isManager)
                                     MeniuButton(
                                       icon: Icons.shopping_cart,
-                                      label: 'Buy tokens',
+                                      label:
+                                          Locales.string(context, 'buy_tokens'),
                                       onTap: () {
                                         showBottomSheet();
                                       },
@@ -1142,7 +1195,7 @@ class _CarWashState extends State<CarWashScreen> {
                                   if (widget.isManager)
                                     MeniuButton(
                                       icon: Icons.local_offer,
-                                      label: 'Offer',
+                                      label: Locales.string(context, 'offer'),
                                       onTap: () {
                                         Navigator.push(
                                           context,
@@ -1157,14 +1210,14 @@ class _CarWashState extends State<CarWashScreen> {
                                     ),
                                   MeniuButton(
                                     icon: Icons.map,
-                                    label: 'Map',
+                                    label: Locales.string(context, 'map'),
                                     onTap: () {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => MapScreen(
                                                 address: widget
-                                                    .carwash.value.address)),
+                                                    .carwash.value.address_ro)),
                                       );
                                     },
                                   ),
