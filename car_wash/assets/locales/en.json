@@ -86,5 +86,6 @@
     "change_password_error4": "Please enter your new password again!",
     "notification_offer1": "{value}% discount at {name}",
     "notification_offer2": "Buy {value} tokens, get one free at {name}",
-    "translate": "Translate ➔"
+    "translate": "Translate ➔",
+    "view_all": "View all ➔"
 }

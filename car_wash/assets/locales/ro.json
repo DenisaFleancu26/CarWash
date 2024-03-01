@@ -86,5 +86,6 @@
     "change_password_error4": "Vă rugăm să introduceți din nou noua parolă!",
     "notification_offer1": "{value}% reducere la {name}",
     "notification_offer2": "Cumpărați {value} fise, primiți una gratuit la {name}",
-    "translate": "Traducere ➔"
+    "translate": "Traducere ➔",
+    "view_all": "Vezi tot ➔"
 }
