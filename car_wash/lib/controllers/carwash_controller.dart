@@ -131,7 +131,10 @@ class CarWashController {
             .collection('car-wash')
             .get();
         for (var element in managerCarWashes.docs) {
-          if (element['name'] == name && element['address'] == address) {
+          if ((element['name_ro'] == name &&
+                  element['address_ro'] == address) ||
+              (element['name_en'] == name &&
+                  element['address_en'] == address)) {
             managerId = manager.id;
             carwashId = element.id;
           }

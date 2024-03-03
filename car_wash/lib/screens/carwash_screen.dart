@@ -11,6 +11,7 @@ import 'package:car_wash/screens/login_screen.dart';
 import 'package:car_wash/screens/map_screen.dart';
 import 'package:car_wash/screens/offer_screen.dart';
 import 'package:car_wash/screens/qr_screen.dart';
+import 'package:car_wash/screens/review_screen.dart';
 import 'package:car_wash/widgets/horizontal_line.dart';
 import 'package:car_wash/widgets/meniu_button.dart';
 import 'package:car_wash/widgets/navigation_bar.dart';
@@ -902,15 +903,59 @@ class _CarWashState extends State<CarWashScreen> {
                                 ),
                               ),
                               const HorizontalLine(distance: 15),
-                              LocaleText(
-                                'clients_review',
-                                style: TextStyle(
-                                  color:
-                                      const Color.fromARGB(255, 255, 255, 255),
-                                  fontSize:
-                                      MediaQuery.of(context).size.width / 25,
-                                ),
-                              ),
+                              Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    LocaleText(
+                                      'clients_review',
+                                      style: TextStyle(
+                                        color: const Color.fromARGB(
+                                            255, 255, 255, 255),
+                                        fontSize:
+                                            MediaQuery.of(context).size.width /
+                                                25,
+                                      ),
+                                    ),
+                                    if (widget.carwash.value.reviews.isNotEmpty)
+                                      GestureDetector(
+                                        onTap: () => {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    ClientsReviewScreen(
+                                                        reviews: widget.carwash
+                                                            .value.reviews)),
+                                          )
+                                        },
+                                        child: SizedBox(
+                                          height: MediaQuery.of(context)
+                                                  .size
+                                                  .width /
+                                              25,
+                                          child: Center(
+                                            child: LocaleText('view_all',
+                                                style: TextStyle(
+                                                  fontSize:
+                                                      MediaQuery.of(context)
+                                                              .size
+                                                              .width /
+                                                          30,
+                                                  shadows: const [
+                                                    Shadow(
+                                                        color: Colors.grey,
+                                                        offset: Offset(0, -2))
+                                                  ],
+                                                  color: Colors.transparent,
+                                                  decoration:
+                                                      TextDecoration.underline,
+                                                  decorationColor: Colors.grey,
+                                                )),
+                                          ),
+                                        ),
+                                      )
+                                  ]),
                               SizedBox(
                                   height: MediaQuery.of(context).size.height *
                                       0.01),
