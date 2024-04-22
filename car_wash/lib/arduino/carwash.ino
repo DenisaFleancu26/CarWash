@@ -55,7 +55,7 @@ void loop() {
   for (int i = 0; i < SPOTS; i++) {
 
 
-    if(Firebase.getInt(String(CARWASH) + "/" + String(i+1) + "/broken") == 1)
+    if(Firebase.getInt(String(CARWASH) + "/spots/" + String(i+1) + "/broken") == 1)
     {
       digitalWrite(ledRed[i], HIGH);
       digitalWrite(ledGreen[i], LOW);
@@ -78,16 +78,16 @@ void loop() {
         if(distances[i] > 0 && distances[i] <= 20){
           digitalWrite(ledRed[i], HIGH);
           digitalWrite(ledGreen[i], LOW); 
-          if(Firebase.getInt(String(CARWASH) + "/" + String(i+1) + "/available") == 0)
+          if(Firebase.getInt(String(CARWASH) + "/spots/" + String(i+1) + "/available") == 0)
           {
-            Firebase.setInt(String(CARWASH) + "/" + String(i+1) + "/available", 1);
+            Firebase.setInt(String(CARWASH) + "/spots/" + String(i+1) + "/available", 1);
           } 
         } else {
           digitalWrite(ledRed[i], LOW);
           digitalWrite(ledGreen[i], HIGH); 
-          if(Firebase.getInt(String(CARWASH) + "/" + String(i+1) + "/available") == 1)
+          if(Firebase.getInt(String(CARWASH) + "/spots/" + String(i+1) + "/available") == 1)
           {
-            Firebase.setInt(String(CARWASH) + "/" + String(i+1) + "/available", 0);
+            Firebase.setInt(String(CARWASH) + "/spots/" + String(i+1) + "/available", 0);
           } 
         }
       }
