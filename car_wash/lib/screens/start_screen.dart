@@ -142,11 +142,11 @@ class _StartScreenState extends State<StartScreen> {
                                 ],
                               )))),
                   Text(
-                    "Car Wash",
+                    "Smart Wash",
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       height: MediaQuery.of(context).size.height * 0.0015,
-                      fontSize: MediaQuery.of(context).size.width / 5,
+                      fontSize: MediaQuery.of(context).size.width / 5.1,
                       fontFamily: 'Nosifer',
                       foreground: Paint()
                         ..shader = const LinearGradient(
