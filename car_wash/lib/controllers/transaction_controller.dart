@@ -22,7 +22,7 @@ class TransactionController {
         .collection('transaction')
         .add({
       "dataQR": dataQR,
-      "carWash_ro": carwash_ro,
+      "carwash_ro": carwash_ro,
       "carwash_en": carwash_en,
       "address_ro": address_ro,
       "address_en": address_en,
@@ -42,8 +42,8 @@ class TransactionController {
       for (var element in collection.docs) {
         TransactionModel transaction = TransactionModel(
             dataQR: element['dataQR'],
-            carwash_ro: element['carWash_ro'],
-            carwash_en: element['carWash_en'],
+            carwash_ro: element['carwash_ro'],
+            carwash_en: element['carwash_en'],
             address_ro: element['address_ro'],
             address_en: element['address_en'],
             totalPrice: element['totalPrice'],
