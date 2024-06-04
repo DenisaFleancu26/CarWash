@@ -5,10 +5,10 @@
 #include <ArduinoJson.h>
 #include <ESP8266HTTPClient.h>
 
-#define FIREBASE_HOST "carwash-f3d39-default-rtdb.europe-west1.firebasedatabase.app"
-#define FIREBASE_AUTH "yGgKuRJO1pAjwZLfeHxrvSoGUanWa5J6nWAlravU"
-#define WIFI_SSID "DIGI-gwmg"
-#define WIFI_PASSWORD "yNCq8NW4"
+#define FIREBASE_HOST "xxxxxxxxxxxxxxxxxxxxxxxxx"
+#define FIREBASE_AUTH "xxxxxxxxxxxx"
+#define WIFI_SSID "xxxxxxx"
+#define WIFI_PASSWORD "xxxxxxx"
 
 #define CARWASH "SAwic2Ccc8ksnWWLOeMU"
 #define SPOTS 2
@@ -57,7 +57,7 @@ void loop() {
 
     if(Firebase.getInt(String(CARWASH) + "/spots/" + String(i+1) + "/broken") == 1)
     {
-      digitalWrite(ledRed[i], HIGH);
+      digitalWrite(ledRed[i], LOW);
       digitalWrite(ledGreen[i], LOW);
     }else{
       // Clears the trigPin
