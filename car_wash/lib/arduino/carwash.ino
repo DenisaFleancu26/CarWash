@@ -72,10 +72,10 @@ void loop() {
       // Reads the echoPin, returns the sound wave travel time in microseconds
       durations[i] = pulseIn(echoPins[i], HIGH);
 
-      if(durations[i] >= 0 && durations[i] <= 20000) 
+      if(durations[i] >= 0 && durations[i] <= 10000) 
       {
         distances[i] = durations[i] * 0.034 / 2; 
-        if(distances[i] > 0 && distances[i] <= 20){
+        if(distances[i] > 0 && distances[i] <= 10){
           digitalWrite(ledRed[i], HIGH);
           digitalWrite(ledGreen[i], LOW); 
           if(Firebase.getInt(String(CARWASH) + "/spots/" + String(i+1) + "/available") == 0)
