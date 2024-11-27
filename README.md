@@ -2,6 +2,11 @@
 
 ## Instrucțiuni pentru clonarea și rularea aplicației SmartWash
 
+### DEMO
+```
+https://drive.google.com/drive/folders/1knVbGUTVqpd8sk1DNGrJmI9-7-5XRnIA
+```
+
 #### Pentru a clona și rula aplicația SmartWash, urmați acești pași:
 
 1. Instalare editor de cod: ``Visual Studio Code`` sau ``Android Studio``.
